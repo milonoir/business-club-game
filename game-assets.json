@@ -1,0 +1,1107 @@
+{
+  "companies": [
+    "Amfora",
+    "Domus",
+    "Piért",
+    "Skála-Coop"
+  ],
+  "actionDeck": [
+    {
+      "id": 1,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 41,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 42,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 43,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 44,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 45,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 46,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 48,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 49,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 50,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 51,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 52,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 53,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 54,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 55,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 56,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 57,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 59,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 60,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 0,
+          "mod": "+ 10"
+        }
+      ]
+    }
+  ],
+  "bankDeck": [
+    {
+      "id": 1,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 1,
+          "mod": "+ 10"
+        },
+        {
+          "company": 2,
+          "mod": "+ 10"
+        },
+        {
+          "company": 3,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 1,
+          "mod": "+ 10"
+        },
+        {
+          "company": 2,
+          "mod": "+ 10"
+        },
+        {
+          "company": 3,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 1,
+          "mod": "+ 10"
+        },
+        {
+          "company": 2,
+          "mod": "+ 10"
+        },
+        {
+          "company": 3,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 1,
+          "mod": "+ 10"
+        },
+        {
+          "company": 2,
+          "mod": "+ 10"
+        },
+        {
+          "company": 3,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 1,
+          "mod": "+ 10"
+        },
+        {
+          "company": 2,
+          "mod": "+ 10"
+        },
+        {
+          "company": 3,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 1,
+          "mod": "+ 10"
+        },
+        {
+          "company": 2,
+          "mod": "+ 10"
+        },
+        {
+          "company": 3,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 1,
+          "mod": "+ 10"
+        },
+        {
+          "company": 2,
+          "mod": "+ 10"
+        },
+        {
+          "company": 3,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 1,
+          "mod": "+ 10"
+        },
+        {
+          "company": 2,
+          "mod": "+ 10"
+        },
+        {
+          "company": 3,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 1,
+          "mod": "+ 10"
+        },
+        {
+          "company": 2,
+          "mod": "+ 10"
+        },
+        {
+          "company": 3,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 1,
+          "mod": "+ 10"
+        },
+        {
+          "company": 2,
+          "mod": "+ 10"
+        },
+        {
+          "company": 3,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 1,
+          "mod": "+ 10"
+        },
+        {
+          "company": 2,
+          "mod": "+ 10"
+        },
+        {
+          "company": 3,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 1,
+          "mod": "+ 10"
+        },
+        {
+          "company": 2,
+          "mod": "+ 10"
+        },
+        {
+          "company": 3,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 1,
+          "mod": "+ 10"
+        },
+        {
+          "company": 2,
+          "mod": "+ 10"
+        },
+        {
+          "company": 3,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 1,
+          "mod": "+ 10"
+        },
+        {
+          "company": 2,
+          "mod": "+ 10"
+        },
+        {
+          "company": 3,
+          "mod": "+ 10"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 10"
+        },
+        {
+          "company": 1,
+          "mod": "+ 10"
+        },
+        {
+          "company": 2,
+          "mod": "+ 10"
+        },
+        {
+          "company": 3,
+          "mod": "+ 10"
+        }
+      ]
+    }
+  ]
+}
