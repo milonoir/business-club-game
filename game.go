@@ -23,12 +23,6 @@ type game struct {
 	assets
 }
 
-func (g *game) ShufflePlayers() {
-	rand.Shuffle(len(g.Players), func(i, j int) {
-		g.Players[i], g.Players[j] = g.Players[j], g.Players[i]
-	})
-}
-
 func newGame(a assets) game {
 	g := game{
 		assets:      a,
@@ -50,4 +44,14 @@ func newGame(a assets) game {
 	})
 
 	return g
+}
+
+func (g *game) shufflePlayers() {
+	rand.Shuffle(len(g.Players), func(i, j int) {
+		g.Players[i], g.Players[j] = g.Players[j], g.Players[i]
+	})
+}
+
+func (g *game) start() {
+
 }

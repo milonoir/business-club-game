@@ -1,7 +1,7 @@
 package main
 
 type player struct {
-	Cash    int
-	Stocks  map[string]int
-	Actions []card
+	cash    int
+	stocks  map[string]int
+	actions []card
 }

@@ -19,3 +19,6 @@
 
 # Game executables
 bc-server
+
+# Testing
+test*/
