@@ -7,6 +7,7 @@ import (
 const (
 	maxTurns      = 10
 	startingPrice = 150
+	maxPrice      = 400
 )
 
 type assets struct {
@@ -53,5 +54,29 @@ func (g *game) shufflePlayers() {
 }
 
 func (g *game) start() {
+	// Game ends after maxTurns.
+	for turn := 0; turn < maxTurns; turn++ {
+		// Shuffle players, then iterate over players.
+		g.shufflePlayers()
+		for _, p := range g.Players {
+			_ = p
+			// Get player action card. Validate action. Retry if invalid.
+			// Update game state.
+			// Get player transaction. Validate transaction. Retry if invalid.
+		}
+		// Perform bank action.
+		// Update game state.
+	}
+}
+
+func (g *game) getPlayerCard(p *player) *card {
+	return nil
+}
+
+func (g *game) drawBankCard() *card {
+	return nil
+}
+
+func (g *game) update(c *card) {
 
 }

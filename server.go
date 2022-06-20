@@ -12,6 +12,7 @@ import (
 	"github.com/gobwas/ws"
 )
 
+// server is responsible for handling WS connections and passing them over to the lobby.
 type server struct {
 	port uint16
 	wg   sync.WaitGroup
