@@ -22,3 +22,6 @@ bc-server
 
 # Testing
 test*/
+
+# TLS/SSL cert/key files
+cert/

@@ -5,12 +5,12 @@ import (
 	"fmt"
 )
 
-// base is used for two thing:
+// base is used for two things:
 // - parsing message kinds;
-// - and creating server type messages.
+// - and marshaling messages.
 type base struct {
 	Kind Kind
-	Data json.RawMessage
+	Data []byte
 }
 
 // Type implements the Message interface.
@@ -30,8 +30,11 @@ func Parse(raw []byte) (Message, error) {
 		return nil, fmt.Errorf("parse raw message: %w", err)
 	}
 
-	// NOTE: GameState message cannot be sent by clients, so it is not checked here.
 	switch b.Type() {
+	case Auth:
+		return NewAuthMessage(b.Data)
+	case GameState:
+		return NewUnknown(), nil
 	case VoteToStart:
 		return NewVoteToStart(), nil
 	case PlayCard:
