@@ -1,6 +1,6 @@
 module github.com/milonoir/bc-server
 
-go 1.18
+go 1.20
 
 require (
 	github.com/gobwas/ws v1.1.0

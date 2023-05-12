@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"sync"
 	"time"
 
@@ -61,17 +60,17 @@ func (s *server) start(sig <-chan os.Signal) {
 		defer s.wg.Done()
 
 		// TLS
-		if err := srv.ListenAndServeTLS(
-			filepath.Join("cert", "localhost.crt"),
-			filepath.Join("cert", "localhost.key"),
-		); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("server error: %+v", err)
-		}
-
-		// Non-TLS
-		//if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		//if err := srv.ListenAndServeTLS(
+		//	filepath.Join("cert", "localhost.crt"),
+		//	filepath.Join("cert", "localhost.key"),
+		//); err != nil && err != http.ErrServerClosed {
 		//	log.Fatalf("server error: %+v", err)
 		//}
+
+		// Non-TLS
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("server error: %+v", err)
+		}
 	}()
 	log.Println("server started")
 
