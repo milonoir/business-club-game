@@ -17,6 +17,9 @@
 # IDE files
 .idea/
 
+# Game executables
+bin/
+
 # Testing
 test*/
 
