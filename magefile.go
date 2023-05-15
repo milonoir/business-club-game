@@ -35,6 +35,6 @@ func BuildClient() error {
 }
 
 func InstallDeps() error {
-	fmt.Println("Installing Deps...")
+	fmt.Println("Installing deps...")
 	return sh.Run("go", "mod", "download")
 }

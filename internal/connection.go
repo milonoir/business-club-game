@@ -2,6 +2,8 @@ package internal
 
 import (
 	"encoding/json"
+	"errors"
+	"io"
 	"log"
 	"net"
 	"sync/atomic"
@@ -13,7 +15,8 @@ import (
 )
 
 const (
-	pingInterval = 2 * time.Second
+	pingInterval      = 2 * time.Second
+	errClosedByClient = "use of closed network connection"
 )
 
 type connection struct {
@@ -22,6 +25,7 @@ type connection struct {
 
 	lastPong time.Time
 	drop     atomic.Bool
+	alive    atomic.Bool
 	incoming chan message.Message
 }
 
@@ -31,6 +35,8 @@ func newConnection(conn net.Conn) *connection {
 		done:     make(chan struct{}),
 		incoming: make(chan message.Message),
 	}
+
+	c.alive.Store(true)
 
 	go c.ping()
 	go c.receive()
@@ -47,14 +53,24 @@ func (c *connection) ping() {
 		case <-c.done:
 			return
 		case <-t.C:
+			if !c.alive.Load() {
+				return
+			}
 			if _, err := c.conn.Write(ws.CompiledPing); err != nil {
-				log.Printf("ERROR - sending ping to client (%s): %v", c.conn.RemoteAddr(), err)
+				log.Printf("ERR - [%s] sending ping to client: %v", c.conn.RemoteAddr(), err)
 			}
 		}
 	}
 }
 
 func (c *connection) receive() {
+	var (
+		err   error
+		opErr *net.OpError
+		msg   message.Message
+		raw   = make([]wsutil.Message, 0, 10)
+	)
+
 	for {
 		select {
 		case <-c.done:
@@ -62,28 +78,44 @@ func (c *connection) receive() {
 		default:
 		}
 
-		data, op, err := wsutil.ReadClientData(c.conn)
-		if err != nil {
-			log.Printf("ERROR - read client (%s) data: %v", c.conn.RemoteAddr(), err)
+		raw = raw[:0]
+		raw, err = wsutil.ReadClientMessage(c.conn, raw)
+		switch {
+		case err == nil:
+		case errors.Is(err, io.EOF), errors.Is(err, io.ErrUnexpectedEOF), errors.Is(err, net.ErrClosed):
+			continue
+		case errors.As(err, &opErr):
+			if opErr.Error() == errClosedByClient {
+				// Connection closed by the client.
+				c.alive.Store(false)
+				return
+			}
+		default:
+			log.Printf("ERR - [%s] read client message: %v", c.conn.RemoteAddr(), err)
+			continue
 		}
 
-		switch op {
-		case ws.OpPong:
-			c.lastPong = time.Now()
-		case ws.OpText:
+		for _, rm := range raw {
+			// Pong message.
+			if rm.OpCode == ws.OpPong {
+				log.Printf("[%s] pong", c.conn.RemoteAddr())
+				c.lastPong = time.Now()
+				continue
+			}
+
+			// Text message.
 			if c.drop.Load() {
 				continue
 			}
-			m, err := message.Parse(data)
-			if err != nil {
-				log.Printf("ERROR - parse message (%s): %v", c.conn.RemoteAddr(), err)
+			if msg, err = message.Parse(rm.Payload); err != nil {
+				log.Printf("ERR - [%s] parse message: %v", c.conn.RemoteAddr(), err)
 				continue
 			}
 			select {
-			case c.incoming <- m:
+			case c.incoming <- msg:
 			default:
+				// Drop message.
 			}
-		default:
 		}
 	}
 }
@@ -91,12 +123,12 @@ func (c *connection) receive() {
 func (c *connection) send(msg message.Message) {
 	b, err := json.Marshal(msg)
 	if err != nil {
-		log.Printf("ERROR - corrupt message: %v", err)
+		log.Printf("ERR - corrupt message: %v", err)
 		return
 	}
 
 	if err = wsutil.WriteClientMessage(c.conn, ws.OpText, b); err != nil {
-		log.Printf("ERROR - write client (%s) message: %v", c.conn.RemoteAddr(), err)
+		log.Printf("ERR - [%s] write client message: %v", c.conn.RemoteAddr(), err)
 	}
 }
 

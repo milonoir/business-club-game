@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/gobwas/ws"
+	"github.com/google/uuid"
 )
 
 const (
@@ -15,13 +16,13 @@ const (
 // lobby manages player connections and the game.
 type lobby struct {
 	pmux    sync.Mutex
-	players map[net.Conn]*player
+	players map[string]*player
 	done    chan struct{}
 }
 
 func newLobby() *lobby {
 	return &lobby{
-		players: make(map[net.Conn]*player, maxPlayers),
+		players: make(map[string]*player, maxPlayers),
 		done:    make(chan struct{}),
 	}
 }
@@ -39,21 +40,25 @@ func (l *lobby) joinPlayer(c net.Conn) {
 		}
 	}
 
+	guid := uuid.New().String()
+
 	log.Printf("player joined from: %s", c.RemoteAddr())
-	l.players[c] = &player{
-		conn: c,
+	l.players[guid] = &player{
+		conn: newConnection(c),
 	}
 }
 
-func (l *lobby) removePlayer(c net.Conn) {
+func (l *lobby) removePlayer(guid string) {
 	l.pmux.Lock()
-	delete(l.players, c)
-	l.pmux.Unlock()
+	defer l.pmux.Unlock()
 
-	log.Printf("player left from: %s", c.RemoteAddr())
+	p := l.players[guid]
+	delete(l.players, guid)
 
-	if err := c.Close(); err != nil {
-		log.Printf("WARNING - close connection (%s): %v", c.RemoteAddr(), err)
+	log.Printf("player left from: %s", p.conn.conn.RemoteAddr())
+
+	if err := p.conn.conn.Close(); err != nil {
+		log.Printf("WARNING - close connection (%s): %v", p.conn.conn.RemoteAddr(), err)
 	}
 }
 
@@ -69,9 +74,9 @@ func (l *lobby) start() {
 
 func (l *lobby) stop() {
 	close(l.done)
-	for c := range l.players {
-		if err := c.Close(); err != nil {
-			log.Printf("error closing connection %s: %v", c.RemoteAddr(), err)
+	for _, p := range l.players {
+		if err := p.conn.conn.Close(); err != nil {
+			log.Printf("error closing connection %s: %v", p.conn.conn.RemoteAddr(), err)
 		}
 	}
 }
