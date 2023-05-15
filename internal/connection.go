@@ -9,7 +9,7 @@ import (
 
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
-	message2 "github.com/milonoir/bc-server/internal/message"
+	"github.com/milonoir/business-club-game/internal/message"
 )
 
 const (
@@ -22,14 +22,14 @@ type connection struct {
 
 	lastPong time.Time
 	drop     atomic.Bool
-	incoming chan message2.Message
+	incoming chan message.Message
 }
 
 func newConnection(conn net.Conn) *connection {
 	c := &connection{
 		conn:     conn,
 		done:     make(chan struct{}),
-		incoming: make(chan message2.Message),
+		incoming: make(chan message.Message),
 	}
 
 	go c.ping()
@@ -74,7 +74,7 @@ func (c *connection) receive() {
 			if c.drop.Load() {
 				continue
 			}
-			m, err := message2.Parse(data)
+			m, err := message.Parse(data)
 			if err != nil {
 				log.Printf("ERROR - parse message (%s): %v", c.conn.RemoteAddr(), err)
 				continue
@@ -88,7 +88,7 @@ func (c *connection) receive() {
 	}
 }
 
-func (c *connection) send(msg message2.Message) {
+func (c *connection) send(msg message.Message) {
 	b, err := json.Marshal(msg)
 	if err != nil {
 		log.Printf("ERROR - corrupt message: %v", err)

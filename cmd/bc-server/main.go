@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/milonoir/bc-server/internal"
+	"github.com/milonoir/business-club-game/internal"
 )
 
 const (

@@ -1,4 +1,4 @@
-module github.com/milonoir/bc-server
+module github.com/milonoir/business-club-game
 
 go 1.20
 
