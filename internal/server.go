@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"sync"
 	"time"
 
@@ -16,14 +15,14 @@ import (
 type Server struct {
 	port uint16
 	wg   sync.WaitGroup
+	srv  *http.Server
 
 	*lobby
 }
 
 func NewServer(port uint16) *Server {
 	return &Server{
-		port:  port,
-		lobby: newLobby(),
+		port: port,
 	}
 }
 
@@ -39,9 +38,10 @@ func (s *Server) handler() http.HandlerFunc {
 	}
 }
 
-func (s *Server) Start(sig <-chan os.Signal) {
+func (s *Server) Start() {
 	// Start the lobby.
 	log.Println("starting lobby")
+	s.lobby = newLobby()
 	s.wg.Add(1)
 	go func() {
 		defer s.wg.Done()
@@ -49,9 +49,9 @@ func (s *Server) Start(sig <-chan os.Signal) {
 	}()
 	log.Println("lobby started")
 
-	// Start the HTTP server.
+	// Start the HTTP(S) server.
 	log.Printf("starting server at :%d", s.port)
-	srv := &http.Server{
+	s.srv = &http.Server{
 		Addr:    fmt.Sprintf(":%d", s.port),
 		Handler: s.handler(),
 	}
@@ -68,22 +68,21 @@ func (s *Server) Start(sig <-chan os.Signal) {
 		//}
 
 		// Non-TLS
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := s.srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("server error: %+v", err)
 		}
 	}()
 	log.Println("server started")
+}
 
-	// Wait until server is terminated.
-	<-sig
-
-	// Stop the HTTP server.
+func (s *Server) Stop() error {
+	// Stop the HTTP(S) server.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	log.Println("stopping server")
-	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatalf("server shutdown failed: %+v", err)
+	if err := s.srv.Shutdown(ctx); err != nil {
+		return fmt.Errorf("server shutdown failed: %w", err)
 	}
 	log.Println("server stopped")
 
@@ -94,4 +93,6 @@ func (s *Server) Start(sig <-chan os.Signal) {
 
 	// Wait for all goroutines to return.
 	s.wg.Wait()
+
+	return nil
 }
