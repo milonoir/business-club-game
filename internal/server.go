@@ -1,4 +1,4 @@
-package main
+package internal
 
 import (
 	"context"
@@ -12,22 +12,22 @@ import (
 	"github.com/gobwas/ws"
 )
 
-// server is responsible for handling WS connections and passing them over to the lobby.
-type server struct {
+// Server is responsible for handling WS connections and passing them over to the lobby.
+type Server struct {
 	port uint16
 	wg   sync.WaitGroup
 
 	*lobby
 }
 
-func newServer(port uint16) *server {
-	return &server{
+func NewServer(port uint16) *Server {
+	return &Server{
 		port:  port,
 		lobby: newLobby(),
 	}
 }
 
-func (s *server) handler() http.HandlerFunc {
+func (s *Server) handler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, _, _, err := ws.UpgradeHTTP(r, w)
 		if err != nil {
@@ -39,7 +39,7 @@ func (s *server) handler() http.HandlerFunc {
 	}
 }
 
-func (s *server) start(sig <-chan os.Signal) {
+func (s *Server) Start(sig <-chan os.Signal) {
 	// Start the lobby.
 	log.Println("starting lobby")
 	s.wg.Add(1)

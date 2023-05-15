@@ -1,4 +1,4 @@
-package main
+package internal
 
 import (
 	"math/rand"
@@ -10,7 +10,7 @@ const (
 	maxPrice      = 400
 )
 
-type assets struct {
+type Assets struct {
 	Companies  []string `json:"companies"`
 	ActionDeck []card   `json:"actionDeck"`
 	BankDeck   []card   `json:"bankDeck"`
@@ -21,12 +21,12 @@ type game struct {
 	Players     []player
 	TurnsLeft   int
 
-	assets
+	Assets
 }
 
-func newGame(a assets) game {
+func newGame(a Assets) game {
 	g := game{
-		assets:      a,
+		Assets:      a,
 		TurnsLeft:   maxTurns,
 		StockPrices: make(map[string]int, len(a.Companies)),
 	}

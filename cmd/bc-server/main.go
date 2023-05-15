@@ -6,6 +6,8 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/milonoir/bc-server/internal"
 )
 
 const (
@@ -23,7 +25,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var a assets
+	var a internal.Assets
 	if err = json.Unmarshal(b, &a); err != nil {
 		log.Fatalf("corrupted assets file: %s\n", err)
 	}
@@ -33,8 +35,8 @@ func main() {
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
 	// Run server.
-	srv := newServer(serverPort)
-	srv.start(sig)
+	srv := internal.NewServer(serverPort)
+	srv.Start(sig)
 
 	// Initializing the game.
 	//g := newGame(a)

@@ -1,2 +1,3 @@
-# bc-server
-Business Club server
+# Business Club game
+
+Server and client for the Business Club game.
