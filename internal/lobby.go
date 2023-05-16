@@ -1,16 +1,23 @@
 package internal
 
 import (
+	"errors"
 	"log"
 	"net"
 	"sync"
+	"time"
 
-	"github.com/gobwas/ws"
-	"github.com/google/uuid"
+	"github.com/milonoir/business-club-game/internal/message"
+	"github.com/teris-io/shortid"
 )
 
 const (
-	maxPlayers = 4
+	maxPlayers  = 4
+	authTimeout = 5 * time.Second
+)
+
+var (
+	errTimeout = errors.New("timeout")
 )
 
 // lobby manages player connections and the game.
@@ -31,20 +38,74 @@ func (l *lobby) joinPlayer(c net.Conn) {
 	l.pmux.Lock()
 	defer l.pmux.Unlock()
 
-	if len(l.players) == maxPlayers {
-		log.Printf("lobby is full, rejecting connection: %s", c.RemoteAddr())
-		// Lobby is full, reject join request.
-		if _, err := c.Write(ws.CompiledClose); err != nil {
-			log.Printf("ERROR - reject connection (%s): %v", c.RemoteAddr(), err)
-			return
-		}
+	// Wrap connection.
+	conn := newConnection(c)
+
+	// Get auth key from client.
+	key, err := l.authPlayer(conn)
+	if err != nil {
+		log.Printf("ERR - [%s] auth error: %v", c.RemoteAddr(), err)
+		conn.close()
+		return
 	}
 
-	guid := uuid.New().String()
+	// If we received a key, the player wants to reconnect.
+	if key != "" {
+		p, ok := l.players[key]
+		if !ok {
+			// Unknown key.
+			log.Printf("ERR - [%s] unknown key: %s", c.RemoteAddr(), key)
+			conn.close()
+			return
+		}
+		// Reconnect player.
+		log.Printf("player reconnected from: %s", c.RemoteAddr())
+		p.conn = conn
+		return
+	}
+
+	// New player joining, check if lobby is full.
+	if len(l.players) == maxPlayers {
+		log.Printf("lobby is full, reject client connection [%s]", c.RemoteAddr())
+		conn.close()
+		return
+	}
+
+	key, err = shortid.Generate()
+	if err != nil {
+		log.Printf("ERR - generate key: %v", err)
+		return
+	}
+
+	// Send guid to client.
+	conn.send(message.NewAuthMessage([]byte(key)))
+
+	// Start ping/pong.
+	go conn.ping()
 
 	log.Printf("player joined from: %s", c.RemoteAddr())
-	l.players[guid] = &player{
-		conn: newConnection(c),
+	l.players[key] = &player{
+		conn: conn,
+		key:  key,
+	}
+}
+
+func (l *lobby) authPlayer(c *connection) (string, error) {
+	// Send empty auth message. Client should respond with either:
+	// - auth message with key (reconnect player)
+	// - empty auth message (new player)
+	c.send(message.EmptyAuth)
+
+	for {
+		select {
+		case <-time.After(authTimeout):
+			return "", errTimeout
+		case msg := <-c.incoming:
+			if msg.Type() != message.Auth {
+				continue
+			}
+			return msg.Payload().(string), nil
+		}
 	}
 }
 
@@ -58,7 +119,7 @@ func (l *lobby) removePlayer(guid string) {
 	log.Printf("player left from: %s", p.conn.conn.RemoteAddr())
 
 	if err := p.conn.conn.Close(); err != nil {
-		log.Printf("WARNING - close connection (%s): %v", p.conn.conn.RemoteAddr(), err)
+		log.Printf("ERR - remove player [%s] close connection: %v", p.conn.conn.RemoteAddr(), err)
 	}
 }
 
@@ -76,7 +137,7 @@ func (l *lobby) stop() {
 	close(l.done)
 	for _, p := range l.players {
 		if err := p.conn.conn.Close(); err != nil {
-			log.Printf("error closing connection %s: %v", p.conn.conn.RemoteAddr(), err)
+			log.Printf("ERR - [%s] close connection: %v", p.conn.conn.RemoteAddr(), err)
 		}
 	}
 }

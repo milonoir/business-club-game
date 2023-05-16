@@ -17,6 +17,7 @@ import (
 const (
 	pingInterval      = 2 * time.Second
 	errClosedByClient = "use of closed network connection"
+	inboxSize         = 10
 )
 
 type connection struct {
@@ -33,15 +34,25 @@ func newConnection(conn net.Conn) *connection {
 	c := &connection{
 		conn:     conn,
 		done:     make(chan struct{}),
-		incoming: make(chan message.Message),
+		incoming: make(chan message.Message, inboxSize),
 	}
 
 	c.alive.Store(true)
 
-	go c.ping()
 	go c.receive()
 
 	return c
+}
+
+func (c *connection) close() {
+	close(c.done)
+
+	if _, err := c.conn.Write(ws.CompiledClose); err != nil {
+		log.Printf("ERR - [%s] send close: %v", c.conn.RemoteAddr(), err)
+	}
+	if err := c.conn.Close(); err != nil {
+		log.Printf("ERR - [%s] close connection: %v", c.conn.RemoteAddr(), err)
+	}
 }
 
 func (c *connection) ping() {
@@ -127,8 +138,8 @@ func (c *connection) send(msg message.Message) {
 		return
 	}
 
-	if err = wsutil.WriteClientMessage(c.conn, ws.OpText, b); err != nil {
-		log.Printf("ERR - [%s] write client message: %v", c.conn.RemoteAddr(), err)
+	if err = wsutil.WriteServerMessage(c.conn, ws.OpText, b); err != nil {
+		log.Printf("ERR - [%s] write server message: %v", c.conn.RemoteAddr(), err)
 	}
 }
 

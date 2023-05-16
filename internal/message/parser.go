@@ -32,7 +32,7 @@ func Parse(raw []byte) (Message, error) {
 
 	switch b.Type() {
 	case Auth:
-		return NewAuthMessage(b.Data)
+		return NewAuthMessage(b.Data), nil
 	case GameState:
 		return NewUnknown(), nil
 	case VoteToStart:

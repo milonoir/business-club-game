@@ -4,16 +4,20 @@ import (
 	"encoding/json"
 )
 
+var (
+	EmptyAuth = NewAuthMessage(nil)
+)
+
 // authMessage represents an Auth kind message.
 type authMessage struct {
 	key string
 }
 
 // NewAuthMessage returns new Message of Auth kind.
-func NewAuthMessage(b []byte) (Message, error) {
+func NewAuthMessage(b []byte) Message {
 	return authMessage{
 		key: string(b),
-	}, nil
+	}
 }
 
 // Type implements the Message interface.

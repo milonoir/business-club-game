@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"crypto/tls"
+	"encoding/json"
 	"log"
 	"net"
 	"os"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
+	"github.com/milonoir/business-club-game/internal/message"
 )
 
 // THIS IS ONLY A TEST CLIENT.
@@ -42,7 +44,7 @@ func main() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		pong(conn, done)
+		responder(conn, done)
 	}()
 
 	// Setup OS signal trap.
@@ -60,7 +62,7 @@ func main() {
 	//}
 }
 
-func pong(conn net.Conn, done chan struct{}) {
+func responder(conn net.Conn, done chan struct{}) {
 	for {
 		select {
 		case <-done:
@@ -75,13 +77,40 @@ func pong(conn net.Conn, done chan struct{}) {
 		}
 
 		for i, msg := range m {
-			log.Printf("#%d, opcode: %v, payload: %s", i, msg.OpCode, msg.Payload)
+			log.Printf("#%d, opcode: %v, payload: %s", i+1, msg.OpCode, msg.Payload)
 
 			if msg.OpCode == ws.OpPing {
 				if err = wsutil.WriteClientMessage(conn, ws.OpPong, msg.Payload); err != nil {
 					log.Printf("write error: %+v", err)
 				}
+			} else {
+				parseAndRespond(conn, msg.Payload)
 			}
 		}
+	}
+}
+
+func parseAndRespond(conn net.Conn, raw []byte) {
+	msg, err := message.Parse(raw)
+	if err != nil {
+		log.Printf("parse error: %+v", err)
+		return
+	}
+
+	switch msg.Type() {
+	case message.Auth:
+		key := msg.Payload().(string)
+		if key == "" {
+			sendEmptyAuth(conn)
+			return
+		}
+		log.Printf("received auth key: %s", key)
+	}
+}
+
+func sendEmptyAuth(conn net.Conn) {
+	bb, _ := json.Marshal(message.EmptyAuth)
+	if err := wsutil.WriteClientMessage(conn, ws.OpText, bb); err != nil {
+		log.Printf("write error: %+v", err)
 	}
 }
