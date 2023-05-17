@@ -14,27 +14,38 @@ import (
 // If not set, running mage will list available targets
 var Default = BuildAll
 
-func BuildAll() error {
-	mg.Deps(InstallDeps)
-	if err := BuildServer(); err != nil {
-		return err
-	}
-	return BuildClient()
+var envWinClient = map[string]string{
+	"GOOS":   "windows",
+	"GOARCH": "amd64",
 }
 
-func BuildServer() error {
-	mg.Deps(InstallDeps)
+func BuildAll() error {
+	mg.Deps(Deps)
+	if err := Server(); err != nil {
+		return err
+	}
+	return Client()
+}
+
+func Server() error {
+	mg.Deps(Deps)
 	fmt.Println("Building server...")
 	return sh.Run("go", "build", "-o", "bin/bc-server", "./cmd/bc-server")
 }
 
-func BuildClient() error {
-	mg.Deps(InstallDeps)
+func Client() error {
+	mg.Deps(Deps)
 	fmt.Println("Building client...")
 	return sh.Run("go", "build", "-o", "bin/bc-client", "./cmd/bc-client")
 }
 
-func InstallDeps() error {
+func WinClient() error {
+	mg.Deps(Deps)
+	fmt.Println("Building Windows client...")
+	return sh.RunWith(envWinClient, "go", "build", "-o", "bin/bc-client.exe", "./cmd/bc-client")
+}
+
+func Deps() error {
 	fmt.Println("Installing deps...")
 	return sh.Run("go", "mod", "download")
 }

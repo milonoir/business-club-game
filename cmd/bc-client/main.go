@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"crypto/tls"
+	_ "embed"
 	"encoding/json"
 	"log"
 	"net"
@@ -11,14 +12,19 @@ import (
 	"sync"
 	"syscall"
 
+	"github.com/gdamore/tcell/v2"
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
 	"github.com/milonoir/business-club-game/internal/message"
+	"github.com/rivo/tview"
 )
 
 // THIS IS ONLY A TEST CLIENT.
 
-func main() {
+//go:embed splash.ascii
+var splashScreen string
+
+func main2() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -37,6 +43,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer conn.Close()
 
 	var wg sync.WaitGroup
 	done := make(chan struct{})
@@ -112,5 +119,63 @@ func sendEmptyAuth(conn net.Conn) {
 	bb, _ := json.Marshal(message.EmptyAuth)
 	if err := wsutil.WriteClientMessage(conn, ws.OpText, bb); err != nil {
 		log.Printf("write error: %+v", err)
+	}
+}
+
+func buildApp() *tview.Application {
+	// Create application.
+	app := tview.NewApplication()
+
+	// Create pages.
+	pages := tview.NewPages()
+
+	// Create grid.
+	mainScreen := tview.NewGrid().
+		SetRows(3, 0, 3).
+		SetColumns(30, 0, 30).
+		SetBorders(true)
+
+	// Title screen.
+	title := tview.NewTextView().
+		SetTextAlign(tview.AlignLeft).
+		SetTextColor(tcell.ColorYellow).
+		SetText(splashScreen)
+	title.
+		SetBorderPadding(6, 1, 10, 1)
+
+	// Login box.
+	login := tview.NewForm().
+		AddInputField("Username", "", 20, nil, nil).
+		AddInputField("Host", "localhost", 20, nil, nil).
+		AddInputField("Port", "8585", 20, nil, nil).
+		AddInputField("Auth Key", "", 20, nil, nil).
+		AddTextView("", "Provide auth key to\nreconnect if you got\ndisconnected.", 20, 3, true, false).
+		AddCheckbox("TLS", false, nil).
+		AddButton("Login", func() {}).
+		AddButton("Quit", func() { app.Stop() })
+	login.
+		SetBorderPadding(14, 1, 0, 1)
+
+	// Welcome screen.
+	welcome := tview.NewFlex().
+		AddItem(title, 0, 3, false).
+		AddItem(login, 0, 1, true)
+
+	// Add main widgets to pages.
+	pages.
+		AddPage("welcome", welcome, true, true).
+		AddPage("main", mainScreen, true, false)
+
+	// Set application root primitive.
+	app.SetRoot(pages, true)
+
+	return app
+}
+
+func main() {
+	app := buildApp()
+
+	if err := app.Run(); err != nil {
+		panic(err)
 	}
 }
