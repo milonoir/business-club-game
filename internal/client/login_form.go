@@ -21,7 +21,7 @@ const (
 	labelQuit     = "Quit"
 )
 
-// LoginData is the data returned from the login form.
+// LoginData is the data returned by the LoginForm.
 type LoginData struct {
 	Username string
 	Host     string
@@ -30,14 +30,14 @@ type LoginData struct {
 	TLS      bool
 }
 
-// Login is the login form.
-type Login struct {
+// LoginForm wraps a tview.Form and adds some validation logic.
+type LoginForm struct {
 	form *tview.Form
 }
 
-// NewLogin creates a new login form.
-func NewLogin(connectCb func(*LoginData), quitCb func()) *Login {
-	l := &Login{
+// NewLoginForm creates a new LoginForm.
+func NewLoginForm(loginCb func(*LoginData), quitCb func()) *LoginForm {
+	l := &LoginForm{
 		form: tview.NewForm(),
 	}
 
@@ -48,7 +48,7 @@ func NewLogin(connectCb func(*LoginData), quitCb func()) *Login {
 		AddInputField(labelAuthKey, "", 20, tview.InputFieldMaxLength(15), nil).
 		AddTextView("", "Provide auth key to\nreconnect if you got\ndisconnected.", 20, 3, true, false).
 		AddCheckbox(labelTLS, false, nil).
-		AddButton(labelLogin, l.Connect(connectCb)).
+		AddButton(labelLogin, l.formValidatorWrapper(loginCb)).
 		AddButton(labelQuit, quitCb)
 	l.form.
 		SetBorderPadding(14, 1, 0, 1)
@@ -56,13 +56,13 @@ func NewLogin(connectCb func(*LoginData), quitCb func()) *Login {
 	return l
 }
 
-// GetForm returns the login form.
-func (l *Login) GetForm() *tview.Form {
+// GetForm returns the underlying tview.Form.
+func (l *LoginForm) GetForm() *tview.Form {
 	return l.form
 }
 
-// Connect returns a callback that can be used to return validated login data.
-func (l *Login) Connect(cb func(data *LoginData)) func() {
+// formValidatorWrapper returns a callback that can be used to return the validated form data as LoginData.
+func (l *LoginForm) formValidatorWrapper(cb func(data *LoginData)) func() {
 	return func() {
 		user := l.form.GetFormItemByLabel(labelUsername).(*tview.InputField).GetText()
 		if user == "" {
