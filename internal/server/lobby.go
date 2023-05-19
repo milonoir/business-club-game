@@ -1,4 +1,4 @@
-package internal
+package server
 
 import (
 	"errors"
@@ -23,13 +23,13 @@ var (
 // lobby manages player connections and the game.
 type lobby struct {
 	pmux    sync.Mutex
-	players map[string]*player
+	players map[string]*Player
 	done    chan struct{}
 }
 
 func newLobby() *lobby {
 	return &lobby{
-		players: make(map[string]*player, maxPlayers),
+		players: make(map[string]*Player, maxPlayers),
 		done:    make(chan struct{}),
 	}
 }
@@ -84,7 +84,7 @@ func (l *lobby) joinPlayer(c net.Conn) {
 	go conn.ping()
 
 	log.Printf("player joined from: %s", c.RemoteAddr())
-	l.players[key] = &player{
+	l.players[key] = &Player{
 		conn: conn,
 		key:  key,
 	}

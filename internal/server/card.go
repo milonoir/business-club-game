@@ -1,4 +1,4 @@
-package internal
+package server
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-type card struct {
+type Card struct {
 	ID   int        `json:"id"`
 	Mods []modifier `json:"mods"`
 }

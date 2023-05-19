@@ -144,7 +144,7 @@ func buildApp() *tview.Application {
 	title.
 		SetBorderPadding(6, 1, 10, 1)
 
-	// Login box.
+	// Login form.
 	login := client.NewLoginForm(
 		func(data *client.LoginData) {
 			pages.SwitchToPage("main")

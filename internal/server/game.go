@@ -1,4 +1,4 @@
-package internal
+package server
 
 import (
 	"math/rand"
@@ -12,13 +12,13 @@ const (
 
 type Assets struct {
 	Companies  []string `json:"companies"`
-	ActionDeck []card   `json:"actionDeck"`
-	BankDeck   []card   `json:"bankDeck"`
+	ActionDeck []Card   `json:"actionDeck"`
+	BankDeck   []Card   `json:"bankDeck"`
 }
 
 type game struct {
 	StockPrices map[string]int
-	Players     []player
+	Players     []Player
 	TurnsLeft   int
 
 	Assets
@@ -69,14 +69,14 @@ func (g *game) start() {
 	}
 }
 
-func (g *game) getPlayerCard(p *player) *card {
+func (g *game) getPlayerCard(p *Player) *Card {
 	return nil
 }
 
-func (g *game) drawBankCard() *card {
+func (g *game) drawBankCard() *Card {
 	return nil
 }
 
-func (g *game) update(c *card) {
+func (g *game) update(c *Card) {
 
 }

@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/milonoir/business-club-game/internal"
+	"github.com/milonoir/business-club-game/internal/server"
 )
 
 const (
@@ -25,7 +25,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var a internal.Assets
+	var a server.Assets
 	if err = json.Unmarshal(b, &a); err != nil {
 		log.Fatalf("corrupted assets file: %s\n", err)
 	}
@@ -35,7 +35,7 @@ func main() {
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
 	// Run server.
-	srv := internal.NewServer(serverPort)
+	srv := server.NewServer(serverPort)
 	srv.Start()
 
 	// Catch signal.

@@ -1,6 +1,6 @@
-package internal
+package server
 
-type player struct {
+type Player struct {
 	// Networking properties
 	conn  *connection
 	key   string
@@ -9,5 +9,5 @@ type player struct {
 	// Game properties
 	cash    int
 	stocks  map[string]int
-	actions []card
+	actions []Card
 }
