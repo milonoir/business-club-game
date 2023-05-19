@@ -15,6 +15,7 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
+	"github.com/milonoir/business-club-game/internal/client"
 	"github.com/milonoir/business-club-game/internal/message"
 	"github.com/rivo/tview"
 )
@@ -24,7 +25,7 @@ import (
 //go:embed splash.ascii
 var splashScreen string
 
-func main2() {
+func main_old() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -144,22 +145,19 @@ func buildApp() *tview.Application {
 		SetBorderPadding(6, 1, 10, 1)
 
 	// Login box.
-	login := tview.NewForm().
-		AddInputField("Username", "", 20, nil, nil).
-		AddInputField("Host", "localhost", 20, nil, nil).
-		AddInputField("Port", "8585", 20, nil, nil).
-		AddInputField("Auth Key", "", 20, nil, nil).
-		AddTextView("", "Provide auth key to\nreconnect if you got\ndisconnected.", 20, 3, true, false).
-		AddCheckbox("TLS", false, nil).
-		AddButton("Login", func() {}).
-		AddButton("Quit", func() { app.Stop() })
-	login.
-		SetBorderPadding(14, 1, 0, 1)
+	login := client.NewLogin(
+		func(data *client.LoginData) {
+			pages.SwitchToPage("main")
+		},
+		func() {
+			app.Stop()
+		},
+	)
 
 	// Welcome screen.
 	welcome := tview.NewFlex().
 		AddItem(title, 0, 3, false).
-		AddItem(login, 0, 1, true)
+		AddItem(login.GetForm(), 0, 1, true)
 
 	// Add main widgets to pages.
 	pages.
