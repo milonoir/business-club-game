@@ -10,12 +10,12 @@
       "id": 1,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "+ 40"
         },
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "- 40"
         }
       ]
     },
@@ -23,12 +23,12 @@
       "id": 2,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "+ 100"
         },
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "- 10"
         }
       ]
     },
@@ -36,12 +36,12 @@
       "id": 3,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "+ 50"
         },
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "- 10"
         }
       ]
     },
@@ -49,12 +49,12 @@
       "id": 4,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "* 2"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": -1,
+          "mod": "- 100"
         }
       ]
     },
@@ -62,12 +62,12 @@
       "id": 5,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "+ 80"
         },
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "- 60"
         }
       ]
     },
@@ -75,12 +75,12 @@
       "id": 6,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "+ 30"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": -1,
+          "mod": "- 50"
         }
       ]
     },
@@ -88,12 +88,12 @@
       "id": 7,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "+ 70"
         },
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "- 50"
         }
       ]
     },
@@ -102,11 +102,11 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "+ 50"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "- 10"
         }
       ]
     },
@@ -115,11 +115,11 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "+ 20"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "- 60"
         }
       ]
     },
@@ -128,11 +128,11 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "+ 70"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "- 20"
         }
       ]
     },
@@ -140,12 +140,12 @@
       "id": 11,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": -1,
+          "mod": "+ 100"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "- 80"
         }
       ]
     },
@@ -153,12 +153,12 @@
       "id": 12,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "+ 90"
         },
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "- 20"
         }
       ]
     },
@@ -166,12 +166,12 @@
       "id": 13,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "+ 50"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "- 10"
         }
       ]
     },
@@ -180,11 +180,11 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "* 2"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "- 90"
         }
       ]
     },
@@ -192,12 +192,12 @@
       "id": 15,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "+ 30"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": -1,
+          "mod": "- 50"
         }
       ]
     },
@@ -205,12 +205,12 @@
       "id": 16,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "+ 40"
         },
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "- 90"
         }
       ]
     },
@@ -218,12 +218,12 @@
       "id": 17,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "+ 70"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "- 100"
         }
       ]
     },
@@ -231,12 +231,12 @@
       "id": 18,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "+ 60"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "- 80"
         }
       ]
     },
@@ -244,12 +244,12 @@
       "id": 19,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "+ 30"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "- 40"
         }
       ]
     },
@@ -258,11 +258,11 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "+ 50"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "- 70"
         }
       ]
     },
@@ -271,11 +271,11 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "+ 80"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "- 50"
         }
       ]
     },
@@ -284,11 +284,11 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "+ 100"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": -1,
+          "mod": "- 50"
         }
       ]
     },
@@ -296,12 +296,12 @@
       "id": 23,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "+ 80"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "- 80"
         }
       ]
     },
@@ -309,12 +309,12 @@
       "id": 24,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "+ 40"
         },
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "- 100"
         }
       ]
     },
@@ -322,12 +322,12 @@
       "id": 25,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "+ 100"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "- 70"
         }
       ]
     },
@@ -335,12 +335,12 @@
       "id": 26,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": -1,
+          "mod": "+ 100"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "- 80"
         }
       ]
     },
@@ -348,12 +348,12 @@
       "id": 27,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "* 2"
         },
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "- 90"
         }
       ]
     },
@@ -361,12 +361,12 @@
       "id": 28,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "+ 50"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "- 20"
         }
       ]
     },
@@ -374,12 +374,12 @@
       "id": 29,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "+ 60"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "- 100"
         }
       ]
     },
@@ -387,12 +387,12 @@
       "id": 30,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "* 2"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": -1,
+          "mod": "- 50"
         }
       ]
     },
@@ -400,12 +400,12 @@
       "id": 31,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "+ 90"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "- 60"
         }
       ]
     },
@@ -413,12 +413,12 @@
       "id": 32,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "+ 20"
         },
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "- 80"
         }
       ]
     },
@@ -426,12 +426,12 @@
       "id": 33,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "+ 50"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": -1,
+          "mod": "- 100"
         }
       ]
     },
@@ -439,12 +439,12 @@
       "id": 34,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "+ 90"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "- 80"
         }
       ]
     },
@@ -452,12 +452,12 @@
       "id": 35,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "+ 30"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": -1,
+          "mod": "- 100"
         }
       ]
     },
@@ -465,12 +465,12 @@
       "id": 36,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "+ 50"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "- 40"
         }
       ]
     },
@@ -478,12 +478,12 @@
       "id": 37,
       "mods": [
         {
-          "company": 0,
+          "company": 3,
           "mod": "+ 10"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "- 90"
         }
       ]
     },
@@ -491,12 +491,12 @@
       "id": 38,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "+ 100"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "- 90"
         }
       ]
     },
@@ -504,12 +504,12 @@
       "id": 39,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "+ 30"
         },
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "- 30"
         }
       ]
     },
@@ -517,12 +517,12 @@
       "id": 40,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "+ 60"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "- 10"
         }
       ]
     },
@@ -530,12 +530,12 @@
       "id": 41,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": -1,
+          "mod": "+ 100"
         },
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "- 80"
         }
       ]
     },
@@ -543,12 +543,12 @@
       "id": 42,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "+ 50"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "- 30"
         }
       ]
     },
@@ -556,12 +556,12 @@
       "id": 43,
       "mods": [
         {
-          "company": 0,
+          "company": 1,
           "mod": "+ 10"
         },
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "- 70"
         }
       ]
     },
@@ -573,8 +573,8 @@
           "mod": "+ 10"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "- 40"
         }
       ]
     },
@@ -582,12 +582,12 @@
       "id": 45,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "+ 100"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": -1,
+          "mod": "- 100"
         }
       ]
     },
@@ -595,12 +595,12 @@
       "id": 46,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "+ 20"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "- 30"
         }
       ]
     },
@@ -608,12 +608,12 @@
       "id": 47,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "+ 70"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "- 90"
         }
       ]
     },
@@ -621,12 +621,12 @@
       "id": 48,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "+ 20"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "- 20"
         }
       ]
     },
@@ -634,12 +634,12 @@
       "id": 49,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": -1,
+          "mod": "+ 100"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "- 80"
         }
       ]
     },
@@ -648,11 +648,11 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "+ 30"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "- 10"
         }
       ]
     },
@@ -661,11 +661,11 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "+ 60"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "- 10"
         }
       ]
     },
@@ -673,12 +673,12 @@
       "id": 52,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "+ 80"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "- 60"
         }
       ]
     },
@@ -686,12 +686,12 @@
       "id": 53,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "+ 30"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "- 90"
         }
       ]
     },
@@ -700,11 +700,11 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "+ 90"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "- 70"
         }
       ]
     },
@@ -713,11 +713,11 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "+ 40"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "- 10"
         }
       ]
     },
@@ -725,12 +725,12 @@
       "id": 56,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "+ 100"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "- 90"
         }
       ]
     },
@@ -739,11 +739,11 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "+ 30"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "- 50"
         }
       ]
     },
@@ -751,12 +751,12 @@
       "id": 58,
       "mods": [
         {
-          "company": 0,
+          "company": 2,
           "mod": "+ 10"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "- 100"
         }
       ]
     },
@@ -764,12 +764,12 @@
       "id": 59,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 2,
+          "mod": "+ 100"
         },
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 1,
+          "mod": "- 30"
         }
       ]
     },
@@ -777,12 +777,25 @@
       "id": 60,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
+          "company": 3,
+          "mod": "* 2"
         },
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "- 90"
+        }
+      ]
+    },
+    {
+      "id": 61,
+      "mods": [
+        {
+          "company": 0,
+          "mod": "+ 100"
+        },
+        {
+          "company": 1,
+          "mod": "- 50"
         }
       ]
     }
@@ -793,19 +806,19 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "* 2"
         },
         {
           "company": 1,
-          "mod": "+ 10"
+          "mod": "- 30"
         },
         {
           "company": 2,
-          "mod": "+ 10"
+          "mod": "+ 80"
         },
         {
           "company": 3,
-          "mod": "+ 10"
+          "mod": "+ 70"
         }
       ]
     },
@@ -814,19 +827,19 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "+ 60"
         },
         {
           "company": 1,
-          "mod": "+ 10"
+          "mod": "- 90"
         },
         {
           "company": 2,
-          "mod": "+ 10"
+          "mod": "- 30"
         },
         {
           "company": 3,
-          "mod": "+ 10"
+          "mod": "- 40"
         }
       ]
     },
@@ -834,20 +847,16 @@
       "id": 3,
       "mods": [
         {
-          "company": 0,
-          "mod": "+ 10"
-        },
-        {
           "company": 1,
-          "mod": "+ 10"
+          "mod": "- 100"
         },
         {
           "company": 2,
-          "mod": "+ 10"
+          "mod": "- 40"
         },
         {
           "company": 3,
-          "mod": "+ 10"
+          "mod": "+ 100"
         }
       ]
     },
@@ -856,19 +865,15 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
-        },
-        {
-          "company": 1,
-          "mod": "+ 10"
+          "mod": "+ 80"
         },
         {
           "company": 2,
-          "mod": "+ 10"
+          "mod": "- 100"
         },
         {
           "company": 3,
-          "mod": "+ 10"
+          "mod": "= 0"
         }
       ]
     },
@@ -877,19 +882,15 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "- 30"
         },
         {
           "company": 1,
-          "mod": "+ 10"
-        },
-        {
-          "company": 2,
-          "mod": "+ 10"
+          "mod": "- 80"
         },
         {
           "company": 3,
-          "mod": "+ 10"
+          "mod": "+ 80"
         }
       ]
     },
@@ -898,19 +899,19 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "+ 50"
         },
         {
           "company": 1,
-          "mod": "+ 10"
+          "mod": "+ 100"
         },
         {
           "company": 2,
-          "mod": "+ 10"
+          "mod": "+ 90"
         },
         {
           "company": 3,
-          "mod": "+ 10"
+          "mod": "- 80"
         }
       ]
     },
@@ -919,19 +920,15 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "- 100"
         },
         {
           "company": 1,
-          "mod": "+ 10"
+          "mod": "+ 60"
         },
         {
           "company": 2,
-          "mod": "+ 10"
-        },
-        {
-          "company": 3,
-          "mod": "+ 10"
+          "mod": "+ 100"
         }
       ]
     },
@@ -940,19 +937,19 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "+ 70"
         },
         {
           "company": 1,
-          "mod": "+ 10"
+          "mod": "- 40"
         },
         {
           "company": 2,
-          "mod": "+ 10"
+          "mod": "+ 60"
         },
         {
           "company": 3,
-          "mod": "+ 10"
+          "mod": "- 20"
         }
       ]
     },
@@ -961,19 +958,19 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "- 90"
         },
         {
           "company": 1,
-          "mod": "+ 10"
+          "mod": "- 20"
         },
         {
           "company": 2,
-          "mod": "+ 10"
+          "mod": "* 2"
         },
         {
           "company": 3,
-          "mod": "+ 10"
+          "mod": "- 100"
         }
       ]
     },
@@ -982,19 +979,19 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "= 0"
         },
         {
           "company": 1,
-          "mod": "+ 10"
+          "mod": "* 2"
         },
         {
           "company": 2,
-          "mod": "+ 10"
+          "mod": "- 80"
         },
         {
           "company": 3,
-          "mod": "+ 10"
+          "mod": "+ 50"
         }
       ]
     },
@@ -1003,19 +1000,19 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "- 80"
         },
         {
           "company": 1,
-          "mod": "+ 10"
+          "mod": "+ 70"
         },
         {
           "company": 2,
-          "mod": "+ 10"
+          "mod": "+ 50"
         },
         {
           "company": 3,
-          "mod": "+ 10"
+          "mod": "- 30"
         }
       ]
     },
@@ -1024,19 +1021,19 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "- 20"
         },
         {
           "company": 1,
-          "mod": "+ 10"
+          "mod": "+ 90"
         },
         {
           "company": 2,
-          "mod": "+ 10"
+          "mod": "- 90"
         },
         {
           "company": 3,
-          "mod": "+ 10"
+          "mod": "* 2"
         }
       ]
     },
@@ -1045,19 +1042,19 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "+ 90"
         },
         {
           "company": 1,
-          "mod": "+ 10"
+          "mod": "+ 80"
         },
         {
           "company": 2,
-          "mod": "+ 10"
+          "mod": "= 0"
         },
         {
           "company": 3,
-          "mod": "+ 10"
+          "mod": "+ 60"
         }
       ]
     },
@@ -1066,19 +1063,19 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "+ 100"
         },
         {
           "company": 1,
-          "mod": "+ 10"
+          "mod": "+ 50"
         },
         {
           "company": 2,
-          "mod": "+ 10"
+          "mod": "- 20"
         },
         {
           "company": 3,
-          "mod": "+ 10"
+          "mod": "- 90"
         }
       ]
     },
@@ -1087,19 +1084,19 @@
       "mods": [
         {
           "company": 0,
-          "mod": "+ 10"
+          "mod": "- 40"
         },
         {
           "company": 1,
-          "mod": "+ 10"
+          "mod": "= 0"
         },
         {
           "company": 2,
-          "mod": "+ 10"
+          "mod": "+ 70"
         },
         {
           "company": 3,
-          "mod": "+ 10"
+          "mod": "+ 90"
         }
       ]
     }
