@@ -8,10 +8,10 @@ import (
 
 type Card struct {
 	ID   int        `json:"id"`
-	Mods []modifier `json:"mods"`
+	Mods []Modifier `json:"mods"`
 }
 
-type modifier struct {
+type Modifier struct {
 	Company int `json:"company"`
 	Mod     mod `json:"mod"`
 }
