@@ -132,8 +132,8 @@ func buildApp() *tview.Application {
 
 	// Create grid.
 	mainScreen := tview.NewGrid().
-		SetRows(3, 0, 3).
-		SetColumns(30, 0, 30).
+		SetRows(0, 0, 0).
+		SetColumns(0, 0, 0).
 		SetBorders(true)
 
 	// Turn widget.
@@ -143,6 +143,52 @@ func buildApp() *tview.Application {
 	// TEST ONLY.
 	turns.NewTurn([]string{"Alice", "Bob", "Clyde", "Dave"})
 	turns.NextPlayer()
+
+	// Portfolio widget.
+	portfolio := client.NewPortfolioPanel("Amfora", "Domus", "Piert", "Skala-Coop")
+	mainScreen.AddItem(portfolio.GetTextView(), 0, 1, 2, 1, 1, 1, false)
+
+	// TEST ONLY.
+	portfolio.Update(client.PortfolioUpdate{
+		P1:   40,
+		N1:   2,
+		P2:   230,
+		N2:   9,
+		P3:   0,
+		N3:   5,
+		P4:   170,
+		N4:   0,
+		Cash: 3000,
+	})
+
+	// Opponents widget.
+	opponents := client.NewOpponentsPanel("Alice Longname", "Clyde Williams", "Dave Hopkins Jr")
+	mainScreen.AddItem(opponents.GetTable(), 0, 2, 2, 1, 1, 1, false)
+
+	// TEST ONLY.
+	opponents.Update(client.OpponentsUpdate{
+		O1: client.OpponentData{
+			N1: 2,
+			N2: 0,
+			N3: 4,
+			N4: 0,
+			C:  5,
+		},
+		O2: client.OpponentData{
+			N1: 2,
+			N2: 3,
+			N3: 3,
+			N4: 1,
+			C:  2,
+		},
+		O3: client.OpponentData{
+			N1: 2,
+			N2: 2,
+			N3: 0,
+			N4: 5,
+			C:  1,
+		},
+	})
 
 	// Title screen.
 	title := tview.NewTextView().
