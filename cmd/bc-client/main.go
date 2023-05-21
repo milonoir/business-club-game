@@ -136,6 +136,14 @@ func buildApp() *tview.Application {
 		SetColumns(30, 0, 30).
 		SetBorders(true)
 
+	// Turn widget.
+	turns := client.NewTurnPanel(10)
+	mainScreen.AddItem(turns.GetTextView(), 0, 0, 2, 1, 1, 1, false)
+
+	// TEST ONLY.
+	turns.NewTurn([]string{"Alice", "Bob", "Clyde", "Dave"})
+	turns.NextPlayer()
+
 	// Title screen.
 	title := tview.NewTextView().
 		SetTextAlign(tview.AlignLeft).
