@@ -30,7 +30,8 @@ func NewStockPricePanel(c1, c2, c3, c4 string, startPrice int) *StockPricePanel 
 
 	p.tv.
 		SetDynamicColors(true).
-		SetBorder(true)
+		SetBorder(true).
+		SetTitle("Stock prices")
 
 	p.Update(startPrice, startPrice, startPrice, startPrice)
 

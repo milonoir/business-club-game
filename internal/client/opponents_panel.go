@@ -1,7 +1,6 @@
 package client
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/gdamore/tcell/v2"
@@ -31,9 +30,9 @@ func NewOpponentsPanel(o1, o2, o3 string) *OpponentsPanel {
 		SetBorders(true)
 
 	p.t.
-		SetCell(0, 0, tview.NewTableCell(fmt.Sprintf("%-15s", o1)).SetTextColor(tcell.ColorYellow).SetAlign(tview.AlignCenter)).
-		SetCell(0, 1, tview.NewTableCell(fmt.Sprintf("%-15s", o2)).SetTextColor(tcell.ColorYellow).SetAlign(tview.AlignCenter)).
-		SetCell(0, 2, tview.NewTableCell(fmt.Sprintf("%-15s", o3)).SetTextColor(tcell.ColorYellow).SetAlign(tview.AlignCenter))
+		SetCell(0, 0, tview.NewTableCell(center(o1, 15)).SetTextColor(tcell.ColorYellow).SetAlign(tview.AlignCenter)).
+		SetCell(0, 1, tview.NewTableCell(center(o2, 15)).SetTextColor(tcell.ColorYellow).SetAlign(tview.AlignCenter)).
+		SetCell(0, 2, tview.NewTableCell(center(o3, 15)).SetTextColor(tcell.ColorYellow).SetAlign(tview.AlignCenter))
 
 	p.Update(OpponentsUpdate{})
 
@@ -65,4 +64,20 @@ func (p *OpponentsPanel) Update(u OpponentsUpdate) {
 		SetCell(3, 2, tview.NewTableCell(strings.Repeat("*", u.O3.N3)).SetTextColor(tcell.ColorYellow).SetAlign(tview.AlignCenter)).
 		SetCell(4, 2, tview.NewTableCell(strings.Repeat("*", u.O3.N4)).SetTextColor(tcell.ColorRed).SetAlign(tview.AlignCenter)).
 		SetCell(5, 2, tview.NewTableCell(strings.Repeat("$", u.O3.C)).SetTextColor(tcell.ColorGreen).SetAlign(tview.AlignCenter))
+}
+
+func center(s string, width int) string {
+	if len(s) >= width {
+		return s[:width]
+	}
+
+	diff := width - len(s)
+	left := diff / 2
+	right := left
+
+	if diff%2 != 0 {
+		right += 1
+	}
+
+	return strings.Repeat(" ", left) + s + strings.Repeat(" ", right)
 }

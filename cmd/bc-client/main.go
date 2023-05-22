@@ -16,6 +16,7 @@ import (
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
 	"github.com/milonoir/business-club-game/internal/client"
+	"github.com/milonoir/business-club-game/internal/game"
 	"github.com/milonoir/business-club-game/internal/message"
 	"github.com/rivo/tview"
 )
@@ -24,6 +25,9 @@ import (
 
 //go:embed splash.ascii
 var splashScreen string
+
+//go:embed sample_cards.json
+var cardsJson string
 
 func main_old() {
 	ctx, cancel := context.WithCancel(context.Background())
@@ -173,6 +177,14 @@ func buildApp() *tview.Application {
 			N1: 2, N2: 2, N3: 0, N4: 5, C: 1,
 		},
 	})
+
+	// Action list.
+	var cards []*game.Card
+	if err := json.Unmarshal([]byte(cardsJson), &cards); err != nil {
+		panic(err)
+	}
+	actions := client.NewActionList([]string{"Amfora", "Domus", "Piert", "Skala-Coop"}, cards)
+	mainScreen.AddItem(actions.GetList(), 2, 0, 1, 1, 1, 1, true)
 
 	// Server status widget.
 	status := client.NewServerStatus("localhost:8585")

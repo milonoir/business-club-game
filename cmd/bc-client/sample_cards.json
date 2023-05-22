@@ -1,0 +1,132 @@
+[
+  {
+    "id": 1,
+    "mods": [
+      {
+        "company": 1,
+        "mod": "+ 40"
+      },
+      {
+        "company": 0,
+        "mod": "- 40"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "mods": [
+      {
+        "company": 1,
+        "mod": "+ 100"
+      },
+      {
+        "company": 0,
+        "mod": "- 10"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "mods": [
+      {
+        "company": 1,
+        "mod": "+ 50"
+      },
+      {
+        "company": 0,
+        "mod": "- 10"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "mods": [
+      {
+        "company": 1,
+        "mod": "* 2"
+      },
+      {
+        "company": -1,
+        "mod": "- 100"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "mods": [
+      {
+        "company": 2,
+        "mod": "+ 80"
+      },
+      {
+        "company": 0,
+        "mod": "- 60"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "mods": [
+      {
+        "company": 1,
+        "mod": "+ 30"
+      },
+      {
+        "company": -1,
+        "mod": "- 50"
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "mods": [
+      {
+        "company": 3,
+        "mod": "+ 70"
+      },
+      {
+        "company": 0,
+        "mod": "- 50"
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "mods": [
+      {
+        "company": 0,
+        "mod": "+ 50"
+      },
+      {
+        "company": 2,
+        "mod": "- 10"
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "mods": [
+      {
+        "company": 0,
+        "mod": "+ 20"
+      },
+      {
+        "company": 1,
+        "mod": "- 60"
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "mods": [
+      {
+        "company": 0,
+        "mod": "+ 70"
+      },
+      {
+        "company": 2,
+        "mod": "= 0"
+      }
+    ]
+  }
+]
