@@ -47,12 +47,12 @@ func (p *PortfolioPanel) Update(u PortfolioUpdate) {
 	total := u.P1*u.N1 + u.P2*u.N2 + u.P3*u.N3 + u.P4*u.N4 + u.Cash
 
 	sb := strings.Builder{}
-	sb.WriteString(fmt.Sprintf("[blue]%s[white]: %d\n", p.c1, u.N1))
-	sb.WriteString(fmt.Sprintf("[orange]%s[white]: %d\n", p.c2, u.N2))
-	sb.WriteString(fmt.Sprintf("[yellow]%s[white]: %d\n", p.c3, u.N3))
-	sb.WriteString(fmt.Sprintf("[red]%s[white]: %d\n", p.c4, u.N4))
-	sb.WriteString(fmt.Sprintf("[green]Cash[white]: %d\n\n", u.Cash))
-	sb.WriteString(fmt.Sprintf("[white]Total: %d\n", total))
+	sb.WriteString(fmt.Sprintf("[blue]%12s[white]: %d\n", p.c1, u.N1))
+	sb.WriteString(fmt.Sprintf("[orange]%12s[white]: %d\n", p.c2, u.N2))
+	sb.WriteString(fmt.Sprintf("[yellow]%12s[white]: %d\n", p.c3, u.N3))
+	sb.WriteString(fmt.Sprintf("[red]%12s[white]: %d\n", p.c4, u.N4))
+	sb.WriteString(fmt.Sprintf("[green]%12s[white]: %d\n\n", "Cash", u.Cash))
+	sb.WriteString(fmt.Sprintf("%12s: %d\n", "Total value", total))
 
 	p.tv.SetText(sb.String())
 }

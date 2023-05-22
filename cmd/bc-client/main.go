@@ -133,12 +133,12 @@ func buildApp() *tview.Application {
 	// Create grid.
 	mainScreen := tview.NewGrid().
 		SetRows(0, 0, 0).
-		SetColumns(0, 0, 0).
-		SetBorders(true)
+		SetColumns(0, 0, 0)
+	//SetBorders(true)
 
 	// Turn widget.
 	turns := client.NewTurnPanel(10)
-	mainScreen.AddItem(turns.GetTextView(), 0, 0, 2, 1, 1, 1, false)
+	mainScreen.AddItem(turns.GetTextView(), 0, 0, 1, 1, 1, 1, false)
 
 	// TEST ONLY.
 	turns.NewTurn([]string{"Alice", "Bob", "Clyde", "Dave"})
@@ -146,49 +146,47 @@ func buildApp() *tview.Application {
 
 	// Portfolio widget.
 	portfolio := client.NewPortfolioPanel("Amfora", "Domus", "Piert", "Skala-Coop")
-	mainScreen.AddItem(portfolio.GetTextView(), 0, 1, 2, 1, 1, 1, false)
+	mainScreen.AddItem(portfolio.GetTextView(), 0, 1, 1, 1, 1, 1, false)
 
 	// TEST ONLY.
 	portfolio.Update(client.PortfolioUpdate{
-		P1:   40,
-		N1:   2,
-		P2:   230,
-		N2:   9,
-		P3:   0,
-		N3:   5,
-		P4:   170,
-		N4:   0,
+		P1: 40, N1: 2,
+		P2: 230, N2: 9,
+		P3: 0, N3: 5,
+		P4: 170, N4: 0,
 		Cash: 3000,
 	})
 
 	// Opponents widget.
-	opponents := client.NewOpponentsPanel("Alice Longname", "Clyde Williams", "Dave Hopkins Jr")
-	mainScreen.AddItem(opponents.GetTable(), 0, 2, 2, 1, 1, 1, false)
+	opponents := client.NewOpponentsPanel("Alice 😀", "Clyde Williams", "Dave Hopkins Jr")
+	mainScreen.AddItem(opponents.GetTable(), 0, 2, 1, 1, 1, 1, false)
 
 	// TEST ONLY.
 	opponents.Update(client.OpponentsUpdate{
 		O1: client.OpponentData{
-			N1: 2,
-			N2: 0,
-			N3: 4,
-			N4: 0,
-			C:  5,
+			N1: 2, N2: 0, N3: 4, N4: 0, C: 5,
 		},
 		O2: client.OpponentData{
-			N1: 2,
-			N2: 3,
-			N3: 3,
-			N4: 1,
-			C:  2,
+			N1: 2, N2: 3, N3: 3, N4: 1, C: 2,
 		},
 		O3: client.OpponentData{
-			N1: 2,
-			N2: 2,
-			N3: 0,
-			N4: 5,
-			C:  1,
+			N1: 2, N2: 2, N3: 0, N4: 5, C: 1,
 		},
 	})
+
+	// Server status widget.
+	status := client.NewServerStatus("localhost:8585")
+	mainScreen.AddItem(status.GetTextView(), 2, 2, 1, 1, 1, 1, false)
+
+	// TEST ONLY.
+	status.SetAuthKey("ab3tesjk4")
+
+	// Stock price panel.
+	stocks := client.NewStockPricePanel("Amfora", "Domus", "Piert", "Skala-Coop", 150)
+	mainScreen.AddItem(stocks.GetTextView(), 1, 1, 1, 2, 1, 1, false)
+
+	// TEST ONLY.
+	stocks.Update(10, 290, 0, 400)
 
 	// Title screen.
 	title := tview.NewTextView().

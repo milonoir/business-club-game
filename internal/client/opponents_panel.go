@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/gdamore/tcell/v2"
@@ -30,9 +31,9 @@ func NewOpponentsPanel(o1, o2, o3 string) *OpponentsPanel {
 		SetBorders(true)
 
 	p.t.
-		SetCell(0, 0, tview.NewTableCell(o1).SetTextColor(tcell.ColorYellow)).
-		SetCell(0, 1, tview.NewTableCell(o2).SetTextColor(tcell.ColorYellow)).
-		SetCell(0, 2, tview.NewTableCell(o3).SetTextColor(tcell.ColorYellow))
+		SetCell(0, 0, tview.NewTableCell(fmt.Sprintf("%-15s", o1)).SetTextColor(tcell.ColorYellow).SetAlign(tview.AlignCenter)).
+		SetCell(0, 1, tview.NewTableCell(fmt.Sprintf("%-15s", o2)).SetTextColor(tcell.ColorYellow).SetAlign(tview.AlignCenter)).
+		SetCell(0, 2, tview.NewTableCell(fmt.Sprintf("%-15s", o3)).SetTextColor(tcell.ColorYellow).SetAlign(tview.AlignCenter))
 
 	p.Update(OpponentsUpdate{})
 
