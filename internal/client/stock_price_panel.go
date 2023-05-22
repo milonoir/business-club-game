@@ -55,5 +55,5 @@ func (p *StockPricePanel) Update(p1, p2, p3, p4 int) {
 
 func (p *StockPricePanel) scale(price int) string {
 	i := price / 10
-	return "[grey]" + textScale[:i] + "[fuchsia]*[grey]" + textScale[i+1:]
+	return "[grey]" + textScale[:i] + "[fuchsia]#[grey]" + textScale[i+1:]
 }

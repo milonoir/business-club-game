@@ -30,6 +30,13 @@ func main() {
 		log.Fatalf("corrupted assets file: %s\n", err)
 	}
 
+	// Initializing the game.
+	//g := server.NewGame(a)
+	//
+	//fmt.Println(g.Companies)
+	//fmt.Println(g.ActionDeck)
+	//fmt.Println(g.BankDeck)
+
 	// Setup OS signal trap.
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
@@ -45,11 +52,4 @@ func main() {
 	if err = srv.Stop(); err != nil {
 		log.Fatal(err)
 	}
-
-	// Initializing the game.
-	//g := newGame(a)
-	//
-	//fmt.Println(g.Companies)
-	//fmt.Println(g.ActionDeck)
-	//fmt.Println(g.BankDeck)
 }

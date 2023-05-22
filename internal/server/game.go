@@ -2,6 +2,8 @@ package server
 
 import (
 	"math/rand"
+
+	"github.com/milonoir/business-club-game/internal/game"
 )
 
 const (
@@ -11,12 +13,12 @@ const (
 )
 
 type Assets struct {
-	Companies  []string `json:"companies"`
-	ActionDeck []Card   `json:"actionDeck"`
-	BankDeck   []Card   `json:"bankDeck"`
+	Companies  []string    `json:"companies"`
+	ActionDeck []game.Card `json:"actionDeck"`
+	BankDeck   []game.Card `json:"bankDeck"`
 }
 
-type game struct {
+type Game struct {
 	StockPrices map[string]int
 	Players     []Player
 	TurnsLeft   int
@@ -24,8 +26,8 @@ type game struct {
 	Assets
 }
 
-func newGame(a Assets) game {
-	g := game{
+func NewGame(a Assets) Game {
+	g := Game{
 		Assets:      a,
 		TurnsLeft:   maxTurns,
 		StockPrices: make(map[string]int, len(a.Companies)),
@@ -47,13 +49,13 @@ func newGame(a Assets) game {
 	return g
 }
 
-func (g *game) shufflePlayers() {
+func (g *Game) shufflePlayers() {
 	rand.Shuffle(len(g.Players), func(i, j int) {
 		g.Players[i], g.Players[j] = g.Players[j], g.Players[i]
 	})
 }
 
-func (g *game) start() {
+func (g *Game) start() {
 	// Game ends after maxTurns.
 	for turn := 0; turn < maxTurns; turn++ {
 		// Shuffle players, then iterate over players.
@@ -69,14 +71,14 @@ func (g *game) start() {
 	}
 }
 
-func (g *game) getPlayerCard(p *Player) *Card {
+func (g *Game) getPlayerCard(p *Player) *game.Card {
 	return nil
 }
 
-func (g *game) drawBankCard() *Card {
+func (g *Game) drawBankCard() *game.Card {
 	return nil
 }
 
-func (g *game) update(c *Card) {
+func (g *Game) update(c *game.Card) {
 
 }
