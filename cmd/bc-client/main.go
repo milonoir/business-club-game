@@ -128,6 +128,14 @@ func sendEmptyAuth(conn net.Conn) {
 }
 
 func buildApp() *tview.Application {
+	cp := client.NewCompanyProvider()
+	cp.AddCompany("Amfora", "blue")
+	cp.AddCompany("Domus", "orange")
+	cp.AddCompany("Piért", "yellow")
+	cp.AddCompany("Skála-Coop", "red")
+
+	pp := client.NewPlayerProvider([]string{"Xenial Xerus", "Bionic Beaver", "Focal Fossa", "Jammy Jellyfish"})
+
 	// Create application.
 	app := tview.NewApplication()
 
@@ -145,11 +153,11 @@ func buildApp() *tview.Application {
 	mainScreen.AddItem(turns.GetTextView(), 0, 0, 1, 1, 1, 1, false)
 
 	// TEST ONLY.
-	turns.NewTurn([]string{"Alice", "Bob", "Clyde", "Dave"})
+	turns.NewTurn(pp.Players())
 	turns.NextPlayer()
 
 	// Portfolio widget.
-	portfolio := client.NewPortfolioPanel("Amfora", "Domus", "Piert", "Skala-Coop")
+	portfolio := client.NewPortfolioPanel(cp)
 	mainScreen.AddItem(portfolio.GetTextView(), 0, 1, 1, 1, 1, 1, false)
 
 	// TEST ONLY.
@@ -162,7 +170,7 @@ func buildApp() *tview.Application {
 	})
 
 	// Opponents widget.
-	opponents := client.NewOpponentsPanel("Alice 😀", "Clyde Williams", "Dave Hopkins Jr")
+	opponents := client.NewOpponentsPanel(pp.OpponentsByPlayer("Bionic Beaver"), cp)
 	mainScreen.AddItem(opponents.GetTable(), 0, 2, 1, 1, 1, 1, false)
 
 	// TEST ONLY.
@@ -183,7 +191,7 @@ func buildApp() *tview.Application {
 	if err := json.Unmarshal([]byte(cardsJson), &cards); err != nil {
 		panic(err)
 	}
-	actions := client.NewActionList([]string{"Amfora", "Domus", "Piert", "Skala-Coop"}, cards)
+	actions := client.NewActionList(cp, cards)
 	mainScreen.AddItem(actions.GetList(), 2, 0, 1, 1, 1, 1, true)
 
 	// Server status widget.
@@ -194,7 +202,7 @@ func buildApp() *tview.Application {
 	status.SetAuthKey("ab3tesjk4")
 
 	// Stock price panel.
-	stocks := client.NewStockPricePanel("Amfora", "Domus", "Piert", "Skala-Coop", 150)
+	stocks := client.NewStockPricePanel(cp, 150)
 	mainScreen.AddItem(stocks.GetTextView(), 1, 1, 1, 2, 1, 1, false)
 
 	// TEST ONLY.

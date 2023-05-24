@@ -11,16 +11,16 @@ import (
 type ActionList struct {
 	l *tview.List
 
-	companies []string
-	cards     []*game.Card
+	cp    *CompanyProvider
+	cards []*game.Card
 }
 
-func NewActionList(companies []string, cards []*game.Card) *ActionList {
+func NewActionList(cp *CompanyProvider, cards []*game.Card) *ActionList {
 	a := &ActionList{
 		l: tview.NewList(),
 
-		companies: companies,
-		cards:     cards,
+		cp:    cp,
+		cards: cards,
 	}
 
 	a.l.
@@ -51,18 +51,10 @@ func (a *ActionList) cardToString(c *game.Card) string {
 	sb := strings.Builder{}
 
 	for _, mod := range c.Mods {
-		var company string
-		switch mod.Company {
-		case 0:
-			company = fmt.Sprintf("[blue]%-12s", a.companies[0])
-		case 1:
-			company = fmt.Sprintf("[orange]%-12s", a.companies[1])
-		case 2:
-			company = fmt.Sprintf("[yellow]%-12s", a.companies[2])
-		case 3:
-			company = fmt.Sprintf("[red]%-12s", a.companies[3])
-		default:
-			company = fmt.Sprintf("[fuchsia]%-12s", "???")
+		company := fmt.Sprintf("[fuchsia]%-12s", "???")
+		if mod.Company > -1 {
+			name := a.cp.CompanyByIndex(mod.Company)
+			company = fmt.Sprintf("[%s]%-12s", a.cp.ColorByCompany(name), name)
 		}
 
 		var modifier string

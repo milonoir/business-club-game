@@ -17,18 +17,13 @@ type PortfolioUpdate struct {
 
 type PortfolioPanel struct {
 	tv *tview.TextView
-
-	// Company names.
-	c1, c2, c3, c4 string
+	cp *CompanyProvider
 }
 
-func NewPortfolioPanel(c1, c2, c3, c4 string) *PortfolioPanel {
+func NewPortfolioPanel(cp *CompanyProvider) *PortfolioPanel {
 	p := &PortfolioPanel{
 		tv: tview.NewTextView(),
-		c1: c1,
-		c2: c2,
-		c3: c3,
-		c4: c4,
+		cp: cp,
 	}
 
 	p.tv.
@@ -45,12 +40,13 @@ func (p *PortfolioPanel) GetTextView() *tview.TextView {
 
 func (p *PortfolioPanel) Update(u PortfolioUpdate) {
 	total := u.P1*u.N1 + u.P2*u.N2 + u.P3*u.N3 + u.P4*u.N4 + u.Cash
+	c := p.cp.Companies()
 
 	sb := strings.Builder{}
-	sb.WriteString(fmt.Sprintf("[blue]%12s[white]: %d\n", p.c1, u.N1))
-	sb.WriteString(fmt.Sprintf("[orange]%12s[white]: %d\n", p.c2, u.N2))
-	sb.WriteString(fmt.Sprintf("[yellow]%12s[white]: %d\n", p.c3, u.N3))
-	sb.WriteString(fmt.Sprintf("[red]%12s[white]: %d\n", p.c4, u.N4))
+	sb.WriteString(fmt.Sprintf("[%s]%12s[white]: %d\n", p.cp.ColorByCompany(c[0]), c[0], u.N1))
+	sb.WriteString(fmt.Sprintf("[%s]%12s[white]: %d\n", p.cp.ColorByCompany(c[1]), c[1], u.N2))
+	sb.WriteString(fmt.Sprintf("[%s]%12s[white]: %d\n", p.cp.ColorByCompany(c[2]), c[2], u.N3))
+	sb.WriteString(fmt.Sprintf("[%s]%12s[white]: %d\n", p.cp.ColorByCompany(c[3]), c[3], u.N4))
 	sb.WriteString(fmt.Sprintf("[green]%12s[white]: %d\n\n", "Cash", u.Cash))
 	sb.WriteString(fmt.Sprintf("%12s: %d\n", "Total value", total))
 

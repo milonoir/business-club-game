@@ -15,17 +15,13 @@ const (
 type StockPricePanel struct {
 	tv *tview.TextView
 
-	// Company names.
-	c1, c2, c3, c4 string
+	cp *CompanyProvider
 }
 
-func NewStockPricePanel(c1, c2, c3, c4 string, startPrice int) *StockPricePanel {
+func NewStockPricePanel(cp *CompanyProvider, startPrice int) *StockPricePanel {
 	p := &StockPricePanel{
 		tv: tview.NewTextView(),
-		c1: c1,
-		c2: c2,
-		c3: c3,
-		c4: c4,
+		cp: cp,
 	}
 
 	p.tv.
@@ -44,14 +40,19 @@ func (p *StockPricePanel) GetTextView() *tview.TextView {
 
 func (p *StockPricePanel) Update(p1, p2, p3, p4 int) {
 	sb := strings.Builder{}
+	companies := p.cp.Companies()
 
 	sb.WriteString(fmt.Sprintf("%14s %s\n", "", textScaleValues))
-	sb.WriteString(fmt.Sprintf("[blue]%14s[white] %s [blue]%3d\n", p.c1, p.scale(p1), p1))
-	sb.WriteString(fmt.Sprintf("[orange]%14s[white] %s [orange]%3d\n", p.c2, p.scale(p2), p2))
-	sb.WriteString(fmt.Sprintf("[yellow]%14s[white] %s [yellow]%3d\n", p.c3, p.scale(p3), p3))
-	sb.WriteString(fmt.Sprintf("[red]%14s[white] %s [red]%3d\n", p.c4, p.scale(p4), p4))
+	sb.WriteString(p.line(p.cp.ColorByCompany(companies[0]), companies[0], p.scale(p1), p1))
+	sb.WriteString(p.line(p.cp.ColorByCompany(companies[1]), companies[1], p.scale(p2), p2))
+	sb.WriteString(p.line(p.cp.ColorByCompany(companies[2]), companies[2], p.scale(p3), p3))
+	sb.WriteString(p.line(p.cp.ColorByCompany(companies[3]), companies[3], p.scale(p4), p4))
 
 	p.tv.SetText(sb.String())
+}
+
+func (p *StockPricePanel) line(color, company, scale string, price int) string {
+	return fmt.Sprintf("[%s]%14s[white] %s [%s]%3d\n", color, company, scale, color, price)
 }
 
 func (p *StockPricePanel) scale(price int) string {
