@@ -16,7 +16,6 @@ import (
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
 	"github.com/milonoir/business-club-game/internal/client"
-	"github.com/milonoir/business-club-game/internal/game"
 	"github.com/milonoir/business-club-game/internal/message"
 	"github.com/rivo/tview"
 )
@@ -28,6 +27,9 @@ var splashScreen string
 
 //go:embed sample_cards.json
 var cardsJson string
+
+//go:embed graph.ascii
+var graphAscii string
 
 func main_old() {
 	ctx, cancel := context.WithCancel(context.Background())
@@ -144,9 +146,8 @@ func buildApp() *tview.Application {
 
 	// Create grid.
 	mainScreen := tview.NewGrid().
-		SetRows(0, 0, 0).
-		SetColumns(0, 0, 0)
-	//SetBorders(true)
+		SetColumns(0, 0, 0).
+		SetRows(0, 0, 0)
 
 	// Turn widget.
 	turns := client.NewTurnPanel(10)
@@ -186,27 +187,46 @@ func buildApp() *tview.Application {
 		},
 	})
 
-	// Action list.
-	var cards []*game.Card
-	if err := json.Unmarshal([]byte(cardsJson), &cards); err != nil {
-		panic(err)
-	}
-	actions := client.NewActionList(cp, cards)
-	mainScreen.AddItem(actions.GetList(), 2, 0, 1, 1, 1, 1, true)
+	//// Action list.
+	//var cards []*game.Card
+	//if err := json.Unmarshal([]byte(cardsJson), &cards); err != nil {
+	//	panic(err)
+	//}
+	//actions := client.NewActionList(cp, cards)
+	//mainScreen.AddItem(actions.GetList(), 2, 1, 1, 1, 1, 1, true)
+	//
+	//// Server status widget.
+	//status := client.NewServerStatus("localhost:8585")
+	//mainScreen.AddItem(status.GetTextView(), 2, 2, 1, 1, 1, 1, false)
+	//
+	//// TEST ONLY.
+	//status.SetAuthKey("ab3tesjk4")
+	//
+	//// Stock price panel.
+	//stocks := client.NewStockPricePanel(cp, 150)
+	//mainScreen.AddItem(stocks.GetTextView(), 1, 1, 1, 2, 1, 1, false)
+	//
+	//// TEST ONLY.
+	//stocks.Update(10, 290, 0, 400)
+	//
+	//graph := tview.NewTextView().SetDynamicColors(true)
+	//graph.SetBorder(true).SetTitle("Graph")
+	//graph.SetText(graphAscii)
+	//mainScreen.AddItem(graph, 1, 0, 2, 1, 1, 1, false)
 
-	// Server status widget.
-	status := client.NewServerStatus("localhost:8585")
-	mainScreen.AddItem(status.GetTextView(), 2, 2, 1, 1, 1, 1, false)
-
-	// TEST ONLY.
-	status.SetAuthKey("ab3tesjk4")
-
-	// Stock price panel.
-	stocks := client.NewStockPricePanel(cp, 150)
-	mainScreen.AddItem(stocks.GetTextView(), 1, 1, 1, 2, 1, 1, false)
-
-	// TEST ONLY.
-	stocks.Update(10, 290, 0, 400)
+	graphs := client.NewGraphPanel(cp)
+	mainScreen.AddItem(graphs.GetGrid(), 1, 0, 2, 2, 1, 1, false)
+	graphs.Add(10, 0, 60, 290)
+	graphs.Add(20, 20, 90, 140)
+	graphs.Add(30, 20, 90, 140)
+	graphs.Add(40, 20, 90, 140)
+	graphs.Add(50, 20, 90, 140)
+	graphs.Add(60, 20, 90, 140)
+	graphs.Add(70, 20, 90, 140)
+	graphs.Add(80, 20, 90, 140)
+	graphs.Add(90, 20, 90, 140)
+	graphs.Add(100, 20, 90, 140)
+	graphs.Add(300, 20, 90, 140)
 
 	// Title screen.
 	title := tview.NewTextView().

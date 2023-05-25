@@ -4,9 +4,30 @@ import (
 	"github.com/rivo/tview"
 )
 
+type ActionType string
+
+const (
+	ActionChange = "change"
+	ActionBuy    = "buy"
+	ActionSell   = "sell"
+)
+
+type ActorType uint8
+
+const (
+	ActorPlayer ActorType = iota
+	ActorBank
+)
+
+// Examples:
+// [Player/Bank] action: [Company] [Mod] [Value] = [New price]
+// [Player] deal: [Action - buy/sell] [Company] [Amount] @ [Price]
+
 type LogItem struct {
-	Who  string
-	What string
+	Actor      string
+	ActorColor string
+	Action     ActionType
+	Company    string
 }
 
 type LogPanel struct {
@@ -18,7 +39,8 @@ type LogPanel struct {
 
 func NewLogPanel() *LogPanel {
 	p := &LogPanel{
-		tv: tview.NewTextView(),
+		tv:   tview.NewTextView(),
+		logs: make([]*LogItem, 0, 10),
 	}
 
 	p.tv.

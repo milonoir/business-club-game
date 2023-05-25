@@ -28,6 +28,13 @@ func (p *CompanyProvider) CompanyByIndex(index int) string {
 	return p.companies[index]
 }
 
+func (p *CompanyProvider) ColorByCompanyIndex(index int) string {
+	if index < 0 || index > len(p.companies)-1 {
+		return ""
+	}
+	return p.company2Color[p.companies[index]]
+}
+
 func (p *CompanyProvider) ColorByCompany(company string) string {
 	return p.company2Color[company]
 }
