@@ -30,9 +30,6 @@ var splashScreen string
 //go:embed sample_cards.json
 var cardsJson string
 
-//go:embed graph.ascii
-var graphAscii string
-
 func main_old() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -149,7 +146,7 @@ func buildApp() *tview.Application {
 	// Create grid.
 	mainScreen := tview.NewGrid().
 		SetColumns(0, 0, 0).
-		SetRows(0, 25, 0, 1)
+		SetRows(0, 22, 0, 1)
 
 	// Turn widget.
 	turns := client.NewTurnPanel(10)
@@ -211,9 +208,16 @@ func buildApp() *tview.Application {
 	// TEST ONLY.
 	status.SetAuthKey("ab3tesjk4")
 
+	// Middle row of the main screen.
+	middleRow := tview.NewGrid()
+	middleRow.
+		SetColumns(0, 0).
+		SetRows(22)
+	mainScreen.AddItem(middleRow, 1, 0, 1, 3, 1, 1, false)
+
 	// Stock price graph panel.
 	graphs := client.NewGraphPanel(cp)
-	mainScreen.AddItem(graphs.GetGrid(), 1, 0, 1, 2, 1, 1, false)
+	middleRow.AddItem(graphs.GetGrid(), 0, 0, 1, 1, 1, 1, false)
 	go func() {
 		graphs.Add(10, 0, 60, 290)
 		time.Sleep(time.Second)
@@ -237,6 +241,35 @@ func buildApp() *tview.Application {
 		time.Sleep(time.Second)
 		graphs.Add(300, 210, 190, 370)
 	}()
+
+	// History panel.
+	history := client.NewHistoryPanel(cp)
+	middleRow.AddItem(history.GetTextView(), 0, 1, 1, 1, 1, 1, false)
+
+	// TEST ONLY>
+	history.AddItem(&client.ActionItem{
+		ActorType: client.ActorBank,
+		Mod:       &(cards[0].Mods[0]),
+		NewPrice:  120,
+	})
+	history.AddItem(&client.ActionItem{
+		ActorType: client.ActorBank,
+		Mod:       &(cards[0].Mods[1]),
+		NewPrice:  40,
+	})
+	history.AddItem(&client.ActionItem{
+		ActorType: client.ActorPlayer,
+		Name:      pp.Players()[0],
+		Mod:       &(cards[1].Mods[1]),
+		NewPrice:  370,
+	})
+	history.AddItem(&client.DealItem{
+		Name:         pp.Players()[0],
+		Type:         client.DealBuy,
+		CompanyIndex: 3,
+		Amount:       20,
+		Price:        10,
+	})
 
 	// Title screen.
 	title := tview.NewTextView().
