@@ -12,6 +12,7 @@ import (
 type GraphPanel struct {
 	g    *tview.Grid
 	tvs  []*tview.TextView
+	cur  *tview.TextView
 	data [][4]int
 	cp   *CompanyProvider
 }
@@ -27,7 +28,7 @@ func NewGraphPanel(cp *CompanyProvider) *GraphPanel {
 	// Setting up the grid.
 	p.g.
 		SetColumns(4, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9).
-		SetRows(21)
+		SetRows(21, 1)
 
 	// Y-axis.
 	s := make([]string, 0, 20)
@@ -38,6 +39,11 @@ func NewGraphPanel(cp *CompanyProvider) *GraphPanel {
 	tv.SetDynamicColors(true).SetBorder(false)
 	tv.SetText(strings.Join(s, "\n"))
 	p.g.AddItem(tv, 0, 0, 1, 1, 1, 1, false)
+
+	// Current prices - bottom row.
+	p.cur = tview.NewTextView()
+	p.cur.SetTextAlign(tview.AlignCenter).SetDynamicColors(true).SetBorder(false)
+	p.g.AddItem(p.cur, 1, 0, 1, 11, 1, 1, false)
 
 	// Initializing sub-graphs.
 	for i := 0; i < 10; i++ {
@@ -72,6 +78,13 @@ func (p *GraphPanel) redraw() {
 		}
 		p.tvs[i].SetText(strings.Join(rows, "\n"))
 	}
+
+	current := p.data[len(p.data)-1]
+	cs := make([]string, 4)
+	for i, name := range p.cp.Companies() {
+		cs[i] = fmt.Sprintf("[%s]%s: [white]%d", p.cp.ColorByCompany(name), name, current[i])
+	}
+	p.cur.SetText(strings.Join(cs, "   "))
 }
 
 func (p *GraphPanel) emptyGraph() string {

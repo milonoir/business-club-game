@@ -11,6 +11,7 @@ import (
 	"os/signal"
 	"sync"
 	"syscall"
+	"time"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/gobwas/ws"
@@ -216,17 +217,29 @@ func buildApp() *tview.Application {
 
 	graphs := client.NewGraphPanel(cp)
 	mainScreen.AddItem(graphs.GetGrid(), 1, 0, 2, 2, 1, 1, false)
-	graphs.Add(10, 0, 60, 290)
-	graphs.Add(20, 20, 90, 140)
-	graphs.Add(30, 20, 90, 140)
-	graphs.Add(40, 20, 90, 140)
-	graphs.Add(50, 20, 90, 140)
-	graphs.Add(60, 20, 90, 140)
-	graphs.Add(70, 20, 90, 140)
-	graphs.Add(80, 20, 90, 140)
-	graphs.Add(90, 20, 90, 140)
-	graphs.Add(100, 20, 90, 140)
-	graphs.Add(300, 20, 90, 140)
+	go func() {
+		graphs.Add(10, 0, 60, 290)
+		time.Sleep(time.Second)
+		graphs.Add(20, 220, 80, 0)
+		time.Sleep(time.Second)
+		graphs.Add(30, 120, 230, 0)
+		time.Sleep(time.Second)
+		graphs.Add(40, 60, 390, 40)
+		time.Sleep(time.Second)
+		graphs.Add(50, 280, 190, 0)
+		time.Sleep(time.Second)
+		graphs.Add(60, 0, 10, 10)
+		time.Sleep(time.Second)
+		graphs.Add(70, 10, 0, 190)
+		time.Sleep(time.Second)
+		graphs.Add(80, 20, 0, 240)
+		time.Sleep(time.Second)
+		graphs.Add(90, 70, 90, 140)
+		time.Sleep(time.Second)
+		graphs.Add(100, 210, 170, 340)
+		time.Sleep(time.Second)
+		graphs.Add(300, 210, 190, 370)
+	}()
 
 	// Title screen.
 	title := tview.NewTextView().
