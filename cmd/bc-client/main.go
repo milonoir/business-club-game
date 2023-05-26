@@ -197,6 +197,13 @@ func buildApp() *tview.Application {
 	actions := client.NewActionList(cp, cards)
 	mainScreen.AddItem(actions.GetList(), 2, 1, 1, 1, 1, 1, true)
 
+	// Game version widget.
+	ver := client.NewVersionPanel()
+	mainScreen.AddItem(ver.GetTextView(), 3, 0, 1, 1, 1, 1, false)
+
+	// TEST ONLY.
+	ver.SetVersion("0.1")
+
 	// Server status widget.
 	status := client.NewServerStatus("localhost:8585")
 	mainScreen.AddItem(status.GetTextView(), 3, 1, 1, 2, 1, 1, false)
@@ -204,18 +211,7 @@ func buildApp() *tview.Application {
 	// TEST ONLY.
 	status.SetAuthKey("ab3tesjk4")
 
-	//// Stock price panel.
-	//stocks := client.NewStockPricePanel(cp, 150)
-	//mainScreen.AddItem(stocks.GetTextView(), 1, 1, 1, 2, 1, 1, false)
-	//
-	//// TEST ONLY.
-	//stocks.Update(10, 290, 0, 400)
-	//
-	//graph := tview.NewTextView().SetDynamicColors(true)
-	//graph.SetBorder(true).SetTitle("Graph")
-	//graph.SetText(graphAscii)
-	//mainScreen.AddItem(graph, 1, 0, 2, 1, 1, 1, false)
-
+	// Stock price graph panel.
 	graphs := client.NewGraphPanel(cp)
 	mainScreen.AddItem(graphs.GetGrid(), 1, 0, 1, 2, 1, 1, false)
 	go func() {

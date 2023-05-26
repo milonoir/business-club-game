@@ -7,11 +7,6 @@ import (
 	"github.com/rivo/tview"
 )
 
-const (
-	textConnected    = "[green]connected[white]"
-	textDisconnected = "[red]disconnected[white]"
-)
-
 type ServerStatusPanel struct {
 	tv *tview.TextView
 
