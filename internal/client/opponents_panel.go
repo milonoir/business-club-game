@@ -29,7 +29,7 @@ func NewOpponentsPanel(opponents []string, cp *CompanyProvider) *OpponentsPanel 
 	}
 
 	p.t.
-		SetBorders(true)
+		SetBorder(true)
 
 	for i, o := range opponents {
 		p.t.SetCell(0, i, tview.NewTableCell(center(o, 15)).SetTextColor(tcell.ColorYellow).SetAlign(tview.AlignCenter))

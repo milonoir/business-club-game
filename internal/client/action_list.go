@@ -40,8 +40,8 @@ func (a *ActionList) GetList() *tview.List {
 func (a *ActionList) Update() {
 	a.dropAll()
 
-	for i, c := range a.cards {
-		a.l.AddItem(a.cardToString(c), "", rune('a'+i), func() {
+	for _, c := range a.cards {
+		a.l.AddItem(a.cardToString(c), "", 0, func() {
 			// TODO: send selected card to server; potentially use some callback func.
 		})
 	}

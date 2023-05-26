@@ -28,8 +28,8 @@ func NewServerStatus(host string) *ServerStatusPanel {
 
 	p.tv.
 		SetDynamicColors(true).
-		SetBorder(true).
-		SetTitle("Server")
+		SetTextAlign(tview.AlignRight).
+		SetBorder(false)
 
 	p.redraw()
 
@@ -53,14 +53,12 @@ func (p *ServerStatusPanel) SetAuthKey(authKey string) {
 func (p *ServerStatusPanel) redraw() {
 	sb := strings.Builder{}
 
-	sb.WriteString(fmt.Sprintf("    Host: %s\n", p.host))
-	sb.WriteString(fmt.Sprintf("Auth Key: [blue]%s[white]\n", p.authKey))
-
-	status := textDisconnected
 	if p.connected {
-		status = textConnected
+		sb.WriteString("[green]· ")
+	} else {
+		sb.WriteString("[red]· ")
 	}
-	sb.WriteString(fmt.Sprintf("  Status: %s\n", status))
+	sb.WriteString(fmt.Sprintf("[white]Server: [blue]%s   [white]Key: [blue]%s", p.host, p.authKey))
 
 	p.tv.SetText(sb.String())
 }

@@ -28,7 +28,8 @@ func NewGraphPanel(cp *CompanyProvider) *GraphPanel {
 	// Setting up the grid.
 	p.g.
 		SetColumns(4, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9).
-		SetRows(21, 1)
+		SetRows(21, 1).
+		SetBorders(true)
 
 	// Y-axis.
 	s := make([]string, 0, 20)

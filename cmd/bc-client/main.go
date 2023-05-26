@@ -17,6 +17,7 @@ import (
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
 	"github.com/milonoir/business-club-game/internal/client"
+	"github.com/milonoir/business-club-game/internal/game"
 	"github.com/milonoir/business-club-game/internal/message"
 	"github.com/rivo/tview"
 )
@@ -148,7 +149,7 @@ func buildApp() *tview.Application {
 	// Create grid.
 	mainScreen := tview.NewGrid().
 		SetColumns(0, 0, 0).
-		SetRows(0, 0, 0)
+		SetRows(0, 25, 0, 1)
 
 	// Turn widget.
 	turns := client.NewTurnPanel(10)
@@ -188,21 +189,21 @@ func buildApp() *tview.Application {
 		},
 	})
 
-	//// Action list.
-	//var cards []*game.Card
-	//if err := json.Unmarshal([]byte(cardsJson), &cards); err != nil {
-	//	panic(err)
-	//}
-	//actions := client.NewActionList(cp, cards)
-	//mainScreen.AddItem(actions.GetList(), 2, 1, 1, 1, 1, 1, true)
-	//
-	//// Server status widget.
-	//status := client.NewServerStatus("localhost:8585")
-	//mainScreen.AddItem(status.GetTextView(), 2, 2, 1, 1, 1, 1, false)
-	//
-	//// TEST ONLY.
-	//status.SetAuthKey("ab3tesjk4")
-	//
+	// Action list.
+	var cards []*game.Card
+	if err := json.Unmarshal([]byte(cardsJson), &cards); err != nil {
+		panic(err)
+	}
+	actions := client.NewActionList(cp, cards)
+	mainScreen.AddItem(actions.GetList(), 2, 1, 1, 1, 1, 1, true)
+
+	// Server status widget.
+	status := client.NewServerStatus("localhost:8585")
+	mainScreen.AddItem(status.GetTextView(), 3, 1, 1, 2, 1, 1, false)
+
+	// TEST ONLY.
+	status.SetAuthKey("ab3tesjk4")
+
 	//// Stock price panel.
 	//stocks := client.NewStockPricePanel(cp, 150)
 	//mainScreen.AddItem(stocks.GetTextView(), 1, 1, 1, 2, 1, 1, false)
@@ -216,7 +217,7 @@ func buildApp() *tview.Application {
 	//mainScreen.AddItem(graph, 1, 0, 2, 1, 1, 1, false)
 
 	graphs := client.NewGraphPanel(cp)
-	mainScreen.AddItem(graphs.GetGrid(), 1, 0, 2, 2, 1, 1, false)
+	mainScreen.AddItem(graphs.GetGrid(), 1, 0, 1, 2, 1, 1, false)
 	go func() {
 		graphs.Add(10, 0, 60, 290)
 		time.Sleep(time.Second)
@@ -275,8 +276,20 @@ func buildApp() *tview.Application {
 	return app
 }
 
+func refresh(app *tview.Application) {
+	tick := time.NewTicker(500 * time.Microsecond)
+	for {
+		select {
+		case <-tick.C:
+			app.Draw()
+		}
+	}
+}
+
 func main() {
 	app := buildApp()
+
+	go refresh(app)
 
 	if err := app.Run(); err != nil {
 		panic(err)
