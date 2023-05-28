@@ -211,7 +211,7 @@ func buildApp() *tview.Application {
 	// Middle row of the main screen.
 	middleRow := tview.NewGrid()
 	middleRow.
-		SetColumns(0, 0).
+		SetColumns(96, 0).
 		SetRows(22)
 	mainScreen.AddItem(middleRow, 1, 0, 1, 3, 1, 1, false)
 

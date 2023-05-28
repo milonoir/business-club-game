@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/gdamore/tcell/v2"
 	"github.com/milonoir/business-club-game/internal/game"
 	"github.com/rivo/tview"
 )
@@ -108,7 +109,9 @@ func NewHistoryPanel(cp *CompanyProvider) *HistoryPanel {
 	p.tv.
 		SetDynamicColors(true).
 		SetBorder(true).
-		SetTitle("History")
+		SetBorderStyle(tcell.Style{}.
+			Foreground(tcell.ColorGrey)).
+		SetTitle(" History ")
 
 	return p
 }
