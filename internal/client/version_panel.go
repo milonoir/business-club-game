@@ -19,6 +19,7 @@ func NewVersionPanel() *VersionPanel {
 	p.tv.
 		SetTextAlign(tview.AlignLeft).
 		SetTextColor(tcell.ColorYellow).
+		SetBorderPadding(0, 0, 1, 0).
 		SetBorder(false)
 
 	return p

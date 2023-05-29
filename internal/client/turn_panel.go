@@ -24,8 +24,7 @@ func NewTurnPanel(max int) *TurnPanel {
 
 	p.tv.
 		SetDynamicColors(true).
-		SetBorder(true).
-		SetTitle(fmt.Sprintf("Turn: 0/%d", p.maxTurns))
+		SetBorder(false)
 
 	return p
 }
@@ -39,8 +38,6 @@ func (p *TurnPanel) NewTurn(order []string) {
 		return
 	}
 	p.currentTurn++
-
-	p.tv.SetTitle(fmt.Sprintf("Turn: %d/%d", p.currentTurn, p.maxTurns))
 	p.playerOrder = order
 	p.currentPlayer = 0
 
@@ -59,9 +56,11 @@ func (p *TurnPanel) NextPlayer() {
 func (p *TurnPanel) redraw() {
 	sb := strings.Builder{}
 
+	sb.WriteString(fmt.Sprintf("Turn: [blue]%d[white]/%d\n\n", p.currentTurn, p.maxTurns))
+
 	for i, name := range p.playerOrder {
 		if i == p.currentPlayer {
-			sb.WriteString("[green]" + name + "[white]\n")
+			sb.WriteString("[blue]" + name + "[white]\n")
 		} else {
 			sb.WriteString(name + "\n")
 		}

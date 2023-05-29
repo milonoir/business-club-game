@@ -148,43 +148,31 @@ func buildApp() *tview.Application {
 		SetColumns(0, 0, 0).
 		SetRows(0, 22, 0, 1)
 
+	// Top row of the main screen.
+	topRow := tview.NewGrid()
+	topRow.
+		SetColumns(96, 0, 25).
+		SetRows(9)
+	mainScreen.AddItem(topRow, 0, 0, 1, 3, 1, 1, false)
+
+	// Standings panel.
+	standings := client.NewStandingsPanel("Jammy Jellyfish", []string{"Xenial Xerus", "Bionic Beaver", "Focal Fossa"}, cp)
+	topRow.AddItem(standings.GetGrid(), 0, 0, 1, 1, 1, 1, false)
+
+	// TEST ONLY.
+	standings.SetPrices(30, 190, 330, 60)
+	standings.PlayerUpdate(5, 8, 2, 10, 5000)
+	standings.OpponentUpdate(0, 0, 1, 2, 0, 2, false, false)
+	standings.OpponentUpdate(1, 5, 2, 0, 1, 5, false, false)
+	standings.OpponentUpdate(2, 3, 1, 0, 1, 1, false, false)
+
 	// Turn widget.
 	turns := client.NewTurnPanel(10)
-	mainScreen.AddItem(turns.GetTextView(), 0, 0, 1, 1, 1, 1, false)
+	topRow.AddItem(turns.GetTextView(), 0, 2, 1, 1, 1, 1, false)
 
 	// TEST ONLY.
 	turns.NewTurn(pp.Players())
 	turns.NextPlayer()
-
-	// Portfolio widget.
-	portfolio := client.NewPortfolioPanel(cp)
-	mainScreen.AddItem(portfolio.GetTextView(), 0, 1, 1, 1, 1, 1, false)
-
-	// TEST ONLY.
-	portfolio.Update(client.PortfolioUpdate{
-		P1: 40, N1: 2,
-		P2: 230, N2: 9,
-		P3: 0, N3: 5,
-		P4: 170, N4: 0,
-		Cash: 3000,
-	})
-
-	// Opponents widget.
-	opponents := client.NewOpponentsPanel(pp.OpponentsByPlayer("Bionic Beaver"), cp)
-	mainScreen.AddItem(opponents.GetTable(), 0, 2, 1, 1, 1, 1, false)
-
-	// TEST ONLY.
-	opponents.Update(client.OpponentsUpdate{
-		O1: client.OpponentData{
-			N1: 2, N2: 0, N3: 4, N4: 0, C: 5,
-		},
-		O2: client.OpponentData{
-			N1: 2, N2: 3, N3: 3, N4: 1, C: 2,
-		},
-		O3: client.OpponentData{
-			N1: 2, N2: 2, N3: 0, N4: 5, C: 1,
-		},
-	})
 
 	// Action list.
 	var cards []*game.Card

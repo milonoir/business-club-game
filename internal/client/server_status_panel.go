@@ -24,6 +24,7 @@ func NewServerStatus(host string) *ServerStatusPanel {
 	p.tv.
 		SetDynamicColors(true).
 		SetTextAlign(tview.AlignRight).
+		SetBorderPadding(0, 0, 0, 1).
 		SetBorder(false)
 
 	p.redraw()
