@@ -146,18 +146,18 @@ func buildApp() *tview.Application {
 	// Create grid.
 	mainScreen := tview.NewGrid().
 		SetColumns(0, 0, 0).
-		SetRows(0, 22, 0, 1)
+		SetRows(0, 22, 0, 1, 1)
 
 	// Top row of the main screen.
 	topRow := tview.NewGrid()
 	topRow.
-		SetColumns(96, 0, 25).
+		SetColumns(0, 96, 0, 25, 0).
 		SetRows(9)
 	mainScreen.AddItem(topRow, 0, 0, 1, 3, 1, 1, false)
 
 	// Standings panel.
 	standings := client.NewStandingsPanel("Jammy Jellyfish", []string{"Xenial Xerus", "Bionic Beaver", "Focal Fossa"}, cp)
-	topRow.AddItem(standings.GetGrid(), 0, 0, 1, 1, 1, 1, false)
+	topRow.AddItem(standings.GetGrid(), 0, 1, 1, 1, 1, 1, false)
 
 	// TEST ONLY.
 	standings.SetPrices(30, 190, 330, 60)
@@ -168,11 +168,18 @@ func buildApp() *tview.Application {
 
 	// Turn widget.
 	turns := client.NewTurnPanel(10)
-	topRow.AddItem(turns.GetTextView(), 0, 2, 1, 1, 1, 1, false)
+	topRow.AddItem(turns.GetTextView(), 0, 3, 1, 1, 1, 1, false)
 
 	// TEST ONLY.
 	turns.NewTurn(pp.Players())
 	turns.NextPlayer()
+
+	// Top row of the main screen.
+	bottomRow := tview.NewGrid()
+	bottomRow.
+		SetColumns(0, 0, 0).
+		SetRows(9)
+	mainScreen.AddItem(bottomRow, 2, 0, 1, 3, 1, 1, true)
 
 	// Action list.
 	var cards []*game.Card
@@ -180,21 +187,22 @@ func buildApp() *tview.Application {
 		panic(err)
 	}
 	actions := client.NewActionList(cp, cards)
-	mainScreen.AddItem(actions.GetList(), 2, 1, 1, 1, 1, 1, true)
+	bottomRow.AddItem(actions.GetList(), 0, 1, 1, 1, 1, 1, true)
 
 	// Game version widget.
 	ver := client.NewVersionPanel()
-	mainScreen.AddItem(ver.GetTextView(), 3, 0, 1, 1, 1, 1, false)
+	mainScreen.AddItem(ver.GetTextView(), 4, 0, 1, 1, 1, 1, false)
 
 	// TEST ONLY.
 	ver.SetVersion("0.1")
 
 	// Server status widget.
 	status := client.NewServerStatus("localhost:8585")
-	mainScreen.AddItem(status.GetTextView(), 3, 1, 1, 2, 1, 1, false)
+	mainScreen.AddItem(status.GetTextView(), 4, 1, 1, 2, 1, 1, false)
 
 	// TEST ONLY.
 	status.SetAuthKey("ab3tesjk4")
+	status.SetConnection(true)
 
 	// Middle row of the main screen.
 	middleRow := tview.NewGrid()

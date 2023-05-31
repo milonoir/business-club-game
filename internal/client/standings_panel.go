@@ -30,7 +30,7 @@ func NewStandingsPanel(player string, opponents []string, cp *CompanyProvider) *
 		SetRows(1, 1, 6).
 		SetBorders(false).
 		SetBorder(false).
-		SetBorderPadding(0, 2, 1, 0)
+		SetBorderPadding(0, 1, 1, 0)
 
 	// "Header" column.
 	tv := tview.NewTextView()
@@ -101,11 +101,11 @@ func (p *StandingsPanel) generateBreakdownString(n1, n2, n3, n4, cash int, showT
 		sb.WriteString(fmt.Sprintf("[%s]%d\n", p.cp.ColorByCompanyIndex(3), n4))
 		sb.WriteString(fmt.Sprintf("[green]%d\n", cash))
 	} else {
-		sb.WriteString(fmt.Sprintf("[%s]%s\n", p.cp.ColorByCompanyIndex(0), strings.Repeat("■ ", n1)))
-		sb.WriteString(fmt.Sprintf("[%s]%s\n", p.cp.ColorByCompanyIndex(1), strings.Repeat("■ ", n2)))
-		sb.WriteString(fmt.Sprintf("[%s]%s\n", p.cp.ColorByCompanyIndex(2), strings.Repeat("■ ", n3)))
-		sb.WriteString(fmt.Sprintf("[%s]%s\n", p.cp.ColorByCompanyIndex(3), strings.Repeat("■ ", n4)))
-		sb.WriteString(fmt.Sprintf("[green]%s\n", strings.Repeat("$ ", cash)))
+		sb.WriteString(fmt.Sprintf("[%s]%s\n", p.cp.ColorByCompanyIndex(0), strings.Repeat("♦", n1)))
+		sb.WriteString(fmt.Sprintf("[%s]%s\n", p.cp.ColorByCompanyIndex(1), strings.Repeat("♦", n2)))
+		sb.WriteString(fmt.Sprintf("[%s]%s\n", p.cp.ColorByCompanyIndex(2), strings.Repeat("♦", n3)))
+		sb.WriteString(fmt.Sprintf("[%s]%s\n", p.cp.ColorByCompanyIndex(3), strings.Repeat("♦", n4)))
+		sb.WriteString(fmt.Sprintf("[green]%s\n", strings.Repeat("$", cash)))
 	}
 
 	if showNumbers && showTotal {

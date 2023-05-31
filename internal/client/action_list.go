@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/gdamore/tcell/v2"
 	"github.com/milonoir/business-club-game/internal/game"
 	"github.com/rivo/tview"
 )
@@ -25,8 +26,12 @@ func NewActionList(cp *CompanyProvider, cards []*game.Card) *ActionList {
 
 	a.l.
 		ShowSecondaryText(false).
+		SetHighlightFullLine(true).
+		SetSelectedBackgroundColor(tcell.ColorDarkGrey).
+		SetBorderColor(tcell.ColorGreen).
 		SetBorder(true).
-		SetTitle("Actions")
+		SetBorderPadding(0, 0, 1, 1).
+		SetTitle(" Actions ")
 
 	a.Update()
 

@@ -49,12 +49,12 @@ func (p *ServerStatusPanel) SetAuthKey(authKey string) {
 func (p *ServerStatusPanel) redraw() {
 	sb := strings.Builder{}
 
+	cc := "red"
 	if p.connected {
-		sb.WriteString("[green]· ")
+		cc = "green"
 	} else {
-		sb.WriteString("[red]· ")
 	}
-	sb.WriteString(fmt.Sprintf("[white]Server: [blue]%s   [white]Key: [blue]%s", p.host, p.authKey))
+	sb.WriteString(fmt.Sprintf("[white]Server: [%s]%s   [white]Key: [blue]%s", cc, p.host, p.authKey))
 
 	p.tv.SetText(sb.String())
 }

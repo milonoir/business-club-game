@@ -109,8 +109,9 @@ func NewHistoryPanel(cp *CompanyProvider) *HistoryPanel {
 	p.tv.
 		SetDynamicColors(true).
 		SetBorder(true).
-		SetBorderStyle(tcell.Style{}.
-			Foreground(tcell.ColorGrey)).
+		SetBorderColor(tcell.ColorGrey).
+		//SetBorderStyle(tcell.Style{}.
+		//	Foreground(tcell.ColorGrey)).
 		SetTitle(" History ").
 		SetBorderPadding(0, 0, 0, 1)
 

@@ -56,13 +56,13 @@ func (p *TurnPanel) NextPlayer() {
 func (p *TurnPanel) redraw() {
 	sb := strings.Builder{}
 
-	sb.WriteString(fmt.Sprintf("Turn: [blue]%d[white]/%d\n\n", p.currentTurn, p.maxTurns))
+	sb.WriteString(fmt.Sprintf("[yellow]Turn: %d/%d\n\n", p.currentTurn, p.maxTurns))
 
 	for i, name := range p.playerOrder {
 		if i == p.currentPlayer {
-			sb.WriteString("[blue]" + name + "[white]\n")
+			sb.WriteString(fmt.Sprintf("[red]» %s\n", name))
 		} else {
-			sb.WriteString(name + "\n")
+			sb.WriteString(fmt.Sprintf("[white]  %s\n", name))
 		}
 	}
 
