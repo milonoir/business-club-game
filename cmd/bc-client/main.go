@@ -156,10 +156,12 @@ func buildApp() *tview.Application {
 	mainScreen.AddItem(topRow, 0, 0, 1, 3, 1, 1, false)
 
 	// Standings panel.
-	standings := client.NewStandingsPanel("Jammy Jellyfish", []string{"Xenial Xerus", "Bionic Beaver", "Focal Fossa"}, cp)
+	standings := client.NewStandingsPanel(cp)
 	topRow.AddItem(standings.GetGrid(), 0, 1, 1, 1, 1, 1, false)
 
 	// TEST ONLY.
+	standings.SetPlayerNames("Jammy Jellyfish", []string{"Xenial Xerus", "Bionic Beaver", "Focal Fossa"})
+	standings.RefreshCompanyNames()
 	standings.SetPrices(30, 190, 330, 60)
 	standings.PlayerUpdate(5, 8, 2, 10, 5000)
 	standings.OpponentUpdate(0, 0, 1, 2, 0, 2, false, false)
@@ -167,14 +169,15 @@ func buildApp() *tview.Application {
 	standings.OpponentUpdate(2, 3, 1, 0, 1, 1, false, false)
 
 	// Turn widget.
-	turns := client.NewTurnPanel(10)
+	turns := client.NewTurnPanel()
 	topRow.AddItem(turns.GetTextView(), 0, 3, 1, 1, 1, 1, false)
 
 	// TEST ONLY.
+	turns.SetMaxTurns(15)
 	turns.NewTurn(pp.Players())
 	turns.NextPlayer()
 
-	// Top row of the main screen.
+	// Bottom row of the main screen.
 	bottomRow := tview.NewGrid()
 	bottomRow.
 		SetColumns(0, 0, 0).
@@ -186,8 +189,9 @@ func buildApp() *tview.Application {
 	if err := json.Unmarshal([]byte(cardsJson), &cards); err != nil {
 		panic(err)
 	}
-	actions := client.NewActionList(cp, cards)
+	actions := client.NewActionList(cp)
 	bottomRow.AddItem(actions.GetList(), 0, 1, 1, 1, 1, 1, true)
+	actions.Update(cards)
 
 	// Game version widget.
 	ver := client.NewVersionPanel()
@@ -197,10 +201,11 @@ func buildApp() *tview.Application {
 	ver.SetVersion("0.1")
 
 	// Server status widget.
-	status := client.NewServerStatus("localhost:8585")
+	status := client.NewServerStatus()
 	mainScreen.AddItem(status.GetTextView(), 4, 1, 1, 2, 1, 1, false)
 
 	// TEST ONLY.
+	status.SetHost("localhost:8585")
 	status.SetAuthKey("ab3tesjk4")
 	status.SetConnection(true)
 

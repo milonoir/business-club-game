@@ -15,10 +15,9 @@ type ServerStatusPanel struct {
 	host      string
 }
 
-func NewServerStatus(host string) *ServerStatusPanel {
+func NewServerStatus() *ServerStatusPanel {
 	p := &ServerStatusPanel{
-		tv:   tview.NewTextView(),
-		host: host,
+		tv: tview.NewTextView(),
 	}
 
 	p.tv.
@@ -27,13 +26,16 @@ func NewServerStatus(host string) *ServerStatusPanel {
 		SetBorderPadding(0, 0, 0, 1).
 		SetBorder(false)
 
-	p.redraw()
-
 	return p
 }
 
 func (p *ServerStatusPanel) GetTextView() *tview.TextView {
 	return p.tv
+}
+
+func (p *ServerStatusPanel) SetHost(host string) {
+	p.host = host
+	p.redraw()
 }
 
 func (p *ServerStatusPanel) SetConnection(isConnected bool) {

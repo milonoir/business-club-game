@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
@@ -11,13 +12,17 @@ type StandingsPanel struct {
 	g  *tview.Grid
 	cp *CompanyProvider
 
+	cntv *tview.TextView
+	pntv *tview.TextView
+	ontv []*tview.TextView
+
 	ptv *tview.TextView
 	otv []*tview.TextView
 
 	prices []int
 }
 
-func NewStandingsPanel(player string, opponents []string, cp *CompanyProvider) *StandingsPanel {
+func NewStandingsPanel(cp *CompanyProvider) *StandingsPanel {
 	p := &StandingsPanel{
 		g:      tview.NewGrid(),
 		cp:     cp,
@@ -32,36 +37,25 @@ func NewStandingsPanel(player string, opponents []string, cp *CompanyProvider) *
 		SetBorder(false).
 		SetBorderPadding(0, 1, 1, 0)
 
-	// "Header" column.
-	tv := tview.NewTextView()
-	tv.
+	// "Header" column with company names.
+	p.cntv = tview.NewTextView()
+	p.cntv.
 		SetDynamicColors(true).
 		SetTextAlign(tview.AlignRight).
 		SetBorder(false)
-	s := make([]string, 6)
-	for i := 0; i < 4; i++ {
-		name := cp.CompanyByIndex(i)
-		s[i] = fmt.Sprintf("[%s]%s[white]: ", cp.ColorByCompany(name), name)
-	}
-	s[4] = fmt.Sprintf("[green]Cash[white]: ")
-	s[5] = fmt.Sprintf("[white]Total value: ")
-	tv.SetText(strings.Join(s, "\n"))
-	p.g.AddItem(tv, 2, 0, 1, 1, 1, 1, false)
+	p.g.AddItem(p.cntv, 2, 0, 1, 1, 1, 1, false)
 
-	// Header row.
-	players := append([]string{player}, opponents...)
-	for col := 1; col < 5; col++ {
-		tv = createTextView()
-		if col == 1 {
-			tv.SetText(fmt.Sprintf("[green]%s", players[col-1]))
-		} else {
-			tv.SetText(fmt.Sprintf("[yellow]%s", players[col-1]))
-		}
-		p.g.AddItem(tv, 0, col, 1, 1, 1, 1, false)
+	// Header row for player names.
+	p.pntv = createTextView()
+	p.g.AddItem(p.pntv, 0, 1, 1, 1, 1, 1, false)
+	p.ontv = make([]*tview.TextView, 3)
+	for i := 0; i < 3; i++ {
+		p.ontv[i] = createTextView()
+		p.g.AddItem(p.ontv[i], 0, i+2, 1, 1, 1, 1, false)
 	}
 
 	// Separator line.
-	tv = tview.NewTextView()
+	tv := tview.NewTextView().SetTextColor(tcell.ColorGrey)
 	tv.SetText(strings.Repeat("─", 95))
 	p.g.AddItem(tv, 1, 0, 1, 5, 1, 1, false)
 
@@ -81,6 +75,24 @@ func NewStandingsPanel(player string, opponents []string, cp *CompanyProvider) *
 
 func (p *StandingsPanel) GetGrid() *tview.Grid {
 	return p.g
+}
+
+func (p *StandingsPanel) SetPlayerNames(player string, opponents []string) {
+	p.pntv.SetText(fmt.Sprintf("[green]%s", player))
+	for i := 0; i < 3; i++ {
+		p.ontv[i].SetText(fmt.Sprintf("[yellow]%s", opponents[i]))
+	}
+}
+
+func (p *StandingsPanel) RefreshCompanyNames() {
+	s := make([]string, 6)
+	for i := 0; i < 4; i++ {
+		name := p.cp.CompanyByIndex(i)
+		s[i] = fmt.Sprintf("[%s]%s[white]: ", p.cp.ColorByCompany(name), name)
+	}
+	s[4] = fmt.Sprintf("[green]Cash[white]: ")
+	s[5] = fmt.Sprintf("[white]Total value: ")
+	p.cntv.SetText(strings.Join(s, "\n"))
 }
 
 func (p *StandingsPanel) PlayerUpdate(n1, n2, n3, n4, cash int) {

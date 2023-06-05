@@ -30,7 +30,7 @@ func (p *CompanyProvider) CompanyByIndex(index int) string {
 
 func (p *CompanyProvider) ColorByCompanyIndex(index int) string {
 	if index < 0 || index > len(p.companies)-1 {
-		return ""
+		return "white"
 	}
 	return p.company2Color[p.companies[index]]
 }

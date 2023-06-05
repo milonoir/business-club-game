@@ -12,16 +12,14 @@ import (
 type ActionList struct {
 	l *tview.List
 
-	cp    *CompanyProvider
-	cards []*game.Card
+	cp *CompanyProvider
 }
 
-func NewActionList(cp *CompanyProvider, cards []*game.Card) *ActionList {
+func NewActionList(cp *CompanyProvider) *ActionList {
 	a := &ActionList{
 		l: tview.NewList(),
 
-		cp:    cp,
-		cards: cards,
+		cp: cp,
 	}
 
 	a.l.
@@ -33,8 +31,6 @@ func NewActionList(cp *CompanyProvider, cards []*game.Card) *ActionList {
 		SetBorderPadding(0, 0, 1, 1).
 		SetTitle(" Actions ")
 
-	a.Update()
-
 	return a
 }
 
@@ -42,10 +38,10 @@ func (a *ActionList) GetList() *tview.List {
 	return a.l
 }
 
-func (a *ActionList) Update() {
+func (a *ActionList) Update(cards []*game.Card) {
 	a.dropAll()
 
-	for _, c := range a.cards {
+	for _, c := range cards {
 		a.l.AddItem(a.cardToString(c), "", 0, func() {
 			// TODO: send selected card to server; potentially use some callback func.
 		})

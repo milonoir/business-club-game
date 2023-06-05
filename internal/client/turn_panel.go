@@ -16,10 +16,9 @@ type TurnPanel struct {
 	playerOrder   []string
 }
 
-func NewTurnPanel(max int) *TurnPanel {
+func NewTurnPanel() *TurnPanel {
 	p := &TurnPanel{
-		tv:       tview.NewTextView(),
-		maxTurns: max,
+		tv: tview.NewTextView(),
 	}
 
 	p.tv.
@@ -31,6 +30,10 @@ func NewTurnPanel(max int) *TurnPanel {
 
 func (p *TurnPanel) GetTextView() *tview.TextView {
 	return p.tv
+}
+
+func (p *TurnPanel) SetMaxTurns(max int) {
+	p.maxTurns = max
 }
 
 func (p *TurnPanel) NewTurn(order []string) {
