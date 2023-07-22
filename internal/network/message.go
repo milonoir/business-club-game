@@ -1,4 +1,4 @@
-package message
+package network
 
 // NewUnknown returns a new message of Unknown kind.
 func NewUnknown() Message {

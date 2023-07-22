@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"github.com/milonoir/business-club-game/internal/server"
+	"golang.org/x/exp/slog"
 )
 
 const (
@@ -15,6 +16,9 @@ const (
 )
 
 func main() {
+	// Setup logger.
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug})).With("app", "bc-server")
+
 	// Check command line arguments.
 	if len(os.Args) < 2 {
 		log.Fatal("missing assets file argument")
@@ -42,7 +46,7 @@ func main() {
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
 	// Run server.
-	srv := server.NewServer(serverPort)
+	srv := server.NewServer(serverPort, logger)
 	srv.Start()
 
 	// Catch signal.

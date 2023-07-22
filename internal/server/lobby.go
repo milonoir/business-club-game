@@ -2,18 +2,18 @@ package server
 
 import (
 	"errors"
-	"log"
 	"net"
 	"sync"
 	"time"
 
-	"github.com/milonoir/business-club-game/internal/message"
+	"github.com/milonoir/business-club-game/internal/network"
 	"github.com/teris-io/shortid"
+	"golang.org/x/exp/slog"
 )
 
 const (
 	maxPlayers  = 4
-	authTimeout = 5 * time.Second
+	authTimeout = 10 * time.Second
 )
 
 var (
@@ -25,12 +25,14 @@ type lobby struct {
 	pmux    sync.Mutex
 	players map[string]*Player
 	done    chan struct{}
+	l       *slog.Logger
 }
 
-func newLobby() *lobby {
+func newLobby(l *slog.Logger) *lobby {
 	return &lobby{
 		players: make(map[string]*Player, maxPlayers),
 		done:    make(chan struct{}),
+		l:       l.With("component", "lobby"),
 	}
 }
 
@@ -38,14 +40,16 @@ func (l *lobby) joinPlayer(c net.Conn) {
 	l.pmux.Lock()
 	defer l.pmux.Unlock()
 
+	lg := l.l.With("remote_addr", c.RemoteAddr())
+
 	// Wrap connection.
-	conn := newConnection(c)
+	conn := network.NewServerConnection(c, l.l)
 
 	// Get auth key from client.
 	key, err := l.authPlayer(conn)
 	if err != nil {
-		log.Printf("ERR - [%s] auth error: %v", c.RemoteAddr(), err)
-		conn.close()
+		lg.Error("auth player", "error", err)
+		_ = conn.Close()
 		return
 	}
 
@@ -54,57 +58,55 @@ func (l *lobby) joinPlayer(c net.Conn) {
 		p, ok := l.players[key]
 		if !ok {
 			// Unknown key.
-			log.Printf("ERR - [%s] unknown key: %s", c.RemoteAddr(), key)
-			conn.close()
+			lg.Error("unknown key", "key", key)
+			_ = conn.Close()
 			return
 		}
 		// Reconnect player.
-		log.Printf("player reconnected from: %s", c.RemoteAddr())
+		lg.Info("player reconnected", "key", key)
 		p.conn = conn
 		return
 	}
 
 	// New player joining, check if lobby is full.
 	if len(l.players) == maxPlayers {
-		log.Printf("lobby is full, reject client connection [%s]", c.RemoteAddr())
-		conn.close()
+		lg.Info("lobby is full, reject client connection")
+		_ = conn.Close()
 		return
 	}
 
 	key, err = shortid.Generate()
 	if err != nil {
-		log.Printf("ERR - generate key: %v", err)
+		lg.Error("generate key", "error", err)
 		return
 	}
 
 	// Send guid to client.
-	conn.send(message.NewAuthMessage([]byte(key)))
+	if err = conn.Send(network.NewAuthMessage([]byte(key))); err != nil {
+		lg.Error("send auth message", "error", err)
+		_ = conn.Close()
+		return
+	}
 
-	// Start ping/pong.
-	go conn.ping()
-
-	log.Printf("player joined from: %s", c.RemoteAddr())
+	lg.Info("player joined", "key", key)
 	l.players[key] = &Player{
 		conn: conn,
 		key:  key,
 	}
 }
 
-func (l *lobby) authPlayer(c *connection) (string, error) {
-	// Send empty auth message. Client should respond with either:
+func (l *lobby) authPlayer(c network.Connection) (string, error) {
+	// Waiting for client's auth message. Client should respond with either:
 	// - auth message with key (reconnect player)
 	// - empty auth message (new player)
-	c.send(message.EmptyAuth)
-
 	for {
 		select {
 		case <-time.After(authTimeout):
 			return "", errTimeout
-		case msg := <-c.incoming:
-			if msg.Type() != message.Auth {
-				continue
+		case msg := <-c.Inbox():
+			if msg.Type() == network.Auth {
+				return msg.Payload().(string), nil
 			}
-			return msg.Payload().(string), nil
 		}
 	}
 }
@@ -116,10 +118,11 @@ func (l *lobby) removePlayer(guid string) {
 	p := l.players[guid]
 	delete(l.players, guid)
 
-	log.Printf("player left from: %s", p.conn.conn.RemoteAddr())
+	lg := l.l.With("remote_addr", p.conn.RemoteAddress(), "key", guid)
+	lg.Info("player left")
 
-	if err := p.conn.conn.Close(); err != nil {
-		log.Printf("ERR - remove player [%s] close connection: %v", p.conn.conn.RemoteAddr(), err)
+	if err := p.conn.Close(); err != nil {
+		lg.Error("close connection", "error", err)
 	}
 }
 
@@ -136,8 +139,8 @@ func (l *lobby) start() {
 func (l *lobby) stop() {
 	close(l.done)
 	for _, p := range l.players {
-		if err := p.conn.conn.Close(); err != nil {
-			log.Printf("ERR - [%s] close connection: %v", p.conn.conn.RemoteAddr(), err)
+		if err := p.conn.Close(); err != nil {
+			l.l.Error("close connection", "error", err, "remote_addr", p.conn.RemoteAddress())
 		}
 	}
 }

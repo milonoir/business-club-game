@@ -1,4 +1,4 @@
-package client
+package ui
 
 type PlayerProvider struct {
 	players []string

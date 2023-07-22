@@ -1,4 +1,4 @@
-package message
+package network
 
 import (
 	"encoding/json"
