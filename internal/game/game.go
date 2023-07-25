@@ -1,9 +1,7 @@
-package server
+package game
 
 import (
 	"math/rand"
-
-	"github.com/milonoir/business-club-game/internal/game"
 )
 
 const (
@@ -13,9 +11,9 @@ const (
 )
 
 type Assets struct {
-	Companies  []string    `json:"companies"`
-	ActionDeck []game.Card `json:"actionDeck"`
-	BankDeck   []game.Card `json:"bankDeck"`
+	Companies  []string `json:"companies"`
+	ActionDeck []Card   `json:"actionDeck"`
+	BankDeck   []Card   `json:"bankDeck"`
 }
 
 type Game struct {
@@ -71,14 +69,14 @@ func (g *Game) start() {
 	}
 }
 
-func (g *Game) getPlayerCard(p *Player) *game.Card {
+func (g *Game) getPlayerCard(p *Player) *Card {
 	return nil
 }
 
-func (g *Game) drawBankCard() *game.Card {
+func (g *Game) drawBankCard() *Card {
 	return nil
 }
 
-func (g *Game) update(c *game.Card) {
+func (g *Game) update(c *Card) {
 
 }

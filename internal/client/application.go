@@ -194,12 +194,8 @@ func (a *Application) connect(data *ui.LoginData) error {
 	go a.responder(data, a.server.Inbox())
 	a.l.Info("connection established")
 
-	a.l.Info("sending auth key", "key", data.AuthKey)
-	auth := network.EmptyAuth
-	if data.AuthKey != "" {
-		auth = network.NewAuthMessage([]byte(data.AuthKey))
-	}
-	return a.server.Send(auth)
+	a.l.Info("sending auth", "key", data.AuthKey, "username", data.Username)
+	return a.server.Send(network.NewAuthMessageWithName(data.AuthKey, data.Username))
 }
 
 func (a *Application) responder(data *ui.LoginData, incoming <-chan network.Message) {
@@ -207,18 +203,14 @@ func (a *Application) responder(data *ui.LoginData, incoming <-chan network.Mess
 		a.l.Debug("received message", "type", msg.Type(), "payload", msg.Payload())
 		switch msg.Type() {
 		case network.Auth:
-			a.handleAuth(data, msg.Payload().(string))
+			a.handleAuth(data, msg.Payload().([]string))
 		}
 	}
 }
 
-func (a *Application) handleAuth(data *ui.LoginData, key string) {
-	if key == "" {
-		auth := network.EmptyAuth
-		if data.AuthKey != "" {
-			auth = network.NewAuthMessage([]byte(data.AuthKey))
-		}
-		if err := a.server.Send(auth); err != nil {
+func (a *Application) handleAuth(data *ui.LoginData, msg []string) {
+	if key := msg[0]; key == "" {
+		if err := a.server.Send(network.NewAuthMessageWithName(data.AuthKey, data.Username)); err != nil {
 			a.l.Error("send auth", "error", err)
 		}
 	} else {

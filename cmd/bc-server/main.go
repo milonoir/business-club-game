@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/milonoir/business-club-game/internal/game"
 	"github.com/milonoir/business-club-game/internal/server"
 	"golang.org/x/exp/slog"
 )
@@ -29,7 +30,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var a server.Assets
+	var a game.Assets
 	if err = json.Unmarshal(b, &a); err != nil {
 		log.Fatalf("corrupted assets file: %s\n", err)
 	}

@@ -2,21 +2,43 @@ package network
 
 import (
 	"encoding/json"
+	"strings"
+)
+
+const (
+	authMsgSep = ":"
 )
 
 var (
-	EmptyAuth = NewAuthMessage(nil)
+	EmptyAuth = authMessage{}
 )
 
 // authMessage represents an Auth kind message.
 type authMessage struct {
-	key string
+	key  string
+	name string
 }
 
-// NewAuthMessage returns new Message of Auth kind.
-func NewAuthMessage(b []byte) Message {
+// NewAuthMessageFromBytes returns a new Message of Auth kind.
+func NewAuthMessageFromBytes(b []byte) Message {
+	s := string(b)
+	if len(s) == 0 || !strings.Contains(s, authMsgSep) {
+		return EmptyAuth
+	}
+
+	split := strings.SplitN(s, authMsgSep, 2)
+
 	return authMessage{
-		key: string(b),
+		key:  split[0],
+		name: split[1],
+	}
+}
+
+// NewAuthMessageWithName returns a new Message of Auth kind.
+func NewAuthMessageWithName(key, name string) Message {
+	return authMessage{
+		key:  key,
+		name: name,
 	}
 }
 
@@ -27,14 +49,14 @@ func (m authMessage) Type() Kind {
 
 // Payload implements the Message interface.
 func (m authMessage) Payload() any {
-	return m.key
+	return []string{m.key, m.name}
 }
 
 // MarshalJSON implements the json.Marshaler interface.
 func (m authMessage) MarshalJSON() ([]byte, error) {
 	b := base{
 		Kind: Auth,
-		Data: []byte(m.key),
+		Data: []byte(m.key + authMsgSep + m.name),
 	}
 	return json.Marshal(b)
 }
