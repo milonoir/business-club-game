@@ -73,7 +73,7 @@ func (l *lobby) joinPlayer(c net.Conn) {
 	}
 
 	// New player joining, check if lobby is full.
-	if len(l.players) == maxPlayers {
+	if len(l.players) >= maxPlayers {
 		lg.Info("lobby is full, reject client connection")
 		_ = conn.Close()
 		return

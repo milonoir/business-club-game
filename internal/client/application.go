@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net"
+	"time"
 
 	"github.com/gobwas/ws"
 	"github.com/milonoir/business-club-game/internal/client/ui"
@@ -75,6 +76,11 @@ func (a *Application) initUI() {
 	a.login = ui.NewLoginForm(
 		func(data *ui.LoginData) {
 			if err := a.connect(data); err != nil {
+				modal := ui.NewErrorModal(err)
+				a.pages.AddPage("error", modal.GetModal(), true, true)
+				modal.SetHandler(func(int, string) {
+					a.pages.RemovePage("error")
+				})
 				return
 			}
 			// Successful login.
@@ -195,7 +201,18 @@ func (a *Application) connect(data *ui.LoginData) error {
 	a.l.Info("connection established")
 
 	a.l.Info("sending auth", "key", data.AuthKey, "username", data.Username)
-	return a.server.Send(network.NewAuthMessageWithName(data.AuthKey, data.Username))
+	if err = a.server.Send(network.NewAuthMessageWithName(data.AuthKey, data.Username)); err != nil {
+		return err
+	}
+
+	// Wait and check if connection is closed for lobby being full.
+	// TODO: improve this.
+	time.Sleep(300 * time.Millisecond)
+	if !a.server.IsAlive() {
+		return fmt.Errorf("connection closed, server is probably full")
+	}
+
+	return nil
 }
 
 func (a *Application) responder(data *ui.LoginData, incoming <-chan network.Message) {
