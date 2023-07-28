@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"net"
 	"time"
@@ -18,6 +19,10 @@ const (
 	titlePageName = "titlePage"
 	lobbyPageName = "lobbyPage"
 	gamePageName  = "gamePage"
+)
+
+var (
+	errConnectionClosed = errors.New("connection closed by the server")
 )
 
 type Application struct {
@@ -143,6 +148,7 @@ func (a *Application) initUI() {
 
 	// Game version widget.
 	a.version = ui.NewVersionPanel()
+	a.version.SetVersion("0.0.1")
 	gamePage.AddItem(a.version.GetTextView(), 4, 0, 1, 1, 1, 1, false)
 
 	// Server status widget.
@@ -209,8 +215,14 @@ func (a *Application) connect(data *ui.LoginData) error {
 	// TODO: improve this.
 	time.Sleep(300 * time.Millisecond)
 	if !a.server.IsAlive() {
-		return fmt.Errorf("connection closed, server is probably full")
+		return errConnectionClosed
 	}
+
+	// Update server status widget.
+	a.srvStatus.SetHost(data.Host)
+	a.srvStatus.SetConnection(true)
+
+	go a.connectionWatcher()
 
 	return nil
 }
@@ -232,5 +244,27 @@ func (a *Application) handleAuth(data *ui.LoginData, msg []string) {
 		}
 	} else {
 		a.l.Info("received auth key", "key", key)
+		// Update server status widget.
+		a.srvStatus.SetAuthKey(key)
+
+		// Update login form.
+		a.login.SetAuthKey(key)
+	}
+}
+
+func (a *Application) connectionWatcher() {
+	for {
+		if !a.server.IsAlive() {
+			a.srvStatus.SetConnection(false)
+
+			modal := ui.NewErrorModal(errConnectionClosed)
+			a.pages.AddPage("error", modal.GetModal(), true, true)
+			modal.SetHandler(func(int, string) {
+				a.pages.RemovePage("error")
+				a.pages.SwitchToPage(titlePageName)
+			})
+			return
+		}
+		time.Sleep(time.Second)
 	}
 }

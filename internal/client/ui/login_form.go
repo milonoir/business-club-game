@@ -87,3 +87,7 @@ func (l *LoginForm) formValidatorWrapper(cb func(data *LoginData)) func() {
 		})
 	}
 }
+
+func (l *LoginForm) SetAuthKey(key string) {
+	l.form.GetFormItemByLabel(labelAuthKey).(*tview.InputField).SetText(key)
+}
