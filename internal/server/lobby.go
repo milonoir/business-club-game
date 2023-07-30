@@ -62,9 +62,19 @@ func (l *lobby) joinPlayer(c net.Conn) {
 		if !ok {
 			// Unknown key.
 			lg.Error("unknown reconnect key", "key", key)
+			_ = conn.Send(network.NewErrorMessage("unknown reconnect key"))
 			_ = conn.Close()
 			return
 		}
+
+		// Check if connection is alive.
+		if p.Conn().IsAlive() {
+			lg.Error("an alive connection is using this reconnect key", "key", key)
+			_ = conn.Send(network.NewErrorMessage("reconnect key is already in use"))
+			_ = conn.Close()
+			return
+		}
+
 		// Reconnect player.
 		lg.Info("player reconnected", "key", key)
 		p.SetConn(conn)
@@ -75,6 +85,7 @@ func (l *lobby) joinPlayer(c net.Conn) {
 	// New player joining, check if lobby is full.
 	if len(l.players) >= maxPlayers {
 		lg.Info("lobby is full, reject client connection")
+		_ = conn.Send(network.NewErrorMessage("lobby is full"))
 		_ = conn.Close()
 		return
 	}

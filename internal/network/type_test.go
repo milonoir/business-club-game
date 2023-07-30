@@ -16,38 +16,43 @@ func TestKind_UnmarshalJSON(t *testing.T) {
 		expErr  error
 	}{
 		{
-			name:    "key exchange",
+			name:    "error",
 			raw:     []byte(`{"Kind":1}`),
+			expKind: Error,
+		},
+		{
+			name:    "key exchange",
+			raw:     []byte(`{"Kind":2}`),
 			expKind: KeyEx,
 		},
 		{
 			name:    "game state",
-			raw:     []byte(`{"Kind":2}`),
+			raw:     []byte(`{"Kind":3}`),
 			expKind: GameState,
 		},
 		{
 			name:    "vote to start",
-			raw:     []byte(`{"Kind":3}`),
+			raw:     []byte(`{"Kind":4}`),
 			expKind: VoteToStart,
 		},
 		{
 			name:    "play a card",
-			raw:     []byte(`{"Kind":4}`),
+			raw:     []byte(`{"Kind":5}`),
 			expKind: PlayCard,
 		},
 		{
 			name:    "buy stocks",
-			raw:     []byte(`{"Kind":5}`),
+			raw:     []byte(`{"Kind":6}`),
 			expKind: Buy,
 		},
 		{
 			name:    "sell stocks",
-			raw:     []byte(`{"Kind":6}`),
+			raw:     []byte(`{"Kind":7}`),
 			expKind: Sell,
 		},
 		{
 			name:    "end turn",
-			raw:     []byte(`{"Kind":7}`),
+			raw:     []byte(`{"Kind":8}`),
 			expKind: EndTurn,
 		},
 		{

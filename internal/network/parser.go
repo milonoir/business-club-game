@@ -31,6 +31,8 @@ func Parse(raw []byte) (Message, error) {
 	}
 
 	switch b.Type() {
+	case Error:
+		return NewErrorMessage(string(b.Data)), nil
 	case KeyEx:
 		return NewKeyExMessageFromBytes(b.Data), nil
 	case GameState:

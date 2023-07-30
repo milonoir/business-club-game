@@ -19,6 +19,7 @@ const (
 	titlePageName = "titlePage"
 	lobbyPageName = "lobbyPage"
 	gamePageName  = "gamePage"
+	errorPageName = "errorPage"
 )
 
 var (
@@ -48,13 +49,15 @@ type Application struct {
 	cp *ui.CompanyProvider
 
 	server network.Connection
+	errCh  chan string
 	l      *slog.Logger
 }
 
 func NewApplication(l *slog.Logger) *Application {
 	a := &Application{
-		cp: ui.NewCompanyProvider(),
-		l:  l,
+		cp:    ui.NewCompanyProvider(),
+		l:     l,
+		errCh: make(chan string, 10),
 	}
 
 	a.l.Info("initializing application")
@@ -82,9 +85,9 @@ func (a *Application) initUI() {
 		func(data *ui.LoginData) {
 			if err := a.connect(data); err != nil {
 				modal := ui.NewErrorModal(err)
-				a.pages.AddPage("error", modal.GetModal(), true, true)
+				a.pages.AddPage(errorPageName, modal.GetModal(), true, true)
 				modal.SetHandler(func(int, string) {
-					a.pages.RemovePage("error")
+					a.pages.RemovePage(errorPageName)
 				})
 				return
 			}
@@ -212,8 +215,11 @@ func (a *Application) connect(data *ui.LoginData) error {
 	}
 
 	// Wait and check if connection is closed for lobby being full.
-	// TODO: improve this.
-	time.Sleep(300 * time.Millisecond)
+	select {
+	case m := <-a.errCh:
+		return errors.New(m)
+	case <-time.After(300 * time.Millisecond):
+	}
 	if !a.server.IsAlive() {
 		return errConnectionClosed
 	}
@@ -221,6 +227,9 @@ func (a *Application) connect(data *ui.LoginData) error {
 	// Update server status widget.
 	a.srvStatus.SetHost(data.Host)
 	a.srvStatus.SetConnection(true)
+	if data.ReconnectKey != "" {
+		a.srvStatus.SetReconnectKey(data.ReconnectKey)
+	}
 
 	go a.connectionWatcher()
 
@@ -231,6 +240,8 @@ func (a *Application) responder(data *ui.LoginData, incoming <-chan network.Mess
 	for msg := range incoming {
 		a.l.Debug("received message", "type", msg.Type(), "payload", msg.Payload())
 		switch msg.Type() {
+		case network.Error:
+			a.errCh <- msg.Payload().(string)
 		case network.KeyEx:
 			a.handleKeyExchange(data, msg.Payload().([]string))
 		}
@@ -258,9 +269,9 @@ func (a *Application) connectionWatcher() {
 			a.srvStatus.SetConnection(false)
 
 			modal := ui.NewErrorModal(errConnectionClosed)
-			a.pages.AddPage("error", modal.GetModal(), true, true)
+			a.pages.AddPage(errorPageName, modal.GetModal(), true, true)
 			modal.SetHandler(func(int, string) {
-				a.pages.RemovePage("error")
+				a.pages.RemovePage(errorPageName)
 				a.pages.SwitchToPage(titlePageName)
 			})
 			return

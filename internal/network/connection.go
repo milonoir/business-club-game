@@ -213,6 +213,12 @@ func (c *connection) pinger() {
 			if !c.alive.Load() {
 				return
 			}
+			if !c.lastPong.IsZero() && c.lastPong.Add(pingInterval*5).Before(time.Now()) {
+				// After 5 missed pongs, connection is considered to be dead.
+				c.l.Error("ping timeout, connection lost")
+				c.alive.Store(false)
+				return
+			}
 			_, err := c.conn.Write(ws.CompiledPing)
 			var opErr *net.OpError
 			switch {

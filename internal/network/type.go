@@ -33,6 +33,9 @@ const (
 	// Unknown is used for unidentified messages.
 	Unknown Kind = iota
 
+	// Error is a server type message that contains an error.
+	Error
+
 	// KeyEx is used for sending/receiving reconnect keys.
 	KeyEx
 
