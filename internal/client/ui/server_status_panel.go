@@ -56,7 +56,7 @@ func (p *ServerStatusPanel) redraw() {
 		cc = "green"
 	} else {
 	}
-	sb.WriteString(fmt.Sprintf("[white]Server: [%s]%s   [white]Key: [blue]%s", cc, p.host, p.reconnectKey))
+	sb.WriteString(fmt.Sprintf("[white]Server: [%s]%s   [white]Reconnect key: [blue]%s", cc, p.host, p.reconnectKey))
 
 	p.tv.SetText(sb.String())
 }

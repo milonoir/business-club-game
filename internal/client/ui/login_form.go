@@ -46,7 +46,7 @@ func NewLoginForm(loginCb func(*LoginData), quitCb func()) *LoginForm {
 		AddInputField(labelHost, defaultHost, 20, tview.InputFieldMaxLength(15), nil).
 		AddInputField(labelPort, defaultPort, 6, PositiveIntegerValidator(65535), nil).
 		AddInputField(labelReconnectKey, "", 20, tview.InputFieldMaxLength(15), nil).
-		AddTextView("", "Provide key to\nreconnect if you got\ndisconnected.", 20, 3, true, false).
+		AddTextView("", "Provide reconnect\nkey to re-join if\nyou got disconnected", 20, 3, true, false).
 		AddCheckbox(labelTLS, false, nil).
 		AddButton(labelLogin, l.formValidatorWrapper(loginCb)).
 		AddButton(labelQuit, quitCb)
