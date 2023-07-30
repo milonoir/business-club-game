@@ -10,9 +10,9 @@ import (
 type ServerStatusPanel struct {
 	tv *tview.TextView
 
-	connected bool
-	authKey   string
-	host      string
+	connected    bool
+	reconnectKey string
+	host         string
 }
 
 func NewServerStatus() *ServerStatusPanel {
@@ -43,8 +43,8 @@ func (p *ServerStatusPanel) SetConnection(isConnected bool) {
 	p.redraw()
 }
 
-func (p *ServerStatusPanel) SetAuthKey(authKey string) {
-	p.authKey = authKey
+func (p *ServerStatusPanel) SetReconnectKey(key string) {
+	p.reconnectKey = key
 	p.redraw()
 }
 
@@ -56,7 +56,7 @@ func (p *ServerStatusPanel) redraw() {
 		cc = "green"
 	} else {
 	}
-	sb.WriteString(fmt.Sprintf("[white]Server: [%s]%s   [white]Key: [blue]%s", cc, p.host, p.authKey))
+	sb.WriteString(fmt.Sprintf("[white]Server: [%s]%s   [white]Key: [blue]%s", cc, p.host, p.reconnectKey))
 
 	p.tv.SetText(sb.String())
 }

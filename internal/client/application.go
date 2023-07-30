@@ -185,7 +185,7 @@ func (a *Application) connect(data *ui.LoginData) error {
 		conn net.Conn
 	)
 
-	a.l.Info("connecting to server", "host", data.Host, "port", data.Port, "key", data.AuthKey, "tls", data.TLS)
+	a.l.Info("connecting to server", "host", data.Host, "port", data.Port, "key", data.ReconnectKey, "tls", data.TLS)
 	if data.TLS {
 		ws.DefaultDialer.TLSConfig = &tls.Config{
 			InsecureSkipVerify: true,
@@ -206,8 +206,8 @@ func (a *Application) connect(data *ui.LoginData) error {
 	go a.responder(data, a.server.Inbox())
 	a.l.Info("connection established")
 
-	a.l.Info("sending auth", "key", data.AuthKey, "username", data.Username)
-	if err = a.server.Send(network.NewAuthMessageWithName(data.AuthKey, data.Username)); err != nil {
+	a.l.Info("sending key exchange", "key", data.ReconnectKey, "username", data.Username)
+	if err = a.server.Send(network.NewKeyExMessageWithName(data.ReconnectKey, data.Username)); err != nil {
 		return err
 	}
 
@@ -231,24 +231,24 @@ func (a *Application) responder(data *ui.LoginData, incoming <-chan network.Mess
 	for msg := range incoming {
 		a.l.Debug("received message", "type", msg.Type(), "payload", msg.Payload())
 		switch msg.Type() {
-		case network.Auth:
-			a.handleAuth(data, msg.Payload().([]string))
+		case network.KeyEx:
+			a.handleKeyExchange(data, msg.Payload().([]string))
 		}
 	}
 }
 
-func (a *Application) handleAuth(data *ui.LoginData, msg []string) {
+func (a *Application) handleKeyExchange(data *ui.LoginData, msg []string) {
 	if key := msg[0]; key == "" {
-		if err := a.server.Send(network.NewAuthMessageWithName(data.AuthKey, data.Username)); err != nil {
-			a.l.Error("send auth", "error", err)
+		if err := a.server.Send(network.NewKeyExMessageWithName(data.ReconnectKey, data.Username)); err != nil {
+			a.l.Error("send key exchange", "error", err)
 		}
 	} else {
-		a.l.Info("received auth key", "key", key)
+		a.l.Info("received reconnect key", "key", key)
 		// Update server status widget.
-		a.srvStatus.SetAuthKey(key)
+		a.srvStatus.SetReconnectKey(key)
 
 		// Update login form.
-		a.login.SetAuthKey(key)
+		a.login.SetReconnectKey(key)
 	}
 }
 

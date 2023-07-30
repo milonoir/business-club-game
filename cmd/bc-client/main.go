@@ -113,18 +113,18 @@ func parseAndRespond(conn net.Conn, raw []byte) {
 	}
 
 	switch msg.Type() {
-	case network.Auth:
+	case network.KeyEx:
 		key := msg.Payload().(string)
 		if key == "" {
-			sendEmptyAuth(conn)
+			sendEmptyKeyEx(conn)
 			return
 		}
-		log.Printf("received auth key: %s", key)
+		log.Printf("received reconnect key: %s", key)
 	}
 }
 
-func sendEmptyAuth(conn net.Conn) {
-	bb, _ := json.Marshal(network.EmptyAuth)
+func sendEmptyKeyEx(conn net.Conn) {
+	bb, _ := json.Marshal(network.EmptyKeyEx)
 	if err := wsutil.WriteClientMessage(conn, ws.OpText, bb); err != nil {
 		log.Printf("write error: %+v", err)
 	}
@@ -208,7 +208,7 @@ func buildApp() *tview.Application {
 
 	// TEST ONLY.
 	status.SetHost("localhost:8585")
-	status.SetAuthKey("ab3tesjk4")
+	status.SetReconnectKey("ab3tesjk4")
 	status.SetConnection(true)
 
 	// Middle row of the main screen.

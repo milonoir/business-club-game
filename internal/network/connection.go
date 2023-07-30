@@ -27,8 +27,6 @@ type Connection interface {
 	Send(Message) error
 	Inbox() <-chan Message
 	IsAlive() bool
-	SetAccept()
-	SetDiscard()
 	RemoteAddress() net.Addr
 }
 
@@ -38,7 +36,6 @@ type connection struct {
 	side     ws.State
 	done     chan struct{}
 	inbox    chan Message
-	accept   atomic.Bool
 	alive    atomic.Bool
 	lastPong time.Time
 	l        *slog.Logger
@@ -57,7 +54,6 @@ func NewServerConnection(conn net.Conn, l *slog.Logger) Connection {
 		),
 	}
 	c.alive.Store(true)
-	c.accept.Store(true)
 
 	go c.receive()
 	go c.pinger()
@@ -78,7 +74,6 @@ func NewClientConnection(conn net.Conn, l *slog.Logger) Connection {
 		),
 	}
 	c.alive.Store(true)
-	c.accept.Store(true)
 
 	go c.receive()
 
@@ -125,16 +120,6 @@ func (c *connection) Inbox() <-chan Message {
 // IsAlive returns if the wrapped connection is alive.
 func (c *connection) IsAlive() bool {
 	return c.alive.Load()
-}
-
-// SetAccept directs incoming messages into the inbox.
-func (c *connection) SetAccept() {
-	c.accept.Store(true)
-}
-
-// SetDiscard makes the receiver goroutine drop incoming messages.
-func (c *connection) SetDiscard() {
-	c.accept.Store(false)
 }
 
 func (c *connection) RemoteAddress() net.Addr {
@@ -202,9 +187,6 @@ func (c *connection) receive() {
 			}
 
 			// Text message.
-			if !c.accept.Load() {
-				continue
-			}
 			if msg, err = Parse(rm.Payload); err != nil {
 				c.l.Error("parse message", "error", err)
 				continue

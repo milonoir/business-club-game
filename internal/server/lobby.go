@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	maxPlayers  = 4
-	authTimeout = 10 * time.Second
+	maxPlayers   = 4
+	keyExTimeout = 10 * time.Second
 )
 
 var (
@@ -46,10 +46,10 @@ func (l *lobby) joinPlayer(c net.Conn) {
 	// Wrap connection.
 	conn := network.NewServerConnection(c, l.l)
 
-	// Get auth key from client.
-	data, err := l.authPlayer(conn)
+	// Get reconnect key from client.
+	data, err := l.receiveReconnectKey(conn)
 	if err != nil {
-		lg.Error("auth player", "error", err)
+		lg.Error("receive reconnect key", "error", err)
 		_ = conn.Close()
 		return
 	}
@@ -61,7 +61,7 @@ func (l *lobby) joinPlayer(c net.Conn) {
 		p, ok := l.players[key]
 		if !ok {
 			// Unknown key.
-			lg.Error("unknown key", "key", key)
+			lg.Error("unknown reconnect key", "key", key)
 			_ = conn.Close()
 			return
 		}
@@ -81,13 +81,13 @@ func (l *lobby) joinPlayer(c net.Conn) {
 
 	key, err = shortid.Generate()
 	if err != nil {
-		lg.Error("generate key", "error", err)
+		lg.Error("generate reconnect key", "error", err)
 		return
 	}
 
 	// Send key to client.
-	if err = conn.Send(network.NewAuthMessageWithName(key, "")); err != nil {
-		lg.Error("send auth message", "error", err)
+	if err = conn.Send(network.NewKeyExMessageWithName(key, "")); err != nil {
+		lg.Error("send reconnect key", "error", err)
 		_ = conn.Close()
 		return
 	}
@@ -96,16 +96,16 @@ func (l *lobby) joinPlayer(c net.Conn) {
 	l.players[key] = game.NewPlayer(conn, key, name)
 }
 
-func (l *lobby) authPlayer(c network.Connection) ([]string, error) {
-	// Waiting for client's auth message. Client should respond with either:
-	// - auth message with key (reconnect player)
-	// - empty auth message (new player)
+func (l *lobby) receiveReconnectKey(c network.Connection) ([]string, error) {
+	// Waiting for client's key exchange message. Client should respond with either:
+	// - keyEx message with a key (reconnect player)
+	// - empty keyEx message (new player)
 	for {
 		select {
-		case <-time.After(authTimeout):
+		case <-time.After(keyExTimeout):
 			return nil, errTimeout
 		case msg := <-c.Inbox():
-			if msg.Type() == network.Auth {
+			if msg.Type() == network.KeyEx {
 				return msg.Payload().([]string), nil
 			}
 		}

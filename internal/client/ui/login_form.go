@@ -12,22 +12,22 @@ const (
 	defaultPort = "8585"
 
 	// Form labels
-	labelUsername = "Username"
-	labelHost     = "Host"
-	labelPort     = "Port"
-	labelAuthKey  = "Auth Key"
-	labelTLS      = "TLS"
-	labelLogin    = "Login"
-	labelQuit     = "Quit"
+	labelUsername     = "Username"
+	labelHost         = "Host"
+	labelPort         = "Port"
+	labelReconnectKey = "Reconnect key"
+	labelTLS          = "TLS"
+	labelLogin        = "Login"
+	labelQuit         = "Quit"
 )
 
 // LoginData is the data returned by the LoginForm.
 type LoginData struct {
-	Username string
-	Host     string
-	Port     uint16
-	AuthKey  string
-	TLS      bool
+	Username     string
+	Host         string
+	Port         uint16
+	ReconnectKey string
+	TLS          bool
 }
 
 // LoginForm wraps a tview.Form and adds some validation logic.
@@ -45,8 +45,8 @@ func NewLoginForm(loginCb func(*LoginData), quitCb func()) *LoginForm {
 		AddInputField(labelUsername, "", 20, tview.InputFieldMaxLength(15), nil).
 		AddInputField(labelHost, defaultHost, 20, tview.InputFieldMaxLength(15), nil).
 		AddInputField(labelPort, defaultPort, 6, PositiveIntegerValidator(65535), nil).
-		AddInputField(labelAuthKey, "", 20, tview.InputFieldMaxLength(15), nil).
-		AddTextView("", "Provide auth key to\nreconnect if you got\ndisconnected.", 20, 3, true, false).
+		AddInputField(labelReconnectKey, "", 20, tview.InputFieldMaxLength(15), nil).
+		AddTextView("", "Provide key to\nreconnect if you got\ndisconnected.", 20, 3, true, false).
 		AddCheckbox(labelTLS, false, nil).
 		AddButton(labelLogin, l.formValidatorWrapper(loginCb)).
 		AddButton(labelQuit, quitCb)
@@ -79,15 +79,15 @@ func (l *LoginForm) formValidatorWrapper(cb func(data *LoginData)) func() {
 		}
 
 		cb(&LoginData{
-			Username: user,
-			Host:     host,
-			Port:     uint16(port),
-			AuthKey:  l.form.GetFormItemByLabel(labelAuthKey).(*tview.InputField).GetText(),
-			TLS:      l.form.GetFormItemByLabel(labelTLS).(*tview.Checkbox).IsChecked(),
+			Username:     user,
+			Host:         host,
+			Port:         uint16(port),
+			ReconnectKey: l.form.GetFormItemByLabel(labelReconnectKey).(*tview.InputField).GetText(),
+			TLS:          l.form.GetFormItemByLabel(labelTLS).(*tview.Checkbox).IsChecked(),
 		})
 	}
 }
 
-func (l *LoginForm) SetAuthKey(key string) {
-	l.form.GetFormItemByLabel(labelAuthKey).(*tview.InputField).SetText(key)
+func (l *LoginForm) SetReconnectKey(key string) {
+	l.form.GetFormItemByLabel(labelReconnectKey).(*tview.InputField).SetText(key)
 }

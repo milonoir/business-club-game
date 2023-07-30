@@ -7,11 +7,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewAuthMessageWithName(t *testing.T) {
+func TestNewKeyExMessageWithName(t *testing.T) {
 	key := "my-key"
 	name := "my-name"
 
-	m := NewAuthMessageWithName(key, name)
+	m := NewKeyExMessageWithName(key, name)
 
 	b, err := json.Marshal(m)
 	require.NoError(t, err)
@@ -19,16 +19,16 @@ func TestNewAuthMessageWithName(t *testing.T) {
 	pm, err := Parse(b)
 	require.NoError(t, err)
 
-	require.Equal(t, Auth, pm.Type())
+	require.Equal(t, KeyEx, pm.Type())
 	require.Equal(t, []string{key, name}, pm.Payload())
 }
 
-func TestNewAuthMessageFromBytes(t *testing.T) {
+func TestNewKeyExMessageFromBytes(t *testing.T) {
 	key := "my-key"
 	name := "my-name"
-	b := []byte(key + authMsgSep + name)
+	b := []byte(key + keyExMsgSep + name)
 
-	m := NewAuthMessageFromBytes(b)
+	m := NewKeyExMessageFromBytes(b)
 
 	b, err := json.Marshal(m)
 	require.NoError(t, err)
@@ -36,6 +36,6 @@ func TestNewAuthMessageFromBytes(t *testing.T) {
 	pm, err := Parse(b)
 	require.NoError(t, err)
 
-	require.Equal(t, Auth, pm.Type())
+	require.Equal(t, KeyEx, pm.Type())
 	require.Equal(t, []string{key, name}, pm.Payload())
 }

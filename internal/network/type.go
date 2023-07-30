@@ -33,8 +33,8 @@ const (
 	// Unknown is used for unidentified messages.
 	Unknown Kind = iota
 
-	// Auth is used for sending/receiving auth keys.
-	Auth
+	// KeyEx is used for sending/receiving reconnect keys.
+	KeyEx
 
 	// GameState is a server type message that contains the up-to-date game state sent to clients.
 	GameState

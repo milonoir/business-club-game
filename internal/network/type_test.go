@@ -16,9 +16,9 @@ func TestKind_UnmarshalJSON(t *testing.T) {
 		expErr  error
 	}{
 		{
-			name:    "auth",
+			name:    "key exchange",
 			raw:     []byte(`{"Kind":1}`),
-			expKind: Auth,
+			expKind: KeyEx,
 		},
 		{
 			name:    "game state",
