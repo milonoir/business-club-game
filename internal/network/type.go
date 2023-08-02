@@ -39,8 +39,8 @@ const (
 	// KeyEx is used for sending/receiving reconnect keys.
 	KeyEx
 
-	// GameState is a server type message that contains the up-to-date game state sent to clients.
-	GameState
+	// StateUpdate is a server type message that contains the up-to-date game state sent to clients.
+	StateUpdate
 
 	// VoteToStart is a client type message that represents client readiness.
 	VoteToStart

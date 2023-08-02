@@ -41,12 +41,15 @@ type Application struct {
 	srvStatus *ui.ServerStatusPanel
 
 	// Lobby screen.
+	lobby *ui.LobbyForm
 
 	// Title screen.
 	title *ui.TitlePanel
 	login *ui.LoginForm
 
 	cp *ui.CompanyProvider
+
+	gameStarted bool
 
 	server network.Connection
 	errCh  chan string
@@ -92,7 +95,7 @@ func (a *Application) initUI() {
 				return
 			}
 			// Successful login.
-			a.pages.SwitchToPage(gamePageName)
+			a.pages.SwitchToPage(lobbyPageName)
 		},
 		func() {
 			a.Stop()
@@ -101,6 +104,19 @@ func (a *Application) initUI() {
 	titlePage.AddItem(a.login.GetForm(), 0, 1, true)
 
 	// -------------------------------------------------- Lobby page
+	lobbyPage := tview.NewFlex()
+
+	// Title panel.
+	lobbyPage.AddItem(a.title.GetTextView(), 0, 3, false)
+
+	// Lobby form.
+	a.lobby = ui.NewLobbyForm(
+		func() {
+			_ = a.server.Send(network.NewVoteToStartMessage(true))
+		},
+		func() {},
+	)
+	lobbyPage.AddItem(a.lobby.GetForm(), 0, 1, true)
 
 	// -------------------------------------------------- Game page
 	gamePage := tview.NewGrid().
@@ -161,6 +177,7 @@ func (a *Application) initUI() {
 	// Setup pages and set pages as root.
 	a.pages.
 		AddPage(titlePageName, titlePage, true, true).
+		AddPage(lobbyPageName, lobbyPage, true, false).
 		AddPage(gamePageName, gamePage, true, false)
 
 	a.app.SetRoot(a.pages, true)
@@ -244,6 +261,8 @@ func (a *Application) responder(data *ui.LoginData, incoming <-chan network.Mess
 			a.errCh <- msg.Payload().(string)
 		case network.KeyEx:
 			a.handleKeyExchange(data, msg.Payload().([]string))
+		case network.StateUpdate:
+			a.handleStateUpdate(msg.Payload().(*network.GameState))
 		}
 	}
 }
@@ -277,5 +296,26 @@ func (a *Application) connectionWatcher() {
 			return
 		}
 		time.Sleep(time.Second)
+	}
+}
+
+func (a *Application) handleStateUpdate(state *network.GameState) {
+	// Safety check.
+	if state == nil {
+		return
+	}
+
+	// Readiness update.
+	if !state.Started {
+		if len(state.Readiness) > 0 {
+			a.lobby.Update(state.Readiness)
+		}
+		return
+	}
+
+	// Switch to main page if game started.
+	if !a.gameStarted {
+		a.gameStarted = true
+		a.pages.SwitchToPage(gamePageName)
 	}
 }

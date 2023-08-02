@@ -35,10 +35,10 @@ func Parse(raw []byte) (Message, error) {
 		return NewErrorMessage(string(b.Data)), nil
 	case KeyEx:
 		return NewKeyExMessageFromBytes(b.Data), nil
-	case GameState:
-		return NewUnknown(), nil
+	case StateUpdate:
+		return NewStateUpdateMessageFromBytes(b.Data)
 	case VoteToStart:
-		return NewVoteToStart(), nil
+		return NewVoteToStartMessageFromBytes(b.Data), nil
 	case PlayCard:
 		return NewUnknown(), nil
 	case Buy:

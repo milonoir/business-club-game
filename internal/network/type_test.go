@@ -28,7 +28,7 @@ func TestKind_UnmarshalJSON(t *testing.T) {
 		{
 			name:    "game state",
 			raw:     []byte(`{"Kind":3}`),
-			expKind: GameState,
+			expKind: StateUpdate,
 		},
 		{
 			name:    "vote to start",

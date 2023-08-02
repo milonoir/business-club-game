@@ -10,6 +10,8 @@ type Player interface {
 	SetConn(network.Connection)
 	Name() string
 	SetName(string)
+	IsReady() bool
+	SetReady(bool)
 }
 
 // player implements the Player interface.
@@ -49,4 +51,12 @@ func (p *player) Name() string {
 
 func (p *player) SetName(n string) {
 	p.name = n
+}
+
+func (p *player) IsReady() bool {
+	return p.ready
+}
+
+func (p *player) SetReady(r bool) {
+	p.ready = r
 }
