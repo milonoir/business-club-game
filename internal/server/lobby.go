@@ -117,7 +117,12 @@ func (l *lobby) joinPlayer(c net.Conn) {
 	l.players[key] = game.NewPlayer(conn, key, name)
 	go l.fanInConnection(key, conn)
 
-	// TODO: send state to player
+	l.triggerStateUpdate()
+}
+
+// triggerStateUpdate triggers a state update to all players.
+func (l *lobby) triggerStateUpdate() {
+	l.inbox <- signedMessage{"", network.NewStateUpdateMessage(nil)}
 }
 
 func (l *lobby) receiveReconnectKey(c network.Connection) ([]string, error) {
@@ -184,6 +189,9 @@ func (l *lobby) receiver() {
 			switch sm.Msg.Type() {
 			case network.VoteToStart:
 				l.handleVoteToStart(sm.Key, sm.Msg)
+			case network.StateUpdate:
+				// This is an internal signal to send state update to all players.
+				l.sendStateUpdate()
 			}
 		}
 	}
@@ -201,30 +209,46 @@ func (l *lobby) handleVoteToStart(key string, msg network.Message) {
 
 	// Check if all players are ready.
 	allReady := true
-	r := make([]network.Readiness, 0, len(l.players))
 	for _, p = range l.players {
-		r = append(r, network.Readiness{Name: p.Name(), Ready: p.IsReady()})
 		if !p.IsReady() {
 			allReady = false
 		}
 	}
 
-	// Send readiness to all players.
-	update := network.NewStateUpdateMessage(&network.GameState{Readiness: r})
-	for _, p = range l.players {
-		if err := p.Conn().Send(update); err != nil {
-			l.l.Error("send readiness", "error", err, "remote_addr", p.Conn().RemoteAddress())
-		}
+	// Cannot start game with one player or if not all players are ready.
+	if allReady && len(l.players) > 1 {
+		l.isGameRunning = true
 	}
 
-	// Cannot start game with one player or if not all players are ready.
-	if !allReady || len(r) < 2 {
+	l.triggerStateUpdate()
+}
+
+func (l *lobby) sendStateUpdate() {
+	l.pmux.Lock()
+	defer l.pmux.Unlock()
+
+	// Send only a readiness update to all players.
+	if !l.isGameRunning {
+		r := make([]network.Readiness, 0, len(l.players))
+		for _, p := range l.players {
+			r = append(r, network.Readiness{Name: p.Name(), Ready: p.IsReady()})
+		}
+
+		update := network.NewStateUpdateMessage(&network.GameState{Readiness: r})
+		for _, p := range l.players {
+			if err := p.Conn().Send(update); err != nil {
+				l.l.Error("send readiness", "error", err, "remote_addr", p.Conn().RemoteAddress())
+			}
+		}
 		return
 	}
 
-	// TODO: improve game start message.
-	update = network.NewStateUpdateMessage(&network.GameState{Started: true})
-	for _, p = range l.players {
+	// Send full game state update to all players.
+	update := network.NewStateUpdateMessage(&network.GameState{Started: true})
+
+	// TODO: fill in game state.
+
+	for _, p := range l.players {
 		if err := p.Conn().Send(update); err != nil {
 			l.l.Error("send game started", "error", err, "remote_addr", p.Conn().RemoteAddress())
 		}
