@@ -111,8 +111,8 @@ func (a *Application) initUI() {
 
 	// Lobby form.
 	a.lobby = ui.NewLobbyForm(
-		func() {
-			_ = a.server.Send(network.NewVoteToStartMessage(true))
+		func(ready bool) {
+			_ = a.server.Send(network.NewVoteToStartMessage(ready))
 		},
 		func() {},
 	)

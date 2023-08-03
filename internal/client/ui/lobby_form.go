@@ -9,17 +9,22 @@ import (
 	"github.com/rivo/tview"
 )
 
+const (
+	labelReady    = "Ready!"
+	labelNotReady = "Cancel"
+)
+
 type LobbyForm struct {
 	form *tview.Form
 }
 
-func NewLobbyForm(startCb, quitCb func()) *LobbyForm {
+func NewLobbyForm(readyCb func(bool), quitCb func()) *LobbyForm {
 	l := &LobbyForm{
 		form: tview.NewForm(),
 	}
 	l.form.
 		AddTextView("Players", "", 20, 5, true, false).
-		AddButton("Start", startCb).
+		AddButton(labelReady, l.toggleReady(readyCb)).
 		AddButton("Quit", quitCb)
 	l.form.
 		SetBorderPadding(14, 1, 0, 1)
@@ -52,4 +57,17 @@ func (l *LobbyForm) Update(state []network.Readiness) {
 	}
 
 	l.form.GetFormItem(0).(*tview.TextView).SetText(sb.String())
+}
+
+func (l *LobbyForm) toggleReady(readyCb func(bool)) func() {
+	ready := false
+	return func() {
+		ready = !ready
+		label := labelReady
+		if ready {
+			label = labelNotReady
+		}
+		l.form.GetButton(0).SetLabel(label)
+		readyCb(ready)
+	}
 }
