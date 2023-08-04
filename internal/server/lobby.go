@@ -148,12 +148,8 @@ func (l *lobby) removePlayer(key string) {
 	p := l.players[key]
 	delete(l.players, key)
 
-	lg := l.l.With("remote_addr", p.Conn().RemoteAddress(), "key", key)
-	lg.Info("player left")
-
-	if err := p.Conn().Close(); err != nil {
-		lg.Error("close connection", "error", err)
-	}
+	l.l.Info("player left", "remote_addr", p.Conn().RemoteAddress(), "key", key)
+	l.triggerStateUpdate()
 }
 
 func (l *lobby) start() {
@@ -175,6 +171,11 @@ func (l *lobby) fanInConnection(key string, c network.Connection) {
 		case <-l.done:
 			return
 		case msg := <-c.Inbox():
+			if msg == nil {
+				// Connection has been closed, just remove the player.
+				l.removePlayer(key)
+				return
+			}
 			l.inbox <- signedMessage{key, msg}
 		}
 	}

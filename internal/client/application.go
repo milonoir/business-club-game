@@ -23,7 +23,7 @@ const (
 )
 
 var (
-	errConnectionClosed = errors.New("connection closed by the server")
+	errConnectionClosed = errors.New("connection closed")
 )
 
 type Application struct {
@@ -95,6 +95,7 @@ func (a *Application) initUI() {
 				return
 			}
 			// Successful login.
+			a.lobby.Reset()
 			a.pages.SwitchToPage(lobbyPageName)
 		},
 		func() {
@@ -114,7 +115,7 @@ func (a *Application) initUI() {
 		func(ready bool) {
 			_ = a.server.Send(network.NewVoteToStartMessage(ready))
 		},
-		func() {},
+		a.disconnect,
 	)
 	lobbyPage.AddItem(a.lobby.GetForm(), 0, 1, true)
 
@@ -196,6 +197,14 @@ func (a *Application) Stop() {
 		_ = a.server.Close()
 	}
 	a.app.Stop()
+}
+
+func (a *Application) disconnect() {
+	if err := a.server.Close(); err != nil {
+		a.l.Error("error closing connection", "error", err)
+	}
+	a.server = nil
+	a.l.Info("disconnected from server")
 }
 
 func (a *Application) connect(data *ui.LoginData) error {
@@ -284,7 +293,7 @@ func (a *Application) handleKeyExchange(data *ui.LoginData, msg []string) {
 
 func (a *Application) connectionWatcher() {
 	for {
-		if !a.server.IsAlive() {
+		if a.server == nil || !a.server.IsAlive() {
 			a.srvStatus.SetConnection(false)
 
 			modal := ui.NewErrorModal(errConnectionClosed)
@@ -293,6 +302,7 @@ func (a *Application) connectionWatcher() {
 				a.pages.RemovePage(errorPageName)
 				a.pages.SwitchToPage(titlePageName)
 			})
+			a.server = nil
 			return
 		}
 		time.Sleep(time.Second)

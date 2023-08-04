@@ -21,6 +21,10 @@ const (
 	errBrokenPipe     = "write: broken pipe"
 )
 
+var (
+	compiledClientSideCloseMessage = ws.MustCompileFrame(ws.MaskFrame(ws.NewCloseFrame(ws.NewCloseFrameBody(ws.StatusNormalClosure, ""))))
+)
+
 // Connection defines the interface for interacting with a network connection.
 type Connection interface {
 	Close() error
@@ -101,7 +105,12 @@ func (c *connection) Close() error {
 	close(c.inbox)
 
 	if c.alive.Load() {
-		if _, err := c.conn.Write(ws.CompiledClose); err != nil {
+		m := ws.CompiledCloseNormalClosure
+		if c.side == ws.StateClientSide {
+			// NOTE: This is a workaround for the client side close message. It is likely a bug in gobwas/ws.
+			m = compiledClientSideCloseMessage
+		}
+		if _, err := c.conn.Write(m); err != nil {
 			return fmt.Errorf("send compiled close to %s: %w", c.conn.RemoteAddr(), err)
 		}
 	}
@@ -169,6 +178,7 @@ func (c *connection) receive() {
 			// Connection closed by the remote side.
 			if rm.OpCode == ws.OpClose {
 				c.alive.Store(false)
+				_ = c.Close()
 				return
 			}
 

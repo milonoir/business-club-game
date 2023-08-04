@@ -15,19 +15,20 @@ const (
 )
 
 type LobbyForm struct {
-	form *tview.Form
+	form  *tview.Form
+	ready bool
 }
 
-func NewLobbyForm(readyCb func(bool), quitCb func()) *LobbyForm {
+func NewLobbyForm(readyCb func(bool), leaveCb func()) *LobbyForm {
 	l := &LobbyForm{
 		form: tview.NewForm(),
 	}
 	l.form.
-		AddTextView("Players", "", 20, 5, true, false).
+		AddTextView("Players:", "", 20, 5, true, false).
 		AddButton(labelReady, l.toggleReady(readyCb)).
-		AddButton("Quit", quitCb)
+		AddButton("Leave", leaveCb)
 	l.form.
-		SetBorderPadding(14, 1, 0, 1)
+		SetBorderPadding(20, 1, 0, 1)
 
 	return l
 }
@@ -55,19 +56,27 @@ func (l *LobbyForm) Update(state []network.Readiness) {
 		}
 		sb.WriteString(fmt.Sprintf("[%s]%s\n", c, p.Name))
 	}
+	for i := 4 - len(state); i > 0; i-- {
+		sb.WriteString("[grey]-- open slot --\n")
+	}
 
 	l.form.GetFormItem(0).(*tview.TextView).SetText(sb.String())
 }
 
 func (l *LobbyForm) toggleReady(readyCb func(bool)) func() {
-	ready := false
 	return func() {
-		ready = !ready
+		l.ready = !l.ready
 		label := labelReady
-		if ready {
+		if l.ready {
 			label = labelNotReady
 		}
 		l.form.GetButton(0).SetLabel(label)
-		readyCb(ready)
+		readyCb(l.ready)
 	}
+}
+
+func (l *LobbyForm) Reset() {
+	l.form.GetButton(0).SetLabel(labelReady)
+	l.form.SetFocus(1)
+	l.ready = false
 }
