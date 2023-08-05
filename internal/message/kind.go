@@ -1,4 +1,4 @@
-package network
+package message
 
 import (
 	"errors"
@@ -36,8 +36,8 @@ const (
 	// Error is a server type message that contains an error.
 	Error
 
-	// KeyEx is used for sending/receiving reconnect keys.
-	KeyEx
+	// KeyExchange is used for sending/receiving reconnect keys.
+	KeyExchange
 
 	// StateUpdate is a server type message that contains the up-to-date game state sent to clients.
 	StateUpdate
@@ -57,9 +57,3 @@ const (
 	// EndTurn is a client type message when a player wants to end their turn.
 	EndTurn
 )
-
-// Message defines the interface that all kinds of messages have to implement.
-type Message interface {
-	Type() Kind
-	Payload() any
-}

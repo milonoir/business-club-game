@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/milonoir/business-club-game/internal/network"
+	"github.com/milonoir/business-club-game/internal/message"
 	"github.com/rivo/tview"
 )
 
@@ -37,7 +37,7 @@ func (l *LobbyForm) GetForm() *tview.Form {
 	return l.form
 }
 
-func (l *LobbyForm) Update(state []network.Readiness) {
+func (l *LobbyForm) Update(state []message.Readiness) {
 	// Sanity check.
 	if state == nil {
 		return

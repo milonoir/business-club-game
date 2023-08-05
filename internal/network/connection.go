@@ -11,6 +11,7 @@ import (
 
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
+	"github.com/milonoir/business-club-game/internal/message"
 	"golang.org/x/exp/slog"
 )
 
@@ -28,8 +29,8 @@ var (
 // Connection defines the interface for interacting with a network connection.
 type Connection interface {
 	Close() error
-	Send(Message) error
-	Inbox() <-chan Message
+	Send(message.Message) error
+	Inbox() <-chan message.Message
 	IsAlive() bool
 	RemoteAddress() net.Addr
 }
@@ -39,7 +40,7 @@ type connection struct {
 	conn     net.Conn
 	side     ws.State
 	done     chan struct{}
-	inbox    chan Message
+	inbox    chan message.Message
 	alive    atomic.Bool
 	lastPong time.Time
 	l        *slog.Logger
@@ -51,7 +52,7 @@ func NewServerConnection(conn net.Conn, l *slog.Logger) Connection {
 		conn:  conn,
 		side:  ws.StateServerSide,
 		done:  make(chan struct{}),
-		inbox: make(chan Message, messageBufferSize),
+		inbox: make(chan message.Message, messageBufferSize),
 		l: l.With(
 			"remote_addr", conn.RemoteAddr(),
 			"side", "server",
@@ -71,7 +72,7 @@ func NewClientConnection(conn net.Conn, l *slog.Logger) Connection {
 		conn:  conn,
 		side:  ws.StateClientSide,
 		done:  make(chan struct{}),
-		inbox: make(chan Message, messageBufferSize),
+		inbox: make(chan message.Message, messageBufferSize),
 		l: l.With(
 			"remote_addr", conn.RemoteAddr(),
 			"side", "client",
@@ -85,7 +86,7 @@ func NewClientConnection(conn net.Conn, l *slog.Logger) Connection {
 }
 
 // Send sends a Message to the remote connection.
-func (c *connection) Send(msg Message) error {
+func (c *connection) Send(msg message.Message) error {
 	b, err := json.Marshal(msg)
 	if err != nil {
 		return fmt.Errorf("corrupt message: %w", err)
@@ -122,7 +123,7 @@ func (c *connection) Close() error {
 }
 
 // Inbox returns the channel of incoming messages.
-func (c *connection) Inbox() <-chan Message {
+func (c *connection) Inbox() <-chan message.Message {
 	return c.inbox
 }
 
@@ -140,7 +141,7 @@ func (c *connection) receive() {
 	var (
 		err   error
 		opErr *net.OpError
-		msg   Message
+		msg   message.Message
 		raw   = make([]wsutil.Message, 0, messageBufferSize)
 	)
 
@@ -197,7 +198,7 @@ func (c *connection) receive() {
 			}
 
 			// Text message.
-			if msg, err = Parse(rm.Payload); err != nil {
+			if msg, err = message.Parse(rm.Payload); err != nil {
 				c.l.Error("parse message", "error", err)
 				continue
 			}

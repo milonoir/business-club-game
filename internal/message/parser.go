@@ -1,4 +1,4 @@
-package network
+package message
 
 import (
 	"encoding/json"
@@ -32,13 +32,13 @@ func Parse(raw []byte) (Message, error) {
 
 	switch b.Type() {
 	case Error:
-		return NewErrorMessage(string(b.Data)), nil
-	case KeyEx:
-		return NewKeyExMessageFromBytes(b.Data), nil
+		return NewError(string(b.Data)), nil
+	case KeyExchange:
+		return NewKeyExchangeFromBytes(b.Data), nil
 	case StateUpdate:
-		return NewStateUpdateMessageFromBytes(b.Data)
+		return NewStateUpdateFromBytes(b.Data)
 	case VoteToStart:
-		return NewVoteToStartMessageFromBytes(b.Data), nil
+		return NewVoteToStartFromBytes(b.Data), nil
 	case PlayCard:
 		return NewUnknown(), nil
 	case Buy:

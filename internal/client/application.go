@@ -11,6 +11,7 @@ import (
 
 	"github.com/gobwas/ws"
 	"github.com/milonoir/business-club-game/internal/client/ui"
+	"github.com/milonoir/business-club-game/internal/message"
 	"github.com/milonoir/business-club-game/internal/network"
 	"github.com/rivo/tview"
 	"golang.org/x/exp/slog"
@@ -118,7 +119,7 @@ func (a *Application) initUI() {
 	// Lobby form.
 	a.lobby = ui.NewLobbyForm(
 		func(ready bool) {
-			_ = a.server.Send(network.NewVoteToStartMessage(ready))
+			_ = a.server.Send(message.NewVoteToStart(ready))
 		},
 		a.disconnect,
 	)
@@ -241,7 +242,7 @@ func (a *Application) connect(data *ui.LoginData) error {
 	a.l.Info("connection established")
 
 	a.l.Info("sending key exchange", "key", data.ReconnectKey, "username", data.Username)
-	if err = a.server.Send(network.NewKeyExMessageWithName(data.ReconnectKey, data.Username)); err != nil {
+	if err = a.server.Send(message.NewKeyExchangeWithName(data.ReconnectKey, data.Username)); err != nil {
 		return err
 	}
 
@@ -267,23 +268,23 @@ func (a *Application) connect(data *ui.LoginData) error {
 	return nil
 }
 
-func (a *Application) responder(data *ui.LoginData, incoming <-chan network.Message) {
+func (a *Application) responder(data *ui.LoginData, incoming <-chan message.Message) {
 	for msg := range incoming {
 		a.l.Debug("received message", "type", msg.Type(), "payload", msg.Payload())
 		switch msg.Type() {
-		case network.Error:
+		case message.Error:
 			a.errCh <- msg.Payload().(string)
-		case network.KeyEx:
+		case message.KeyExchange:
 			a.handleKeyExchange(data, msg.Payload().([]string))
-		case network.StateUpdate:
-			a.handleStateUpdate(msg.Payload().(*network.GameState))
+		case message.StateUpdate:
+			a.handleStateUpdate(msg.Payload().(*message.GameState))
 		}
 	}
 }
 
 func (a *Application) handleKeyExchange(data *ui.LoginData, msg []string) {
 	if key := msg[0]; key == "" {
-		if err := a.server.Send(network.NewKeyExMessageWithName(data.ReconnectKey, data.Username)); err != nil {
+		if err := a.server.Send(message.NewKeyExchangeWithName(data.ReconnectKey, data.Username)); err != nil {
 			a.l.Error("send key exchange", "error", err)
 		}
 	} else {
@@ -314,7 +315,7 @@ func (a *Application) connectionWatcher() {
 	}
 }
 
-func (a *Application) handleStateUpdate(state *network.GameState) {
+func (a *Application) handleStateUpdate(state *message.GameState) {
 	// Safety check.
 	if state == nil {
 		return

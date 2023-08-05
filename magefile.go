@@ -49,3 +49,13 @@ func Deps() error {
 	fmt.Println("Installing deps...")
 	return sh.Run("go", "mod", "download")
 }
+
+func Test() error {
+	fmt.Println("Running tests...")
+	result, err := sh.Output("go", "test", "-race", "-count=1", "-v", "./...")
+	if err != nil {
+		return err
+	}
+	fmt.Println(result)
+	return nil
+}

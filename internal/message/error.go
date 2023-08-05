@@ -1,4 +1,4 @@
-package network
+package message
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ type errorMessage struct {
 	err string
 }
 
-func NewErrorMessage(err string) Message {
+func NewError(err string) Message {
 	return errorMessage{
 		err: err,
 	}

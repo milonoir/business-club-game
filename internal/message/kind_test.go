@@ -1,4 +1,4 @@
-package network
+package message
 
 import (
 	"encoding/json"
@@ -23,7 +23,7 @@ func TestKind_UnmarshalJSON(t *testing.T) {
 		{
 			name:    "key exchange",
 			raw:     []byte(`{"Kind":2}`),
-			expKind: KeyEx,
+			expKind: KeyExchange,
 		},
 		{
 			name:    "game state",

@@ -1,4 +1,4 @@
-package network
+package message
 
 import (
 	"encoding/json"
@@ -8,26 +8,29 @@ type voteToStartMessage struct {
 	ready bool
 }
 
-func NewVoteToStartMessage(ready bool) Message {
+func NewVoteToStart(ready bool) Message {
 	return voteToStartMessage{
 		ready: ready,
 	}
 }
 
-func NewVoteToStartMessageFromBytes(b []byte) Message {
+func NewVoteToStartFromBytes(b []byte) Message {
 	return voteToStartMessage{
 		ready: b[0] == 1,
 	}
 }
 
+// Type implements the Message interface.
 func (m voteToStartMessage) Type() Kind {
 	return VoteToStart
 }
 
+// Payload implements the Message interface.
 func (m voteToStartMessage) Payload() any {
 	return m.ready
 }
 
+// MarshalJSON implements the json.Marshaler interface.
 func (m voteToStartMessage) MarshalJSON() ([]byte, error) {
 	b := base{
 		Kind: VoteToStart,

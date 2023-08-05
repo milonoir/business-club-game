@@ -79,3 +79,8 @@ func (m *Mod) UnmarshalJSON(b []byte) error {
 
 	return nil
 }
+
+// MarshalJSON implements the json.Marshaler interface.
+func (m *Mod) MarshalJSON() ([]byte, error) {
+	return []byte(m.String()), nil
+}

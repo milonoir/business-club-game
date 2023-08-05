@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/milonoir/business-club-game/internal/game"
+	"github.com/milonoir/business-club-game/internal/message"
 	"github.com/milonoir/business-club-game/internal/network"
 	"github.com/teris-io/shortid"
 	"golang.org/x/exp/slog"
@@ -25,7 +26,7 @@ var (
 // signedMessage is a network.Message wrapped with the reconnect key identifying the player.
 type signedMessage struct {
 	Key string
-	Msg network.Message
+	Msg message.Message
 }
 
 // lobby manages player connections and the game.
@@ -73,7 +74,7 @@ func (l *lobby) joinPlayer(c net.Conn) {
 		if !ok {
 			// Unknown key.
 			lg.Error("unknown reconnect key", "key", key)
-			_ = conn.Send(network.NewErrorMessage("unknown reconnect key"))
+			_ = conn.Send(message.NewError("unknown reconnect key"))
 			_ = conn.Close()
 			return
 		}
@@ -81,7 +82,7 @@ func (l *lobby) joinPlayer(c net.Conn) {
 		// Check if connection is alive.
 		if p.Conn().IsAlive() {
 			lg.Error("an alive connection is using this reconnect key", "key", key)
-			_ = conn.Send(network.NewErrorMessage("reconnect key is already in use"))
+			_ = conn.Send(message.NewError("reconnect key is already in use"))
 			_ = conn.Close()
 			return
 		}
@@ -96,7 +97,7 @@ func (l *lobby) joinPlayer(c net.Conn) {
 	// New player joining, check if lobby is full.
 	if len(l.players) >= maxPlayers {
 		lg.Info("lobby is full, reject client connection")
-		_ = conn.Send(network.NewErrorMessage("lobby is full"))
+		_ = conn.Send(message.NewError("lobby is full"))
 		_ = conn.Close()
 		return
 	}
@@ -108,7 +109,7 @@ func (l *lobby) joinPlayer(c net.Conn) {
 	}
 
 	// Send key to client.
-	if err = conn.Send(network.NewKeyExMessageWithName(key, "")); err != nil {
+	if err = conn.Send(message.NewKeyExchangeWithName(key, "")); err != nil {
 		lg.Error("send reconnect key", "error", err)
 		_ = conn.Close()
 		return
@@ -123,7 +124,7 @@ func (l *lobby) joinPlayer(c net.Conn) {
 
 // triggerStateUpdate triggers a state update to all players.
 func (l *lobby) triggerStateUpdate() {
-	l.inbox <- signedMessage{"", network.NewStateUpdateMessage(nil)}
+	l.inbox <- signedMessage{"", message.NewStateUpdate(nil)}
 }
 
 func (l *lobby) receiveReconnectKey(c network.Connection) ([]string, error) {
@@ -135,7 +136,7 @@ func (l *lobby) receiveReconnectKey(c network.Connection) ([]string, error) {
 		case <-time.After(keyExTimeout):
 			return nil, errTimeout
 		case msg := <-c.Inbox():
-			if msg.Type() == network.KeyEx {
+			if msg.Type() == message.KeyExchange {
 				return msg.Payload().([]string), nil
 			}
 		}
@@ -200,9 +201,9 @@ func (l *lobby) receiver() {
 			return
 		case sm := <-l.inbox:
 			switch sm.Msg.Type() {
-			case network.VoteToStart:
+			case message.VoteToStart:
 				l.handleVoteToStart(sm.Key, sm.Msg)
-			case network.StateUpdate:
+			case message.StateUpdate:
 				// This is an internal signal to send state update to all players.
 				l.sendStateUpdate()
 			}
@@ -210,7 +211,7 @@ func (l *lobby) receiver() {
 	}
 }
 
-func (l *lobby) handleVoteToStart(key string, msg network.Message) {
+func (l *lobby) handleVoteToStart(key string, msg message.Message) {
 	l.pmux.Lock()
 	defer l.pmux.Unlock()
 
@@ -242,12 +243,12 @@ func (l *lobby) sendStateUpdate() {
 
 	// Send only a readiness update to all players.
 	if !l.isGameRunning.Load() {
-		r := make([]network.Readiness, 0, len(l.players))
+		r := make([]message.Readiness, 0, len(l.players))
 		for _, p := range l.players {
-			r = append(r, network.Readiness{Name: p.Name(), Ready: p.IsReady()})
+			r = append(r, message.Readiness{Name: p.Name(), Ready: p.IsReady()})
 		}
 
-		update := network.NewStateUpdateMessage(&network.GameState{Readiness: r})
+		update := message.NewStateUpdate(&message.GameState{Readiness: r})
 		for _, p := range l.players {
 			if p.Conn().IsAlive() {
 				if err := p.Conn().Send(update); err != nil {
@@ -259,7 +260,7 @@ func (l *lobby) sendStateUpdate() {
 	}
 
 	// Send full game state update to all players.
-	update := network.NewStateUpdateMessage(&network.GameState{Started: true})
+	update := message.NewStateUpdate(&message.GameState{Started: true})
 
 	// TODO: fill in game state.
 

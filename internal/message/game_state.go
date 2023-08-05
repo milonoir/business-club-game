@@ -1,4 +1,4 @@
-package network
+package message
 
 import (
 	"encoding/json"
@@ -8,6 +8,9 @@ import (
 type GameState struct {
 	Started   bool
 	Readiness []Readiness
+	Companies []string
+	Player    Player
+	Opponents []Player
 }
 
 type Readiness struct {
@@ -15,17 +18,28 @@ type Readiness struct {
 	Ready bool
 }
 
+type Player struct {
+	Name string
+	Portfolio
+}
+
+type Portfolio struct {
+	Hidden bool
+	Stocks [4]int
+	Cash   int
+}
+
 type stateUpdateMessage struct {
 	state *GameState
 }
 
-func NewStateUpdateMessage(state *GameState) Message {
+func NewStateUpdate(state *GameState) Message {
 	return stateUpdateMessage{
 		state: state,
 	}
 }
 
-func NewStateUpdateMessageFromBytes(b []byte) (Message, error) {
+func NewStateUpdateFromBytes(b []byte) (Message, error) {
 	var state GameState
 	if err := json.Unmarshal(b, &state); err != nil {
 		return nil, fmt.Errorf("unmarshal state: %w", err)

@@ -1,4 +1,4 @@
-package network
+package message
 
 import (
 	"encoding/json"
@@ -7,11 +7,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewKeyExMessageWithName(t *testing.T) {
+func TestNewKeyExchangeWithName(t *testing.T) {
 	key := "my-key"
 	name := "my-name"
 
-	m := NewKeyExMessageWithName(key, name)
+	m := NewKeyExchangeWithName(key, name)
 
 	b, err := json.Marshal(m)
 	require.NoError(t, err)
@@ -19,16 +19,16 @@ func TestNewKeyExMessageWithName(t *testing.T) {
 	pm, err := Parse(b)
 	require.NoError(t, err)
 
-	require.Equal(t, KeyEx, pm.Type())
+	require.Equal(t, KeyExchange, pm.Type())
 	require.Equal(t, []string{key, name}, pm.Payload())
 }
 
-func TestNewKeyExMessageFromBytes(t *testing.T) {
+func TestNewKeyExchangeFromBytes(t *testing.T) {
 	key := "my-key"
 	name := "my-name"
-	b := []byte(key + keyExMsgSep + name)
+	b := []byte(key + keyExchangeSeparator + name)
 
-	m := NewKeyExMessageFromBytes(b)
+	m := NewKeyExchangeFromBytes(b)
 
 	b, err := json.Marshal(m)
 	require.NoError(t, err)
@@ -36,6 +36,6 @@ func TestNewKeyExMessageFromBytes(t *testing.T) {
 	pm, err := Parse(b)
 	require.NoError(t, err)
 
-	require.Equal(t, KeyEx, pm.Type())
+	require.Equal(t, KeyExchange, pm.Type())
 	require.Equal(t, []string{key, name}, pm.Payload())
 }
