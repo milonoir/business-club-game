@@ -7,16 +7,12 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/milonoir/business-club-game/internal/common"
 	"github.com/milonoir/business-club-game/internal/game"
 	"github.com/milonoir/business-club-game/internal/message"
 	"github.com/milonoir/business-club-game/internal/network"
 	"github.com/teris-io/shortid"
 	"golang.org/x/exp/slog"
-)
-
-const (
-	maxPlayers   = 4
-	keyExTimeout = 10 * time.Second
 )
 
 var (
@@ -42,8 +38,8 @@ type lobby struct {
 
 func newLobby(l *slog.Logger) *lobby {
 	return &lobby{
-		players: make(map[string]game.Player, maxPlayers),
-		inbox:   make(chan signedMessage, maxPlayers*100),
+		players: make(map[string]game.Player, common.MaxPlayers),
+		inbox:   make(chan signedMessage, common.MaxPlayers*100),
 		done:    make(chan struct{}),
 		l:       l.With("component", "lobby"),
 	}
@@ -95,7 +91,7 @@ func (l *lobby) joinPlayer(c net.Conn) {
 	}
 
 	// New player joining, check if lobby is full.
-	if len(l.players) >= maxPlayers {
+	if len(l.players) >= common.MaxPlayers {
 		lg.Info("lobby is full, reject client connection")
 		_ = conn.Send(message.NewError("lobby is full"))
 		_ = conn.Close()
@@ -133,7 +129,7 @@ func (l *lobby) receiveReconnectKey(c network.Connection) ([]string, error) {
 	// - empty keyEx message (new player)
 	for {
 		select {
-		case <-time.After(keyExTimeout):
+		case <-time.After(message.KeyExchangeTimeout):
 			return nil, errTimeout
 		case msg := <-c.Inbox():
 			if msg.Type() == message.KeyExchange {

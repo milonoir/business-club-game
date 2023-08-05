@@ -21,11 +21,11 @@ type Game struct {
 	Players     []Player
 	TurnsLeft   int
 
-	Assets
+	*Assets
 }
 
-func NewGame(a Assets) Game {
-	g := Game{
+func New(a *Assets) *Game {
+	g := &Game{
 		Assets:      a,
 		TurnsLeft:   maxTurns,
 		StockPrices: make(map[string]int, len(a.Companies)),

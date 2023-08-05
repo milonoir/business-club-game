@@ -3,10 +3,15 @@ package message
 import (
 	"encoding/json"
 	"strings"
+	"time"
 )
 
 const (
+	// keyExchangeSeparator is the separator used to split the key and the name.
 	keyExchangeSeparator = ":"
+
+	// KeyExchangeTimeout is the timeout used for the key exchange between the client and server.
+	KeyExchangeTimeout = 10 * time.Second
 )
 
 var (

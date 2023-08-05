@@ -3,6 +3,8 @@ package message
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/milonoir/business-club-game/internal/game"
 )
 
 type GameState struct {
@@ -10,6 +12,7 @@ type GameState struct {
 	Readiness []Readiness
 	Companies []string
 	Player    Player
+	Hand      []game.Card
 	Opponents []Player
 }
 
