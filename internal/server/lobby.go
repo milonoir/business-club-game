@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/milonoir/business-club-game/internal/game"
@@ -35,7 +36,7 @@ type lobby struct {
 	done    chan struct{}
 	l       *slog.Logger
 
-	isGameRunning bool
+	isGameRunning atomic.Bool
 }
 
 func newLobby(l *slog.Logger) *lobby {
@@ -166,10 +167,21 @@ func (l *lobby) stop() {
 }
 
 func (l *lobby) fanInConnection(key string, c network.Connection) {
+	t := time.NewTicker(time.Second)
+	defer t.Stop()
+
 	for {
 		select {
 		case <-l.done:
 			return
+		case <-t.C:
+			if !c.IsAlive() {
+				if !l.isGameRunning.Load() {
+					// Connection lost before game started, remove player.
+					l.removePlayer(key)
+					return
+				}
+			}
 		case msg := <-c.Inbox():
 			if msg == nil {
 				// Connection has been closed, just remove the player.
@@ -218,7 +230,7 @@ func (l *lobby) handleVoteToStart(key string, msg network.Message) {
 
 	// Cannot start game with one player or if not all players are ready.
 	if allReady && len(l.players) > 1 {
-		l.isGameRunning = true
+		l.isGameRunning.Store(true)
 	}
 
 	l.triggerStateUpdate()
@@ -229,7 +241,7 @@ func (l *lobby) sendStateUpdate() {
 	defer l.pmux.Unlock()
 
 	// Send only a readiness update to all players.
-	if !l.isGameRunning {
+	if !l.isGameRunning.Load() {
 		r := make([]network.Readiness, 0, len(l.players))
 		for _, p := range l.players {
 			r = append(r, network.Readiness{Name: p.Name(), Ready: p.IsReady()})
@@ -237,8 +249,10 @@ func (l *lobby) sendStateUpdate() {
 
 		update := network.NewStateUpdateMessage(&network.GameState{Readiness: r})
 		for _, p := range l.players {
-			if err := p.Conn().Send(update); err != nil {
-				l.l.Error("send readiness", "error", err, "remote_addr", p.Conn().RemoteAddress())
+			if p.Conn().IsAlive() {
+				if err := p.Conn().Send(update); err != nil {
+					l.l.Error("send readiness", "error", err, "remote_addr", p.Conn().RemoteAddress())
+				}
 			}
 		}
 		return
@@ -250,8 +264,10 @@ func (l *lobby) sendStateUpdate() {
 	// TODO: fill in game state.
 
 	for _, p := range l.players {
-		if err := p.Conn().Send(update); err != nil {
-			l.l.Error("send game started", "error", err, "remote_addr", p.Conn().RemoteAddress())
+		if p.Conn().IsAlive() {
+			if err := p.Conn().Send(update); err != nil {
+				l.l.Error("send game started", "error", err, "remote_addr", p.Conn().RemoteAddress())
+			}
 		}
 	}
 }

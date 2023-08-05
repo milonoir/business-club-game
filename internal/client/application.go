@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"sync/atomic"
 	"time"
 
 	"github.com/gobwas/ws"
@@ -49,7 +50,7 @@ type Application struct {
 
 	cp *ui.CompanyProvider
 
-	gameStarted bool
+	gameStarted atomic.Bool
 
 	server network.Connection
 	errCh  chan string
@@ -96,7 +97,11 @@ func (a *Application) initUI() {
 			}
 			// Successful login.
 			a.lobby.Reset()
-			a.pages.SwitchToPage(lobbyPageName)
+			if a.gameStarted.Load() {
+				a.pages.SwitchToPage(gamePageName)
+			} else {
+				a.pages.SwitchToPage(lobbyPageName)
+			}
 		},
 		func() {
 			a.Stop()
@@ -324,8 +329,8 @@ func (a *Application) handleStateUpdate(state *network.GameState) {
 	}
 
 	// Switch to main page if game started.
-	if !a.gameStarted {
-		a.gameStarted = true
+	if !a.gameStarted.Load() {
+		a.gameStarted.Store(true)
 		a.pages.SwitchToPage(gamePageName)
 	}
 }
