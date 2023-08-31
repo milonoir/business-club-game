@@ -89,6 +89,8 @@ func (a *Application) initUI() {
 	a.login = ui.NewLoginForm(
 		func(data *ui.LoginData) {
 			if err := a.connect(data); err != nil {
+				// Making sure there is no dead connection stored.
+				a.server = nil
 				modal := ui.NewErrorModal(err)
 				a.pages.AddPage(errorPageName, modal.GetModal(), true, true)
 				modal.SetHandler(func(int, string) {

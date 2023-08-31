@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/milonoir/business-club-game/internal/common"
-	"github.com/milonoir/business-club-game/internal/game"
 	"github.com/milonoir/business-club-game/internal/message"
 	"github.com/milonoir/business-club-game/internal/network"
 	"github.com/teris-io/shortid"
@@ -28,7 +27,7 @@ type signedMessage struct {
 // lobby manages player connections and the game.
 type lobby struct {
 	pmux    sync.Mutex
-	players map[string]game.Player
+	players map[string]Player
 	inbox   chan signedMessage
 	done    chan struct{}
 	l       *slog.Logger
@@ -38,7 +37,7 @@ type lobby struct {
 
 func newLobby(l *slog.Logger) *lobby {
 	return &lobby{
-		players: make(map[string]game.Player, common.MaxPlayers),
+		players: make(map[string]Player, common.MaxPlayers),
 		inbox:   make(chan signedMessage, common.MaxPlayers*100),
 		done:    make(chan struct{}),
 		l:       l.With("component", "lobby"),
@@ -112,7 +111,7 @@ func (l *lobby) joinPlayer(c net.Conn) {
 	}
 
 	lg.Info("player joined", "key", key, "name", name)
-	l.players[key] = game.NewPlayer(conn, key, name)
+	l.players[key] = NewPlayer(conn, key, name)
 	go l.fanInConnection(key, conn)
 
 	l.triggerStateUpdate()
