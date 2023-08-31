@@ -158,7 +158,7 @@ func (l *lobby) removePlayer(key string) {
 }
 
 func (l *lobby) start() {
-	go l.receiver()
+	l.receiver()
 }
 
 func (l *lobby) stop() {
@@ -205,7 +205,9 @@ func (l *lobby) receiver() {
 		case sm := <-l.inbox:
 			switch sm.Msg.Type() {
 			case message.VoteToStart:
-				l.handleVoteToStart(sm.Key, sm.Msg)
+				if !l.isGameRunning.Load() {
+					l.handleVoteToStart(sm.Key, sm.Msg)
+				}
 			case message.StateUpdate:
 				// This is an internal signal to send state update to all players.
 				l.sendStateUpdate()
@@ -235,6 +237,8 @@ func (l *lobby) handleVoteToStart(key string, msg message.Message) {
 	// Cannot start game with one player or if not all players are ready.
 	if allReady && len(l.players) > 1 {
 		l.isGameRunning.Store(true)
+
+		// TODO: start the game
 	}
 
 	l.triggerStateUpdate()
