@@ -89,6 +89,14 @@ func (l *lobby) joinPlayer(c net.Conn) {
 		return
 	}
 
+	// Reject client connection if game is already running.
+	if l.isGameRunning.Load() {
+		lg.Info("game is running, reject client connection")
+		_ = conn.Send(message.NewError("game is in progress"))
+		_ = conn.Close()
+		return
+	}
+
 	// New player joining, check if lobby is full.
 	if len(l.players) >= common.MaxPlayers {
 		lg.Info("lobby is full, reject client connection")

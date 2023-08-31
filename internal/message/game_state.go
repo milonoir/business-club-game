@@ -11,25 +11,13 @@ type GameState struct {
 	Started   bool
 	Readiness []Readiness
 	Companies []string
-	Player    Player
-	Hand      []game.Card
-	Opponents []Player
+	Player    game.Player
+	Opponents []game.Player
 }
 
 type Readiness struct {
 	Name  string
 	Ready bool
-}
-
-type Player struct {
-	Name string
-	Portfolio
-}
-
-type Portfolio struct {
-	Hidden bool
-	Stocks [4]int
-	Cash   int
 }
 
 type stateUpdateMessage struct {
