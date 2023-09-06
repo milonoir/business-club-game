@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net"
 	"sync/atomic"
 	"time"
@@ -14,7 +15,6 @@ import (
 	"github.com/milonoir/business-club-game/internal/message"
 	"github.com/milonoir/business-club-game/internal/network"
 	"github.com/rivo/tview"
-	"golang.org/x/exp/slog"
 )
 
 const (

@@ -1,10 +1,10 @@
 package server
 
 import (
+	"log/slog"
 	"math/rand"
 
 	"github.com/milonoir/business-club-game/internal/game"
-	"golang.org/x/exp/slog"
 )
 
 type gameRunner struct {

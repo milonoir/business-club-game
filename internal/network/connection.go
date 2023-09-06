@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net"
 	"sync/atomic"
 	"time"
@@ -12,7 +13,6 @@ import (
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
 	"github.com/milonoir/business-club-game/internal/message"
-	"golang.org/x/exp/slog"
 )
 
 const (

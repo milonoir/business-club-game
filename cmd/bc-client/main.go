@@ -1,12 +1,12 @@
 package main
 
 import (
+	"log/slog"
 	"os"
 	"time"
 
 	"github.com/milonoir/business-club-game/internal/client"
 	"github.com/rivo/tview"
-	"golang.org/x/exp/slog"
 )
 
 func refresh(app *tview.Application) {

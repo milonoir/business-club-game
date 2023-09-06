@@ -2,6 +2,7 @@ package server
 
 import (
 	"errors"
+	"log/slog"
 	"net"
 	"sync/atomic"
 	"time"
@@ -10,7 +11,6 @@ import (
 	"github.com/milonoir/business-club-game/internal/message"
 	"github.com/milonoir/business-club-game/internal/network"
 	"github.com/teris-io/shortid"
-	"golang.org/x/exp/slog"
 )
 
 var (

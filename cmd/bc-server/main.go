@@ -3,13 +3,13 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/milonoir/business-club-game/internal/game"
 	"github.com/milonoir/business-club-game/internal/server"
-	"golang.org/x/exp/slog"
 )
 
 const (

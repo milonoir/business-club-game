@@ -3,13 +3,13 @@ package server
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"sync"
 	"time"
 
 	"github.com/gobwas/ws"
 	"github.com/milonoir/business-club-game/internal/game"
-	"golang.org/x/exp/slog"
 )
 
 // Server is responsible for handling WS connections and passing them over to the lobby.
