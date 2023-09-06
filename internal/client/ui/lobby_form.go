@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/milonoir/business-club-game/internal/common"
+	"github.com/milonoir/business-club-game/internal/game"
 	"github.com/milonoir/business-club-game/internal/message"
 	"github.com/rivo/tview"
 )
@@ -57,7 +57,7 @@ func (l *LobbyForm) Update(state []message.Readiness) {
 		}
 		sb.WriteString(fmt.Sprintf("[%s]%s\n", c, p.Name))
 	}
-	for i := common.MaxPlayers - len(state); i > 0; i-- {
+	for i := game.MaxPlayers - len(state); i > 0; i-- {
 		sb.WriteString("[grey]-- open slot --\n")
 	}
 

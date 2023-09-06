@@ -6,13 +6,13 @@ import (
 
 type Assets struct {
 	Companies  []string `json:"companies"`
-	ActionDeck []*Card  `json:"actionDeck"`
+	PlayerDeck []*Card  `json:"playerDeck"`
 	BankDeck   []*Card  `json:"bankDeck"`
 }
 
-func (a *Assets) ShuffleActionDeck() {
-	rand.Shuffle(len(a.ActionDeck), func(i, j int) {
-		a.ActionDeck[i], a.ActionDeck[j] = a.ActionDeck[j], a.ActionDeck[i]
+func (a *Assets) ShufflePlayerDeck() {
+	rand.Shuffle(len(a.PlayerDeck), func(i, j int) {
+		a.PlayerDeck[i], a.PlayerDeck[j] = a.PlayerDeck[j], a.PlayerDeck[i]
 	})
 }
 

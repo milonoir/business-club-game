@@ -3,11 +3,10 @@ package server
 import (
 	"errors"
 	"net"
-	"sync"
 	"sync/atomic"
 	"time"
 
-	"github.com/milonoir/business-club-game/internal/common"
+	"github.com/milonoir/business-club-game/internal/game"
 	"github.com/milonoir/business-club-game/internal/message"
 	"github.com/milonoir/business-club-game/internal/network"
 	"github.com/teris-io/shortid"
@@ -26,28 +25,26 @@ type signedMessage struct {
 
 // lobby manages player connections and the game.
 type lobby struct {
-	pmux    sync.Mutex
-	players map[string]Player
+	players *playerMap
 	inbox   chan signedMessage
 	done    chan struct{}
 	l       *slog.Logger
 
+	assets        *game.Assets
 	isGameRunning atomic.Bool
 }
 
-func newLobby(l *slog.Logger) *lobby {
+func newLobby(l *slog.Logger, a *game.Assets) *lobby {
 	return &lobby{
-		players: make(map[string]Player, common.MaxPlayers),
-		inbox:   make(chan signedMessage, common.MaxPlayers*100),
+		assets:  a,
+		players: newPlayerMap(),
+		inbox:   make(chan signedMessage, game.MaxPlayers*100),
 		done:    make(chan struct{}),
 		l:       l.With("component", "lobby"),
 	}
 }
 
 func (l *lobby) joinPlayer(c net.Conn) {
-	l.pmux.Lock()
-	defer l.pmux.Unlock()
-
 	lg := l.l.With("remote_addr", c.RemoteAddr())
 
 	// Wrap connection.
@@ -65,7 +62,7 @@ func (l *lobby) joinPlayer(c net.Conn) {
 
 	// If we received a key, the player wants to reconnect.
 	if key != "" {
-		p, ok := l.players[key]
+		p, ok := l.players.get(key)
 		if !ok {
 			// Unknown key.
 			lg.Error("unknown reconnect key", "key", key)
@@ -98,7 +95,7 @@ func (l *lobby) joinPlayer(c net.Conn) {
 	}
 
 	// New player joining, check if lobby is full.
-	if len(l.players) >= common.MaxPlayers {
+	if l.players.len() >= game.MaxPlayers {
 		lg.Info("lobby is full, reject client connection")
 		_ = conn.Send(message.NewError("lobby is full"))
 		_ = conn.Close()
@@ -119,7 +116,7 @@ func (l *lobby) joinPlayer(c net.Conn) {
 	}
 
 	lg.Info("player joined", "key", key, "name", name)
-	l.players[key] = NewPlayer(conn, key, name)
+	l.players.add(key, NewPlayer(conn, key, name))
 	go l.fanInConnection(key, conn)
 
 	l.triggerStateUpdate()
@@ -147,11 +144,11 @@ func (l *lobby) receiveReconnectKey(c network.Connection) ([]string, error) {
 }
 
 func (l *lobby) removePlayer(key string) {
-	l.pmux.Lock()
-	defer l.pmux.Unlock()
-
-	p := l.players[key]
-	delete(l.players, key)
+	p, ok := l.players.get(key)
+	if !ok {
+		return
+	}
+	l.players.remove(key)
 
 	l.l.Info("player left", "remote_addr", p.Conn().RemoteAddress(), "key", key)
 	l.triggerStateUpdate()
@@ -163,11 +160,12 @@ func (l *lobby) start() {
 
 func (l *lobby) stop() {
 	close(l.done)
-	for _, p := range l.players {
+
+	l.players.forEach(func(p Player) {
 		if err := p.Conn().Close(); err != nil {
 			l.l.Error("close connection", "error", err, "remote_addr", p.Conn().RemoteAddress())
 		}
-	}
+	})
 }
 
 func (l *lobby) fanInConnection(key string, c network.Connection) {
@@ -211,16 +209,16 @@ func (l *lobby) receiver() {
 			case message.StateUpdate:
 				// This is an internal signal to send state update to all players.
 				l.sendStateUpdate()
+			default:
+				// Put it back in the inbox, it's not for us.
+				l.inbox <- sm
 			}
 		}
 	}
 }
 
 func (l *lobby) handleVoteToStart(key string, msg message.Message) {
-	l.pmux.Lock()
-	defer l.pmux.Unlock()
-
-	p, ok := l.players[key]
+	p, ok := l.players.get(key)
 	if !ok {
 		return
 	}
@@ -228,41 +226,45 @@ func (l *lobby) handleVoteToStart(key string, msg message.Message) {
 
 	// Check if all players are ready.
 	allReady := true
-	for _, p = range l.players {
+	l.players.forEach(func(p Player) {
 		if !p.IsReady() {
 			allReady = false
 		}
-	}
+	})
 
 	// Cannot start game with one player or if not all players are ready.
-	if allReady && len(l.players) > 1 {
-		l.isGameRunning.Store(true)
-
-		// TODO: start the game
+	if allReady && l.players.len() > 1 {
+		go l.startGame()
 	}
 
 	l.triggerStateUpdate()
 }
 
-func (l *lobby) sendStateUpdate() {
-	l.pmux.Lock()
-	defer l.pmux.Unlock()
+func (l *lobby) startGame() {
+	l.isGameRunning.Store(true)
+	defer l.isGameRunning.Store(false)
 
+	runner := newGameRunner(l.players, l.assets)
+	runner.run(l.inbox, l.done)
+}
+
+func (l *lobby) sendStateUpdate() {
 	// Send only a readiness update to all players.
 	if !l.isGameRunning.Load() {
-		r := make([]message.Readiness, 0, len(l.players))
-		for _, p := range l.players {
+		r := make([]message.Readiness, 0, l.players.len())
+		l.players.forEach(func(p Player) {
 			r = append(r, message.Readiness{Name: p.Name(), Ready: p.IsReady()})
-		}
+		})
 
 		update := message.NewStateUpdate(&message.GameState{Readiness: r})
-		for _, p := range l.players {
+		l.players.forEach(func(p Player) {
 			if p.Conn().IsAlive() {
 				if err := p.Conn().Send(update); err != nil {
 					l.l.Error("send readiness", "error", err, "remote_addr", p.Conn().RemoteAddress())
 				}
 			}
-		}
+		})
+
 		return
 	}
 
@@ -271,11 +273,11 @@ func (l *lobby) sendStateUpdate() {
 
 	// TODO: fill in game state.
 
-	for _, p := range l.players {
+	l.players.forEach(func(p Player) {
 		if p.Conn().IsAlive() {
 			if err := p.Conn().Send(update); err != nil {
 				l.l.Error("send game started", "error", err, "remote_addr", p.Conn().RemoteAddress())
 			}
 		}
-	}
+	})
 }

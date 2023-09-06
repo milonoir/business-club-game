@@ -1,4 +1,4 @@
-package common
+package game
 
 const (
 	// MaxPlayers is the maximum number of players allowed in a game.

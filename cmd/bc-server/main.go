@@ -39,7 +39,7 @@ func main() {
 	//g := server.NewGame(a)
 	//
 	//fmt.Println(g.Companies)
-	//fmt.Println(g.ActionDeck)
+	//fmt.Println(g.PlayerDeck)
 	//fmt.Println(g.BankDeck)
 
 	// Setup OS signal trap.
@@ -48,7 +48,7 @@ func main() {
 
 	// Run server.
 	srv := server.NewServer(serverPort, logger)
-	srv.Start()
+	srv.Start(&a)
 
 	// Catch signal.
 	<-sig

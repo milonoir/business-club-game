@@ -1,5 +1,6 @@
 package game
 
+// Player holds player data.
 type Player struct {
 	Name   string
 	Cash   int

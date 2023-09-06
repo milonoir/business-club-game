@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gobwas/ws"
+	"github.com/milonoir/business-club-game/internal/game"
 	"golang.org/x/exp/slog"
 )
 
@@ -41,10 +42,10 @@ func (s *Server) handler() http.HandlerFunc {
 	}
 }
 
-func (s *Server) Start() {
+func (s *Server) Start(a *game.Assets) {
 	// Start the lobby.
 	s.l.Info("starting lobby")
-	s.lobby = newLobby(s.l)
+	s.lobby = newLobby(s.l, a)
 	s.wg.Add(1)
 	go func() {
 		defer s.wg.Done()
