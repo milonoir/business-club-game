@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -72,7 +73,7 @@ func (s *Server) Start(a *game.Assets) {
 		//}
 
 		// Non-TLS
-		if err := s.srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := s.srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			s.l.Error("server error", "error", err)
 			return
 		}
