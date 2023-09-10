@@ -203,12 +203,15 @@ func (l *lobby) receiver() {
 		case sm := <-l.inbox:
 			switch sm.Msg.Type() {
 			case message.VoteToStart:
-				if !l.isGameRunning.Load() {
-					l.handleVoteToStart(sm.Key, sm.Msg)
-				}
+				l.handleVoteToStart(sm.Key, sm.Msg)
 			case message.StateUpdate:
 				// This is an internal signal to send state update to all players.
-				l.sendStateUpdate()
+				if !l.isGameRunning.Load() {
+					l.sendStateUpdate()
+				} else {
+					// Put it back in the inbox, it's not for us.
+					l.inbox <- sm
+				}
 			default:
 				// Put it back in the inbox, it's not for us.
 				l.inbox <- sm
@@ -218,6 +221,10 @@ func (l *lobby) receiver() {
 }
 
 func (l *lobby) handleVoteToStart(key string, msg message.Message) {
+	if l.isGameRunning.Load() {
+		return
+	}
+
 	p, ok := l.players.get(key)
 	if !ok {
 		return
@@ -250,33 +257,16 @@ func (l *lobby) startGame() {
 
 func (l *lobby) sendStateUpdate() {
 	// Send only a readiness update to all players.
-	if !l.isGameRunning.Load() {
-		r := make([]message.Readiness, 0, l.players.len())
-		l.players.forEach(func(p Player) {
-			r = append(r, message.Readiness{Name: p.Name(), Ready: p.IsReady()})
-		})
+	r := make([]message.Readiness, 0, l.players.len())
+	l.players.forEach(func(p Player) {
+		r = append(r, message.Readiness{Name: p.Name(), Ready: p.IsReady()})
+	})
 
-		update := message.NewStateUpdate(&message.GameState{Readiness: r})
-		l.players.forEach(func(p Player) {
-			if p.Conn().IsAlive() {
-				if err := p.Conn().Send(update); err != nil {
-					l.l.Error("send readiness", "error", err, "remote_addr", p.Conn().RemoteAddress())
-				}
-			}
-		})
-
-		return
-	}
-
-	// Send full game state update to all players.
-	update := message.NewStateUpdate(&message.GameState{Started: true})
-
-	// TODO: fill in game state.
-
+	update := message.NewStateUpdate(&message.GameState{Readiness: r})
 	l.players.forEach(func(p Player) {
 		if p.Conn().IsAlive() {
 			if err := p.Conn().Send(update); err != nil {
-				l.l.Error("send game started", "error", err, "remote_addr", p.Conn().RemoteAddress())
+				l.l.Error("send readiness", "error", err, "remote_addr", p.Conn().RemoteAddress())
 			}
 		}
 	})

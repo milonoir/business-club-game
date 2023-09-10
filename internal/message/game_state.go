@@ -8,11 +8,15 @@ import (
 )
 
 type GameState struct {
-	Started   bool
-	Readiness []Readiness
-	Companies []string
-	Player    game.Player
-	Opponents []game.Player
+	Started       bool
+	Readiness     []Readiness
+	Turn          int
+	PlayerOrder   []string
+	CurrentPlayer int
+	Companies     []string
+	StockPrices   [4]int
+	Player        game.Player
+	Opponents     []game.Player
 }
 
 type Readiness struct {

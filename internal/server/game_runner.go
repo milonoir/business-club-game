@@ -5,6 +5,7 @@ import (
 	"math/rand"
 
 	"github.com/milonoir/business-club-game/internal/game"
+	"github.com/milonoir/business-club-game/internal/message"
 )
 
 type gameRunner struct {
@@ -50,7 +51,10 @@ func (g *gameRunner) run(inbox chan signedMessage, done <-chan struct{}) {
 		// Shuffle players, then iterate over players.
 		order := g.shufflePlayers()
 
-		for _, key := range order {
+		for i, key := range order {
+			// Send state update to all players.
+			g.sendStateUpdate(order, turn, i)
+
 			p, _ := g.players.get(key)
 			_ = p
 			// Signal player to start turn.
@@ -93,4 +97,49 @@ func (g *gameRunner) shufflePlayers() []string {
 	})
 
 	return order
+}
+
+func (g *gameRunner) sendStateUpdate(order []string, turn, currentPlayer int) {
+	state := &message.GameState{
+		Started:       true,
+		Companies:     g.assets.Companies,
+		StockPrices:   g.stockPrices,
+		Turn:          turn,
+		PlayerOrder:   order,
+		CurrentPlayer: currentPlayer,
+	}
+
+	// Build player states first.
+	playerStates := make(map[string]game.Player, game.MaxPlayers)
+	keys := g.players.keys()
+	for _, key := range keys {
+		p, _ := g.players.get(key)
+		playerStates[key] = game.Player{
+			Name:   p.Name(),
+			Cash:   p.Cash(),
+			Stocks: p.Stocks(),
+			Hand:   p.Hand(),
+		}
+	}
+
+	// Reuse game state.
+	for _, key := range keys {
+		// Separate player and opponents.
+		state.Player = playerStates[key]
+		opps := make([]game.Player, 0, game.MaxPlayers-1)
+		for k, p := range playerStates {
+			if k != key {
+				opps = append(opps, p)
+			}
+		}
+		state.Opponents = opps
+
+		// Send state update to player.
+		p, _ := g.players.get(key)
+		if p.Conn().IsAlive() {
+			if err := p.Conn().Send(message.NewStateUpdate(state)); err != nil {
+				g.l.Error("send game state update", "error", err, "remote_addr", p.Conn().RemoteAddress())
+			}
+		}
+	}
 }
