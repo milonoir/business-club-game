@@ -36,24 +36,29 @@ func TestKind_UnmarshalJSON(t *testing.T) {
 			expKind: VoteToStart,
 		},
 		{
-			name:    "play a card",
+			name:    "start turn",
 			raw:     []byte(`{"Kind":5}`),
+			expKind: StartTurn,
+		},
+		{
+			name:    "end turn",
+			raw:     []byte(`{"Kind":6}`),
+			expKind: EndTurn,
+		},
+		{
+			name:    "play a card",
+			raw:     []byte(`{"Kind":7}`),
 			expKind: PlayCard,
 		},
 		{
 			name:    "buy stocks",
-			raw:     []byte(`{"Kind":6}`),
+			raw:     []byte(`{"Kind":8}`),
 			expKind: Buy,
 		},
 		{
 			name:    "sell stocks",
-			raw:     []byte(`{"Kind":7}`),
+			raw:     []byte(`{"Kind":9}`),
 			expKind: Sell,
-		},
-		{
-			name:    "end turn",
-			raw:     []byte(`{"Kind":8}`),
-			expKind: EndTurn,
 		},
 		{
 			name:    "no kind",

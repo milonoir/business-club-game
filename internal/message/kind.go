@@ -20,7 +20,7 @@ func (k *Kind) UnmarshalJSON(b []byte) error {
 		return fmt.Errorf("cannot parse kind: %w", err)
 	}
 
-	if kk := Kind(v); kk > EndTurn {
+	if kk := Kind(v); kk > Sell {
 		*k = Unknown
 	} else {
 		*k = kk
@@ -45,6 +45,12 @@ const (
 	// VoteToStart is a client type message that represents client readiness.
 	VoteToStart
 
+	// StartTurn is a server type message that signals a client that their turn has started.
+	StartTurn
+
+	// EndTurn is a client type message when a player wants to end their turn.
+	EndTurn
+
 	// PlayCard is a client type message when a player wants to play a card.
 	PlayCard
 
@@ -53,7 +59,4 @@ const (
 
 	// Sell is a client type message when a player wants to sell stocks.
 	Sell
-
-	// EndTurn is a client type message when a player wants to end their turn.
-	EndTurn
 )

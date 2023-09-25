@@ -39,13 +39,15 @@ func Parse(raw []byte) (Message, error) {
 		return NewStateUpdateFromBytes(b.Data)
 	case VoteToStart:
 		return NewVoteToStartFromBytes(b.Data), nil
+	case StartTurn:
+		return NewStartTurn(), nil
+	case EndTurn:
+		return NewUnknown(), nil
 	case PlayCard:
 		return NewUnknown(), nil
 	case Buy:
 		return NewUnknown(), nil
 	case Sell:
-		return NewUnknown(), nil
-	case EndTurn:
 		return NewUnknown(), nil
 	default:
 		return NewUnknown(), nil
