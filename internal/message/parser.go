@@ -42,13 +42,13 @@ func Parse(raw []byte) (Message, error) {
 	case StartTurn:
 		return NewStartTurn(), nil
 	case EndTurn:
-		return NewUnknown(), nil
+		return NewEndTurn(), nil
 	case PlayCard:
-		return NewUnknown(), nil
+		return NewPlayCardFromBytes(b.Data)
 	case Buy:
-		return NewUnknown(), nil
+		return NewBuyStockMessageFromBytes(b.Data)
 	case Sell:
-		return NewUnknown(), nil
+		return NewSellStockMessageFromBytes(b.Data)
 	default:
 		return NewUnknown(), nil
 	}

@@ -4,16 +4,19 @@ import (
 	"encoding/json"
 )
 
+// voteToStartMessage represents a VoteToStart message.
 type voteToStartMessage struct {
 	ready bool
 }
 
+// NewVoteToStart returns a new Message of VoteToStart kind.
 func NewVoteToStart(ready bool) Message {
 	return voteToStartMessage{
 		ready: ready,
 	}
 }
 
+// NewVoteToStartFromBytes returns a new Message of VoteToStart kind.
 func NewVoteToStartFromBytes(b []byte) Message {
 	return voteToStartMessage{
 		ready: b[0] == 1,

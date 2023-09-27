@@ -9,6 +9,11 @@ import (
 	"github.com/milonoir/business-club-game/internal/message"
 )
 
+const (
+	retryAttempts = 5
+	retryDelay    = 2 * time.Second
+)
+
 type gameRunner struct {
 	// Input
 	assets  *game.Assets
@@ -53,6 +58,8 @@ func (g *gameRunner) run(inbox chan signedMessage, done <-chan struct{}) {
 		order := g.shufflePlayers()
 
 		for i, key := range order {
+			// TODO: consider player timeout and automated actions.
+
 			// Send state update to all players.
 			g.sendStateUpdate(order, turn, i, false)
 
@@ -60,36 +67,142 @@ func (g *gameRunner) run(inbox chan signedMessage, done <-chan struct{}) {
 			p, _ := g.players.get(key)
 			g.sendStartTurn(p)
 
-			// Get player action card. Validate action. Retry if invalid.
-			// Update game state.
+			// Get player action card.
+			g.handlePlayerAction(inbox, done, key, p)
+			g.sendStateUpdate(order, turn, i, false)
 
-			// Get player transaction. Validate transaction. Retry if invalid.
-			// Update game state.
-			// If player ends turn, move on to the next player.
+			// Get player transaction. Send state update after each transaction.
+			for g.handlePlayerTransaction(inbox, done, key, p) {
+				g.sendStateUpdate(order, turn, i, false)
+			}
 		}
 
+		// Update after last player in turn happens here.
+		g.sendStateUpdate(order, turn, game.MaxPlayers+1, false)
+
 		// Perform bank action.
-		// Update game state.
+		g.playCard(g.assets.BankDeck[turn-1], game.WildcardCompany)
+		g.sendStateUpdate(order, turn, game.MaxPlayers+1, false)
 	}
 
 	// Game has ended, calculate final scores, and send them to players.
-	g.sendStateUpdate(nil, 0, 0, true)
+	g.sendStateUpdate(nil, game.MaxTurns, game.MaxPlayers+1, true)
 }
 
 func (g *gameRunner) handlePlayerAction(inbox <-chan signedMessage, done <-chan struct{}, key string, p Player) {
-	for finished := false; !finished; {
+	for {
 		select {
 		case <-done:
 			return
 		case msg := <-inbox:
+			// Ignore messages from other players.
 			if msg.Key != key {
 				continue
 			}
 
-			// TODO: Validate action.
+			// Ignore non-action messages.
+			if msg.Msg.Type() != message.PlayCard {
+				continue
+			}
 
-			finished = true
+			// Validate action by card ID.
+			pl := msg.Msg.Payload().([]int)
+			id, company := pl[0], pl[1]
+
+			for i, c := range p.Hand() {
+				if c.ID == id {
+					// Remove card from player hand.
+					p.SetHand(append(p.Hand()[:i], p.Hand()[i+1:]...))
+
+					// Play the card.
+					g.playCard(c, company)
+
+					// Acknowledge action.
+					if err := retry(retryAttempts, retryDelay, func() error {
+						return p.Conn().Send(message.NewPlayCard(0, 0))
+					}); err != nil {
+						g.l.Error("send play card ack", "error", err, "remote_addr", p.Conn().RemoteAddress())
+					}
+
+					// TODO: What if player disconnects?
+				}
+			}
 		}
+	}
+}
+
+func (g *gameRunner) playCard(c *game.Card, company int) {
+	for _, m := range c.Mods {
+		cpny := m.Company
+		if cpny <= game.WildcardCompany {
+			cpny = company
+		}
+
+		// This should not ever happen, but log it just in case.
+		if cpny < 0 || cpny > 3 {
+			g.l.Error("asset error: invalid company", "chosen_company", company, "card_company", m.Company, "card_id", c.ID)
+			continue
+		}
+
+		newPrice := m.Mod.Calculate(g.stockPrices[cpny])
+		if newPrice < 0 {
+			newPrice = 0
+		} else if newPrice > game.MaxPrice {
+			newPrice = game.MaxPrice
+		}
+		g.stockPrices[cpny] = newPrice
+
+		// TODO: send journal.
+	}
+}
+
+func (g *gameRunner) handlePlayerTransaction(inbox <-chan signedMessage, done <-chan struct{}, key string, p Player) bool {
+	for {
+		select {
+		case <-done:
+			return false
+		case msg := <-inbox:
+			// Ignore messages from other players.
+			if msg.Key != key {
+				continue
+			}
+
+			switch msg.Msg.Type() {
+			case message.EndTurn:
+				// Player ends turn.
+				return false
+			case message.Buy:
+				// Player wants to buy stocks.
+				pl := msg.Msg.Payload().([]int)
+				company, amount := pl[0], pl[1]
+				g.playerBuyStocks(p, company, amount)
+				return true
+			case message.Sell:
+				// Player wants to sell stocks.
+				pl := msg.Msg.Payload().([]int)
+				company, amount := pl[0], pl[1]
+				g.playerSellStocks(p, company, amount)
+				return true
+			}
+		}
+	}
+}
+
+func (g *gameRunner) playerBuyStocks(p Player, company int, amount int) {
+	if cost := g.stockPrices[company] * amount; p.Cash() >= cost {
+		p.AddCash(-cost)
+		p.AddStocks(company, amount)
+
+		// TODO: send journal
+	}
+}
+
+func (g *gameRunner) playerSellStocks(p Player, company int, amount int) {
+	if p.Stocks()[company] >= amount {
+		p.AddCash(g.stockPrices[company] * amount)
+		p.AddStocks(company, -amount)
+
+		// TODO: send journal
 	}
 }
 
@@ -104,7 +217,7 @@ func (g *gameRunner) shufflePlayers() []string {
 }
 
 func (g *gameRunner) sendStartTurn(p Player) {
-	if err := retry(5, 2*time.Second, func() error {
+	if err := retry(retryAttempts, retryDelay, func() error {
 		return p.Conn().Send(message.NewStartTurn())
 	}); err != nil {
 		g.l.Error("send start turn", "error", err, "remote_addr", p.Conn().RemoteAddress())

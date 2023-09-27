@@ -7,9 +7,6 @@ import (
 )
 
 const (
-	// keyExchangeSeparator is the separator used to split the key and the name.
-	keyExchangeSeparator = ":"
-
 	// KeyExchangeTimeout is the timeout used for the key exchange between the client and server.
 	KeyExchangeTimeout = 10 * time.Second
 )
@@ -27,11 +24,11 @@ type keyExchangeMessage struct {
 // NewKeyExchangeFromBytes returns a new Message of KeyExchange kind.
 func NewKeyExchangeFromBytes(b []byte) Message {
 	s := string(b)
-	if len(s) == 0 || !strings.Contains(s, keyExchangeSeparator) {
+	if len(s) == 0 || !strings.Contains(s, separator) {
 		return EmptyKeyExchange
 	}
 
-	split := strings.SplitN(s, keyExchangeSeparator, 2)
+	split := strings.SplitN(s, separator, 2)
 
 	return keyExchangeMessage{
 		key:  split[0],
@@ -61,7 +58,7 @@ func (m keyExchangeMessage) Payload() any {
 func (m keyExchangeMessage) MarshalJSON() ([]byte, error) {
 	b := base{
 		Kind: KeyExchange,
-		Data: []byte(m.key + keyExchangeSeparator + m.name),
+		Data: []byte(m.key + separator + m.name),
 	}
 	return json.Marshal(b)
 }

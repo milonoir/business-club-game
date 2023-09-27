@@ -25,10 +25,11 @@ type signedMessage struct {
 
 // lobby manages player connections and the game.
 type lobby struct {
-	players *playerMap
-	inbox   chan signedMessage
-	done    chan struct{}
-	l       *slog.Logger
+	players   *playerMap
+	inbox     chan signedMessage
+	gameInbox chan signedMessage
+	done      chan struct{}
+	l         *slog.Logger
 
 	assets        *game.Assets
 	isGameRunning atomic.Bool
@@ -36,11 +37,12 @@ type lobby struct {
 
 func newLobby(l *slog.Logger, a *game.Assets) *lobby {
 	return &lobby{
-		assets:  a,
-		players: newPlayerMap(),
-		inbox:   make(chan signedMessage, game.MaxPlayers*100),
-		done:    make(chan struct{}),
-		l:       l.With("component", "lobby"),
+		assets:    a,
+		players:   newPlayerMap(),
+		inbox:     make(chan signedMessage, game.MaxPlayers*100),
+		gameInbox: make(chan signedMessage, game.MaxPlayers*100),
+		done:      make(chan struct{}),
+		l:         l.With("component", "lobby"),
 	}
 }
 
@@ -208,13 +210,12 @@ func (l *lobby) receiver() {
 				// This is an internal signal to send state update to all players.
 				if !l.isGameRunning.Load() {
 					l.sendStateUpdate()
-				} else {
-					// Put it back in the inbox, it's not for us.
-					l.inbox <- sm
 				}
 			default:
-				// Put it back in the inbox, it's not for us.
-				l.inbox <- sm
+				// Forward to game runner if game is running, otherwise drop.
+				if l.isGameRunning.Load() {
+					l.gameInbox <- sm
+				}
 			}
 		}
 	}
@@ -252,7 +253,7 @@ func (l *lobby) startGame() {
 	defer l.isGameRunning.Store(false)
 
 	runner := newGameRunner(l.players, l.assets)
-	runner.run(l.inbox, l.done)
+	runner.run(l.gameInbox, l.done)
 }
 
 func (l *lobby) sendStateUpdate() {

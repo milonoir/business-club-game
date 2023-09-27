@@ -26,7 +26,7 @@ func TestNewKeyExchangeWithName(t *testing.T) {
 func TestNewKeyExchangeFromBytes(t *testing.T) {
 	key := "my-key"
 	name := "my-name"
-	b := []byte(key + keyExchangeSeparator + name)
+	b := []byte(key + separator + name)
 
 	m := NewKeyExchangeFromBytes(b)
 

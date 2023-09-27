@@ -7,6 +7,7 @@ import (
 	"github.com/milonoir/business-club-game/internal/game"
 )
 
+// GameState represents the state of the game.
 type GameState struct {
 	Started       bool
 	Readiness     []Readiness
@@ -19,21 +20,25 @@ type GameState struct {
 	Opponents     []game.Player
 }
 
+// Readiness represents a player's readiness.
 type Readiness struct {
 	Name  string
 	Ready bool
 }
 
+// stateUpdateMessage is a message that contains the game state.
 type stateUpdateMessage struct {
 	state *GameState
 }
 
+// NewStateUpdate creates a new state update message.
 func NewStateUpdate(state *GameState) Message {
 	return stateUpdateMessage{
 		state: state,
 	}
 }
 
+// NewStateUpdateFromBytes creates a new state update message from bytes.
 func NewStateUpdateFromBytes(b []byte) (Message, error) {
 	var state GameState
 	if err := json.Unmarshal(b, &state); err != nil {
@@ -44,14 +49,17 @@ func NewStateUpdateFromBytes(b []byte) (Message, error) {
 	}, nil
 }
 
+// Type implements the Message interface.
 func (m stateUpdateMessage) Type() Kind {
 	return StateUpdate
 }
 
+// Payload implements the Message interface.
 func (m stateUpdateMessage) Payload() any {
 	return m.state
 }
 
+// MarshalJSON implements the json.Marshaler interface.
 func (m stateUpdateMessage) MarshalJSON() ([]byte, error) {
 	sb, err := json.Marshal(m.state)
 	if err != nil {

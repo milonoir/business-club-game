@@ -12,4 +12,7 @@ const (
 
 	// MaxPrice is the maximum price for each company.
 	MaxPrice = 400
+
+	// WildcardCompany is the company ID for the wildcard company.
+	WildcardCompany = -1
 )
