@@ -9,11 +9,6 @@ import (
 
 type TurnPanel struct {
 	tv *tview.TextView
-
-	maxTurns      int
-	currentTurn   int
-	currentPlayer int
-	playerOrder   []string
 }
 
 func NewTurnPanel() *TurnPanel {
@@ -32,41 +27,23 @@ func (p *TurnPanel) GetTextView() *tview.TextView {
 	return p.tv
 }
 
-func (p *TurnPanel) SetMaxTurns(max int) {
-	p.maxTurns = max
-}
-
-func (p *TurnPanel) NewTurn(order []string) {
-	if p.currentTurn >= p.maxTurns {
-		return
-	}
-	p.currentTurn++
-	p.playerOrder = order
-	p.currentPlayer = 0
-
-	p.redraw()
-}
-
-func (p *TurnPanel) NextPlayer() {
-	if p.currentPlayer >= len(p.playerOrder) {
-		return
-	}
-	p.currentPlayer++
-
-	p.redraw()
-}
-
-func (p *TurnPanel) redraw() {
+func (p *TurnPanel) Update(maxTurns, currentTurn int, playerOrder []string, currentPlayer int) {
 	sb := strings.Builder{}
 
-	sb.WriteString(fmt.Sprintf("[yellow]Turn: %d/%d\n\n", p.currentTurn, p.maxTurns))
+	sb.WriteString(fmt.Sprintf("[yellow]Turn: %d/%d\n\n", currentTurn, maxTurns))
 
-	for i, name := range p.playerOrder {
-		if i == p.currentPlayer {
+	for i, name := range playerOrder {
+		if i == currentPlayer {
 			sb.WriteString(fmt.Sprintf("[red]» %s\n", name))
 		} else {
 			sb.WriteString(fmt.Sprintf("[white]  %s\n", name))
 		}
+	}
+
+	if currentPlayer >= len(playerOrder) {
+		sb.WriteString("[red]» Bank\n")
+	} else {
+		sb.WriteString("[green]  Bank\n")
 	}
 
 	p.tv.SetText(sb.String())

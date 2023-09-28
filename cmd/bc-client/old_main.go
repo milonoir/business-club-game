@@ -173,9 +173,7 @@ func buildApp() *tview.Application {
 	topRow.AddItem(turns.GetTextView(), 0, 3, 1, 1, 1, 1, false)
 
 	// TEST ONLY.
-	turns.SetMaxTurns(15)
-	turns.NewTurn(pp.Players())
-	turns.NextPlayer()
+	turns.Update(15, 3, pp.Players(), 1)
 
 	// Bottom row of the main screen.
 	bottomRow := tview.NewGrid()

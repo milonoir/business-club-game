@@ -12,6 +12,7 @@ import (
 
 	"github.com/gobwas/ws"
 	"github.com/milonoir/business-club-game/internal/client/ui"
+	"github.com/milonoir/business-club-game/internal/game"
 	"github.com/milonoir/business-club-game/internal/message"
 	"github.com/milonoir/business-club-game/internal/network"
 	"github.com/rivo/tview"
@@ -240,7 +241,7 @@ func (a *Application) connect(data *ui.LoginData) error {
 	}
 
 	a.server = network.NewClientConnection(conn, a.l)
-	go a.responder(data, a.server.Inbox())
+	go a.receiver(data, a.server.Inbox())
 	a.l.Info("connection established")
 
 	a.l.Info("sending key exchange", "key", data.ReconnectKey, "username", data.Username)
@@ -270,7 +271,7 @@ func (a *Application) connect(data *ui.LoginData) error {
 	return nil
 }
 
-func (a *Application) responder(data *ui.LoginData, incoming <-chan message.Message) {
+func (a *Application) receiver(data *ui.LoginData, incoming <-chan message.Message) {
 	for msg := range incoming {
 		a.l.Debug("received message", "type", msg.Type(), "payload", msg.Payload())
 		switch msg.Type() {
@@ -336,4 +337,14 @@ func (a *Application) handleStateUpdate(state *message.GameState) {
 		a.gameStarted.Store(true)
 		a.pages.SwitchToPage(gamePageName)
 	}
+
+	// Update UI - turn.
+	a.turn.Update(game.MaxTurns, state.Turn, state.PlayerOrder, state.CurrentPlayer)
+
+	// Update UI - standings.
+	a.standings.PlayerUpdate(state.Player.Stocks[0], state.Player.Stocks[1], state.Player.Stocks[2], state.Player.Stocks[3], state.Player.Cash)
+	for i, opp := range state.Opponents {
+		a.standings.OpponentUpdate(i, opp.Stocks[0], opp.Stocks[1], opp.Stocks[2], opp.Stocks[3], opp.Cash, false, false)
+	}
+
 }

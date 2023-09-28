@@ -49,6 +49,10 @@ func Parse(raw []byte) (Message, error) {
 		return NewBuyStockMessageFromBytes(b.Data)
 	case Sell:
 		return NewSellStockMessageFromBytes(b.Data)
+	case QueryCompanies:
+		return NewQueryCompaniesFromBytes(b.Data)
+	case QueryPlayers:
+		return NewUnknown(), nil
 	default:
 		return NewUnknown(), nil
 	}
