@@ -24,6 +24,14 @@ type Mod struct {
 	value int
 }
 
+// NewMod creates a new Mod.
+func NewMod(op string, value int) *Mod {
+	return &Mod{
+		op:    op,
+		value: value,
+	}
+}
+
 // Calculate applies the Mod on p.
 func (m *Mod) Calculate(p int) int {
 	switch m.op {
@@ -82,5 +90,5 @@ func (m *Mod) UnmarshalJSON(b []byte) error {
 
 // MarshalJSON implements the json.Marshaler interface.
 func (m *Mod) MarshalJSON() ([]byte, error) {
-	return []byte(m.String()), nil
+	return []byte(`"` + m.String() + `"`), nil
 }
