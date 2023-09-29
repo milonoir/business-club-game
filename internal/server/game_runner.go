@@ -43,6 +43,7 @@ func (g *gameRunner) init() {
 	// Deal cards to players.
 	i := 0
 	g.players.forEach(func(p Player) {
+		p.AddCash(game.StartingCash)
 		p.SetHand(g.assets.PlayerDeck[i : i+game.MaxTurns])
 		i += game.MaxTurns
 	})
@@ -208,12 +209,17 @@ func (g *gameRunner) playerSellStocks(p Player, company int, amount int) {
 
 func (g *gameRunner) shufflePlayers() []string {
 	order := g.players.keys()
-
 	rand.Shuffle(len(order), func(i, j int) {
 		order[i], order[j] = order[j], order[i]
 	})
 
-	return order
+	playerOrder := make([]string, 0, len(order))
+	for _, key := range order {
+		p, _ := g.players.get(key)
+		playerOrder = append(playerOrder, p.Name())
+	}
+
+	return playerOrder
 }
 
 func (g *gameRunner) sendStartTurn(p Player) {

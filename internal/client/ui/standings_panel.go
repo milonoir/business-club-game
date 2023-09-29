@@ -119,17 +119,23 @@ func (p *StandingsPanel) generateBreakdownString(prices, stocks [4]int, cash int
 	sb := strings.Builder{}
 
 	if showNumbers {
-		sb.WriteString(fmt.Sprintf("[%s]%d\n", p.cp.ColorByIndex(0), stocks[0]))
-		sb.WriteString(fmt.Sprintf("[%s]%d\n", p.cp.ColorByIndex(1), stocks[1]))
-		sb.WriteString(fmt.Sprintf("[%s]%d\n", p.cp.ColorByIndex(2), stocks[2]))
-		sb.WriteString(fmt.Sprintf("[%s]%d\n", p.cp.ColorByIndex(3), stocks[3]))
+		for i := 0; i < 4; i++ {
+			sb.WriteString(fmt.Sprintf("[%s]%d\n", p.cp.ColorByIndex(i), stocks[i]))
+		}
 		sb.WriteString(fmt.Sprintf("[green]%d\n", cash))
 	} else {
-		sb.WriteString(fmt.Sprintf("[%s]%s\n", p.cp.ColorByIndex(0), strings.Repeat("♦", stocks[0])))
-		sb.WriteString(fmt.Sprintf("[%s]%s\n", p.cp.ColorByIndex(1), strings.Repeat("♦", stocks[1])))
-		sb.WriteString(fmt.Sprintf("[%s]%s\n", p.cp.ColorByIndex(2), strings.Repeat("♦", stocks[2])))
-		sb.WriteString(fmt.Sprintf("[%s]%s\n", p.cp.ColorByIndex(3), strings.Repeat("♦", stocks[3])))
-		sb.WriteString(fmt.Sprintf("[green]%s\n", strings.Repeat("$", cash)))
+		for i := 0; i < 4; i++ {
+			s := strings.Repeat("♦", stocks[i])
+			if s == "" {
+				s = "-"
+			}
+			sb.WriteString(fmt.Sprintf("[%s]%s\n", p.cp.ColorByIndex(i), s))
+		}
+		s := strings.Repeat("$", cash)
+		if s == "" {
+			s = "-"
+		}
+		sb.WriteString(fmt.Sprintf("[green]%s\n", s))
 	}
 
 	if showNumbers && showTotal {

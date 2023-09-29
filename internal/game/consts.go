@@ -7,6 +7,9 @@ const (
 	// MaxTurns is the maximum number of turns in a game.
 	MaxTurns = 15
 
+	// StartingCash is the starting cash for each player.
+	StartingCash = 100
+
 	// StartingPrice is the starting price for each company.
 	StartingPrice = 150
 
