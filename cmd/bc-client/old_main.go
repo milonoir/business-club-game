@@ -130,10 +130,7 @@ func sendEmptyKeyEx(conn net.Conn) {
 
 func buildApp() *tview.Application {
 	cp := ui.NewCompanyProvider()
-	cp.AddCompany("Amfora", "blue")
-	cp.AddCompany("Domus", "orange")
-	cp.AddCompany("Piért", "yellow")
-	cp.AddCompany("Skála-Coop", "red")
+	cp.SetCompanies([]string{"Amfora", "Domus", "Piért", "Skála-Coop"})
 
 	pp := ui.NewPlayerProvider([]string{"Xenial Xerus", "Bionic Beaver", "Focal Fossa", "Jammy Jellyfish"})
 
@@ -160,13 +157,13 @@ func buildApp() *tview.Application {
 	topRow.AddItem(standings.GetGrid(), 0, 1, 1, 1, 1, 1, false)
 
 	// TEST ONLY.
-	standings.SetPlayerNames("Jammy Jellyfish", []string{"Xenial Xerus", "Bionic Beaver", "Focal Fossa"})
-	standings.RefreshCompanyNames()
-	standings.SetPrices(30, 190, 330, 60)
-	standings.PlayerUpdate(5, 8, 2, 10, 5000)
-	standings.OpponentUpdate(0, 0, 1, 2, 0, 2, false, false)
-	standings.OpponentUpdate(1, 5, 2, 0, 1, 5, false, false)
-	standings.OpponentUpdate(2, 3, 1, 0, 1, 1, false, false)
+	//standings.setPlayerNames("Jammy Jellyfish", []string{"Xenial Xerus", "Bionic Beaver", "Focal Fossa"})
+	//standings.refreshCompanyNames()
+	//standings.SetPrices(30, 190, 330, 60)
+	//standings.playerUpdate(5, 8, 2, 10, 5000)
+	//standings.opponentUpdate(0, 0, 1, 2, 0, 2, false, false)
+	//standings.opponentUpdate(1, 5, 2, 0, 1, 5, false, false)
+	//standings.opponentUpdate(2, 3, 1, 0, 1, 1, false, false)
 
 	// Turn widget.
 	turns := ui.NewTurnPanel()
@@ -218,27 +215,27 @@ func buildApp() *tview.Application {
 	graphs := ui.NewGraphPanel(cp)
 	middleRow.AddItem(graphs.GetGrid(), 0, 0, 1, 1, 1, 1, false)
 	go func() {
-		graphs.Add(10, 0, 60, 290)
+		graphs.Add([4]int{10, 0, 60, 290})
 		time.Sleep(time.Second)
-		graphs.Add(20, 220, 80, 0)
+		graphs.Add([4]int{20, 220, 80, 0})
 		time.Sleep(time.Second)
-		graphs.Add(30, 120, 230, 0)
+		graphs.Add([4]int{30, 120, 230, 0})
 		time.Sleep(time.Second)
-		graphs.Add(40, 60, 390, 40)
+		graphs.Add([4]int{40, 60, 390, 40})
 		time.Sleep(time.Second)
-		graphs.Add(50, 280, 190, 0)
+		graphs.Add([4]int{50, 280, 190, 0})
 		time.Sleep(time.Second)
-		graphs.Add(60, 0, 10, 10)
+		graphs.Add([4]int{60, 0, 10, 10})
 		time.Sleep(time.Second)
-		graphs.Add(70, 10, 0, 190)
+		graphs.Add([4]int{70, 10, 0, 190})
 		time.Sleep(time.Second)
-		graphs.Add(80, 20, 0, 240)
+		graphs.Add([4]int{80, 20, 0, 240})
 		time.Sleep(time.Second)
-		graphs.Add(90, 70, 90, 140)
+		graphs.Add([4]int{90, 70, 90, 140})
 		time.Sleep(time.Second)
-		graphs.Add(100, 210, 170, 340)
+		graphs.Add([4]int{100, 210, 170, 340})
 		time.Sleep(time.Second)
-		graphs.Add(300, 210, 190, 370)
+		graphs.Add([4]int{300, 210, 190, 370})
 	}()
 
 	// History panel.

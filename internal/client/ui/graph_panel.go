@@ -62,9 +62,8 @@ func (p *GraphPanel) GetGrid() *tview.Grid {
 	return p.g
 }
 
-func (p *GraphPanel) Add(v1, v2, v3, v4 int) {
-	d := [4]int{v1, v2, v3, v4}
-	p.data = append(p.data, d)
+func (p *GraphPanel) Add(prices [4]int) {
+	p.data = append(p.data, prices)
 	if len(p.data) > 10 {
 		p.data = p.data[1:]
 	}
@@ -83,7 +82,7 @@ func (p *GraphPanel) redraw() {
 	current := p.data[len(p.data)-1]
 	cs := make([]string, 4)
 	for i, name := range p.cp.Companies() {
-		cs[i] = fmt.Sprintf("[%s]%s: [white]%d", p.cp.ColorByCompany(name), name, current[i])
+		cs[i] = fmt.Sprintf("[%s]%s: [white]%d", p.cp.ColorByIndex(i), name, current[i])
 	}
 	p.cur.SetText(strings.Join(cs, "   "))
 }
@@ -96,10 +95,10 @@ func (p *GraphPanel) generateRow(v1, v2, v3, v4, lvl int) string {
 	sb := strings.Builder{}
 
 	sb.WriteString("[grey]─")
-	sb.WriteString(p.barOrEmpty(p.cp.ColorByCompanyIndex(0), v1, lvl))
-	sb.WriteString(p.barOrEmpty(p.cp.ColorByCompanyIndex(1), v2, lvl))
-	sb.WriteString(p.barOrEmpty(p.cp.ColorByCompanyIndex(2), v3, lvl))
-	sb.WriteString(p.barOrEmpty(p.cp.ColorByCompanyIndex(3), v4, lvl))
+	sb.WriteString(p.barOrEmpty(p.cp.ColorByIndex(0), v1, lvl))
+	sb.WriteString(p.barOrEmpty(p.cp.ColorByIndex(1), v2, lvl))
+	sb.WriteString(p.barOrEmpty(p.cp.ColorByIndex(2), v3, lvl))
+	sb.WriteString(p.barOrEmpty(p.cp.ColorByIndex(3), v4, lvl))
 
 	return sb.String()
 }

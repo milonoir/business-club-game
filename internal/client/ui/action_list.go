@@ -17,8 +17,7 @@ type ActionList struct {
 
 func NewActionList(cp *CompanyProvider) *ActionList {
 	a := &ActionList{
-		l: tview.NewList(),
-
+		l:  tview.NewList(),
 		cp: cp,
 	}
 
@@ -55,7 +54,7 @@ func (a *ActionList) cardToString(c *game.Card) string {
 		company := fmt.Sprintf("[fuchsia]%-12s", "???")
 		if mod.Company > -1 {
 			name := a.cp.CompanyByIndex(mod.Company)
-			company = fmt.Sprintf("[%s]%-12s", a.cp.ColorByCompany(name), name)
+			company = fmt.Sprintf("[%s]%-12s", a.cp.ColorByIndex(mod.Company), name)
 		}
 
 		var modifier string

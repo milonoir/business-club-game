@@ -229,6 +229,7 @@ func (g *gameRunner) sendStartTurn(p Player) {
 func (g *gameRunner) sendStateUpdate(order []string, turn, currentPlayer int, isFinal bool) {
 	state := &message.GameState{
 		Started:       true,
+		Ended:         isFinal,
 		Companies:     g.assets.Companies,
 		StockPrices:   g.stockPrices,
 		Turn:          turn,

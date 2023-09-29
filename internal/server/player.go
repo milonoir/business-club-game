@@ -1,6 +1,7 @@
 package server
 
 import (
+	"sort"
 	"sync"
 
 	"github.com/milonoir/business-club-game/internal/game"
@@ -138,6 +139,9 @@ func (pm *playerMap) keys() []string {
 	for k := range pm.m {
 		keys = append(keys, k)
 	}
+
+	// Sort keys for deterministic order.
+	sort.Strings(keys)
 
 	return keys
 }

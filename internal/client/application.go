@@ -338,13 +338,18 @@ func (a *Application) handleStateUpdate(state *message.GameState) {
 		a.pages.SwitchToPage(gamePageName)
 	}
 
+	// Update CompanyProvider.
+	a.cp.SetCompanies(state.Companies)
+
 	// Update UI - turn.
 	a.turn.Update(game.MaxTurns, state.Turn, state.PlayerOrder, state.CurrentPlayer)
 
 	// Update UI - standings.
-	a.standings.PlayerUpdate(state.Player.Stocks[0], state.Player.Stocks[1], state.Player.Stocks[2], state.Player.Stocks[3], state.Player.Cash)
-	for i, opp := range state.Opponents {
-		a.standings.OpponentUpdate(i, opp.Stocks[0], opp.Stocks[1], opp.Stocks[2], opp.Stocks[3], opp.Cash, false, false)
-	}
+	a.standings.Update(state)
 
+	// Update UI - graph.
+	a.graph.Add(state.StockPrices)
+
+	// Update UI - actions.
+	a.action.Update(state.Player.Hand)
 }

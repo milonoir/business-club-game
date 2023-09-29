@@ -10,6 +10,7 @@ import (
 // GameState represents the state of the game.
 type GameState struct {
 	Started       bool
+	Ended         bool
 	Readiness     []Readiness
 	Turn          int
 	PlayerOrder   []string

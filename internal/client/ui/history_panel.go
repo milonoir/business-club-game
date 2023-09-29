@@ -48,7 +48,7 @@ func (i *ActionItem) HistoryString(cp *CompanyProvider) string {
 	}
 
 	company := cp.CompanyByIndex(i.Mod.Company)
-	sb.WriteString(fmt.Sprintf("[white]action: [%s]%s ", cp.ColorByCompany(company), company))
+	sb.WriteString(fmt.Sprintf("[white]action: [%s]%s ", cp.ColorByIndex(i.Mod.Company), company))
 
 	switch op := i.Mod.Mod.Op(); op {
 	case "+":
@@ -86,7 +86,7 @@ func (i *DealItem) HistoryString(cp *CompanyProvider) string {
 	}
 
 	company := cp.CompanyByIndex(i.CompanyIndex)
-	sb.WriteString(fmt.Sprintf("[%s]%s ", cp.ColorByCompany(company), company))
+	sb.WriteString(fmt.Sprintf("[%s]%s ", cp.ColorByIndex(i.CompanyIndex), company))
 	sb.WriteString(fmt.Sprintf("[white]%d x %d = %d", i.Amount, i.Price, i.Amount*i.Price))
 
 	return sb.String()

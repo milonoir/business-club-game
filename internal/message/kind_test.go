@@ -61,16 +61,6 @@ func TestKind_UnmarshalJSON(t *testing.T) {
 			expKind: Sell,
 		},
 		{
-			name:    "query companies",
-			raw:     []byte(`{"Kind":10}`),
-			expKind: QueryCompanies,
-		},
-		{
-			name:    "query players",
-			raw:     []byte(`{"Kind":11}`),
-			expKind: QueryPlayers,
-		},
-		{
 			name:    "no kind",
 			raw:     []byte(`{"Type":6}`),
 			expKind: Unknown,

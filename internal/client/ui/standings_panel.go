@@ -5,12 +5,12 @@ import (
 	"strings"
 
 	"github.com/gdamore/tcell/v2"
+	"github.com/milonoir/business-club-game/internal/message"
 	"github.com/rivo/tview"
 )
 
 type StandingsPanel struct {
-	g  *tview.Grid
-	cp *CompanyProvider
+	g *tview.Grid
 
 	cntv *tview.TextView
 	pntv *tview.TextView
@@ -19,14 +19,13 @@ type StandingsPanel struct {
 	ptv *tview.TextView
 	otv []*tview.TextView
 
-	prices []int
+	cp *CompanyProvider
 }
 
 func NewStandingsPanel(cp *CompanyProvider) *StandingsPanel {
 	p := &StandingsPanel{
-		g:      tview.NewGrid(),
-		cp:     cp,
-		prices: make([]int, 4),
+		g:  tview.NewGrid(),
+		cp: cp,
 	}
 
 	// Setup grid.
@@ -77,59 +76,68 @@ func (p *StandingsPanel) GetGrid() *tview.Grid {
 	return p.g
 }
 
-func (p *StandingsPanel) SetPlayerNames(player string, opponents []string) {
+func (p *StandingsPanel) Update(state *message.GameState) {
+	p.refreshCompanyNames()
+
+	opps := make([]string, 3)
+	for i, o := range state.Opponents {
+		opps[i] = o.Name
+		p.opponentUpdate(i, state.StockPrices, o.Stocks, o.Cash, state.Ended, state.Ended)
+	}
+
+	p.playerUpdate(state.StockPrices, state.Player.Stocks, state.Player.Cash)
+	p.setPlayerNames(state.Player.Name, opps)
+}
+
+func (p *StandingsPanel) setPlayerNames(player string, opponents []string) {
 	p.pntv.SetText(fmt.Sprintf("[green]%s", player))
 	for i := 0; i < 3; i++ {
 		p.ontv[i].SetText(fmt.Sprintf("[yellow]%s", opponents[i]))
 	}
 }
 
-func (p *StandingsPanel) RefreshCompanyNames() {
+func (p *StandingsPanel) refreshCompanyNames() {
 	s := make([]string, 6)
 	for i := 0; i < 4; i++ {
 		name := p.cp.CompanyByIndex(i)
-		s[i] = fmt.Sprintf("[%s]%s[white]: ", p.cp.ColorByCompany(name), name)
+		s[i] = fmt.Sprintf("[%s]%s[white]: ", p.cp.ColorByIndex(i), name)
 	}
 	s[4] = fmt.Sprintf("[green]Cash[white]: ")
 	s[5] = fmt.Sprintf("[white]Total value: ")
 	p.cntv.SetText(strings.Join(s, "\n"))
 }
 
-func (p *StandingsPanel) PlayerUpdate(n1, n2, n3, n4, cash int) {
-	p.ptv.SetText(p.generateBreakdownString(n1, n2, n3, n4, cash, true, true))
+func (p *StandingsPanel) playerUpdate(prices, stocks [4]int, cash int) {
+	p.ptv.SetText(p.generateBreakdownString(prices, stocks, cash, true, true))
 }
 
-func (p *StandingsPanel) OpponentUpdate(index, n1, n2, n3, n4, cash int, showTotal, showNumbers bool) {
-	p.otv[index].SetText(p.generateBreakdownString(n1, n2, n3, n4, cash, showTotal, showNumbers))
+func (p *StandingsPanel) opponentUpdate(index int, prices, stocks [4]int, cash int, showTotal, showNumbers bool) {
+	p.otv[index].SetText(p.generateBreakdownString(prices, stocks, cash, showTotal, showNumbers))
 }
 
-func (p *StandingsPanel) generateBreakdownString(n1, n2, n3, n4, cash int, showTotal, showNumbers bool) string {
+func (p *StandingsPanel) generateBreakdownString(prices, stocks [4]int, cash int, showTotal, showNumbers bool) string {
 	sb := strings.Builder{}
 
 	if showNumbers {
-		sb.WriteString(fmt.Sprintf("[%s]%d\n", p.cp.ColorByCompanyIndex(0), n1))
-		sb.WriteString(fmt.Sprintf("[%s]%d\n", p.cp.ColorByCompanyIndex(1), n2))
-		sb.WriteString(fmt.Sprintf("[%s]%d\n", p.cp.ColorByCompanyIndex(2), n3))
-		sb.WriteString(fmt.Sprintf("[%s]%d\n", p.cp.ColorByCompanyIndex(3), n4))
+		sb.WriteString(fmt.Sprintf("[%s]%d\n", p.cp.ColorByIndex(0), stocks[0]))
+		sb.WriteString(fmt.Sprintf("[%s]%d\n", p.cp.ColorByIndex(1), stocks[1]))
+		sb.WriteString(fmt.Sprintf("[%s]%d\n", p.cp.ColorByIndex(2), stocks[2]))
+		sb.WriteString(fmt.Sprintf("[%s]%d\n", p.cp.ColorByIndex(3), stocks[3]))
 		sb.WriteString(fmt.Sprintf("[green]%d\n", cash))
 	} else {
-		sb.WriteString(fmt.Sprintf("[%s]%s\n", p.cp.ColorByCompanyIndex(0), strings.Repeat("♦", n1)))
-		sb.WriteString(fmt.Sprintf("[%s]%s\n", p.cp.ColorByCompanyIndex(1), strings.Repeat("♦", n2)))
-		sb.WriteString(fmt.Sprintf("[%s]%s\n", p.cp.ColorByCompanyIndex(2), strings.Repeat("♦", n3)))
-		sb.WriteString(fmt.Sprintf("[%s]%s\n", p.cp.ColorByCompanyIndex(3), strings.Repeat("♦", n4)))
+		sb.WriteString(fmt.Sprintf("[%s]%s\n", p.cp.ColorByIndex(0), strings.Repeat("♦", stocks[0])))
+		sb.WriteString(fmt.Sprintf("[%s]%s\n", p.cp.ColorByIndex(1), strings.Repeat("♦", stocks[1])))
+		sb.WriteString(fmt.Sprintf("[%s]%s\n", p.cp.ColorByIndex(2), strings.Repeat("♦", stocks[2])))
+		sb.WriteString(fmt.Sprintf("[%s]%s\n", p.cp.ColorByIndex(3), strings.Repeat("♦", stocks[3])))
 		sb.WriteString(fmt.Sprintf("[green]%s\n", strings.Repeat("$", cash)))
 	}
 
 	if showNumbers && showTotal {
-		total := p.prices[0]*n1 + p.prices[1]*n2 + p.prices[2]*n3 + p.prices[3]*n4 + cash
+		total := prices[0]*stocks[0] + prices[1]*stocks[1] + prices[2]*stocks[2] + prices[3]*stocks[3] + cash
 		sb.WriteString(fmt.Sprintf("[white]%d\n", total))
 	}
 
 	return sb.String()
-}
-
-func (p *StandingsPanel) SetPrices(p1, p2, p3, p4 int) {
-	p.prices = []int{p1, p2, p3, p4}
 }
 
 func createTextView() *tview.TextView {

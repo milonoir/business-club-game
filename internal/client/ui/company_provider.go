@@ -1,40 +1,55 @@
 package ui
 
+import (
+	"sync"
+)
+
+var (
+	colors = []string{
+		"blue",
+		"orange",
+		"yellow",
+		"red",
+	}
+)
+
 type CompanyProvider struct {
-	companies     []string
-	company2Color map[string]string
+	mux       sync.Mutex
+	companies []string
 }
 
 func NewCompanyProvider() *CompanyProvider {
 	return &CompanyProvider{
-		companies:     make([]string, 0, 4),
-		company2Color: make(map[string]string, 4),
+		companies: make([]string, 0, 4),
 	}
 }
 
-func (p *CompanyProvider) AddCompany(name, color string) {
-	p.companies = append(p.companies, name)
-	p.company2Color[name] = color
+func (p *CompanyProvider) SetCompanies(companies []string) {
+	p.mux.Lock()
+	defer p.mux.Unlock()
+	p.companies = companies
 }
 
 func (p *CompanyProvider) Companies() []string {
+	p.mux.Lock()
+	defer p.mux.Unlock()
 	return p.companies
 }
 
 func (p *CompanyProvider) CompanyByIndex(index int) string {
+	p.mux.Lock()
+	defer p.mux.Unlock()
 	if index < 0 || index > len(p.companies)-1 {
 		return ""
 	}
 	return p.companies[index]
 }
 
-func (p *CompanyProvider) ColorByCompanyIndex(index int) string {
+func (p *CompanyProvider) ColorByIndex(index int) string {
+	p.mux.Lock()
+	defer p.mux.Unlock()
 	if index < 0 || index > len(p.companies)-1 {
-		return "white"
+		return ""
 	}
-	return p.company2Color[p.companies[index]]
-}
-
-func (p *CompanyProvider) ColorByCompany(company string) string {
-	return p.company2Color[company]
+	return colors[index]
 }

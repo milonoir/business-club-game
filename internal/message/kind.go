@@ -20,7 +20,7 @@ func (k *Kind) UnmarshalJSON(b []byte) error {
 		return fmt.Errorf("cannot parse kind: %w", err)
 	}
 
-	if kk := Kind(v); kk > QueryPlayers {
+	if kk := Kind(v); kk > Sell {
 		*k = Unknown
 	} else {
 		*k = kk
@@ -59,10 +59,4 @@ const (
 
 	// Sell is a client type message when a player wants to sell stocks.
 	Sell
-
-	// QueryCompanies is a client type message when a client wants to query the companies in the game.
-	QueryCompanies
-
-	// QueryPlayers is a client type message when a client wants to query the players in the game.
-	QueryPlayers
 )
