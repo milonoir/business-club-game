@@ -41,9 +41,9 @@ func (p *TurnPanel) Update(maxTurns, currentTurn int, playerOrder []string, curr
 	}
 
 	if currentPlayer >= len(playerOrder) {
-		sb.WriteString("[red]» Bank\n")
+		sb.WriteString("[red]» BANK\n")
 	} else {
-		sb.WriteString("[green]  Bank\n")
+		sb.WriteString("[purple]  BANK\n")
 	}
 
 	p.tv.SetText(sb.String())

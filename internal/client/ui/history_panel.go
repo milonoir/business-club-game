@@ -123,10 +123,10 @@ func (p *HistoryPanel) GetTextView() *tview.TextView {
 }
 
 func (p *HistoryPanel) AddItem(li HistoryItem) {
-	p.AddString(li.HistoryString(p.cp))
+	p.addString(li.HistoryString(p.cp))
 }
 
-func (p *HistoryPanel) AddString(s string) {
+func (p *HistoryPanel) addString(s string) {
 	p.logs = append(p.logs, s)
 	if len(p.logs) > maxItem {
 		p.logs = p.logs[1:]
