@@ -243,28 +243,28 @@ func buildApp() *tview.Application {
 	middleRow.AddItem(history.GetTextView(), 0, 1, 1, 1, 1, 1, false)
 
 	// TEST ONLY>
-	history.AddItem(&ui.ActionItem{
-		ActorType: ui.ActorBank,
+	history.AddAction(&message.Action{
+		ActorType: message.ActorBank,
 		Mod:       &(cards[0].Mods[0]),
 		NewPrice:  120,
 	})
-	history.AddItem(&ui.ActionItem{
-		ActorType: ui.ActorBank,
+	history.AddAction(&message.Action{
+		ActorType: message.ActorBank,
 		Mod:       &(cards[0].Mods[1]),
 		NewPrice:  40,
 	})
-	history.AddItem(&ui.ActionItem{
-		ActorType: ui.ActorPlayer,
+	history.AddAction(&message.Action{
+		ActorType: message.ActorPlayer,
 		Name:      pp.Players()[0],
 		Mod:       &(cards[1].Mods[1]),
 		NewPrice:  370,
 	})
-	history.AddItem(&ui.DealItem{
-		Name:         pp.Players()[0],
-		Type:         ui.DealBuy,
-		CompanyIndex: 3,
-		Amount:       20,
-		Price:        10,
+	history.AddDeal(&message.Deal{
+		Name:    pp.Players()[0],
+		Type:    message.DealBuy,
+		Company: 3,
+		Amount:  20,
+		Price:   10,
 	})
 
 	// Title screen.

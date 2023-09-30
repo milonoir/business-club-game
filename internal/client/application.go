@@ -25,6 +25,13 @@ const (
 	errorPageName = "errorPage"
 )
 
+type turnPhase int32
+
+const (
+	phaseAction turnPhase = iota
+	phaseDeal
+)
+
 var (
 	errConnectionClosed = errors.New("connection closed")
 )
@@ -53,6 +60,7 @@ type Application struct {
 	cp *ui.CompanyProvider
 
 	gameStarted atomic.Bool
+	phase       atomic.Int32
 
 	server network.Connection
 	errCh  chan string
@@ -281,6 +289,12 @@ func (a *Application) receiver(data *ui.LoginData, incoming <-chan message.Messa
 			a.handleKeyExchange(data, msg.Payload().([]string))
 		case message.StateUpdate:
 			a.handleStateUpdate(msg.Payload().(*message.GameState))
+		case message.StartTurn:
+			a.handleStartTurn()
+		case message.JournalAction:
+			a.handleJournalAction(msg.Payload().(*message.Action))
+		case message.JournalDeal:
+			a.handleJournalDeal(msg.Payload().(*message.Deal))
 		}
 	}
 }
@@ -352,4 +366,19 @@ func (a *Application) handleStateUpdate(state *message.GameState) {
 
 	// Update UI - actions.
 	a.action.Update(state.Player.Hand)
+}
+
+func (a *Application) handleJournalAction(msg *message.Action) {
+	a.history.AddAction(msg)
+}
+
+func (a *Application) handleJournalDeal(msg *message.Deal) {
+	a.history.AddDeal(msg)
+}
+
+func (a *Application) handleStartTurn() {
+	// Reset turn phase to action.
+	a.phase.Store(int32(phaseAction))
+
+	// TODO: Set focus to action list.
 }

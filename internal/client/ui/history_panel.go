@@ -5,92 +5,13 @@ import (
 	"strings"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/milonoir/business-club-game/internal/game"
+	"github.com/milonoir/business-club-game/internal/message"
 	"github.com/rivo/tview"
 )
 
 const (
 	maxItem = 25
 )
-
-type HistoryItem interface {
-	HistoryString(*CompanyProvider) string
-}
-
-type DealType uint8
-
-const (
-	DealBuy DealType = iota
-	DealSell
-)
-
-type ActorType uint8
-
-const (
-	ActorPlayer ActorType = iota
-	ActorBank
-)
-
-type ActionItem struct {
-	ActorType ActorType
-	Name      string
-	Mod       *game.Modifier
-	NewPrice  int
-}
-
-func (i *ActionItem) HistoryString(cp *CompanyProvider) string {
-	sb := strings.Builder{}
-
-	if i.ActorType == ActorPlayer {
-		sb.WriteString(fmt.Sprintf("[yellow]%s ", i.Name))
-	} else {
-		sb.WriteString(fmt.Sprintf("[purple]BANK "))
-	}
-
-	company := cp.CompanyByIndex(i.Mod.Company)
-	sb.WriteString(fmt.Sprintf("[white]action: [%s]%s ", cp.ColorByIndex(i.Mod.Company), company))
-
-	switch op := i.Mod.Mod.Op(); op {
-	case "+":
-		sb.WriteString(fmt.Sprintf("[green]+%d ", i.Mod.Mod.Value()))
-	case "-":
-		sb.WriteString(fmt.Sprintf("[red]-%d ", i.Mod.Mod.Value()))
-	case "*":
-		sb.WriteString(fmt.Sprintf("[yellow]*%d ", i.Mod.Mod.Value()))
-	case "=":
-		sb.WriteString(fmt.Sprintf("[blue]=%d ", i.Mod.Mod.Value()))
-	}
-
-	sb.WriteString(fmt.Sprintf("[white]--> %d", i.NewPrice))
-
-	return sb.String()
-}
-
-type DealItem struct {
-	Name         string
-	Type         DealType
-	CompanyIndex int
-	Amount       int
-	Price        int
-}
-
-func (i *DealItem) HistoryString(cp *CompanyProvider) string {
-	sb := strings.Builder{}
-
-	sb.WriteString(fmt.Sprintf("[yellow]%s [white]deal: ", i.Name))
-
-	if i.Type == DealBuy {
-		sb.WriteString(fmt.Sprintf("[green]buy "))
-	} else {
-		sb.WriteString(fmt.Sprintf("[red]sell "))
-	}
-
-	company := cp.CompanyByIndex(i.CompanyIndex)
-	sb.WriteString(fmt.Sprintf("[%s]%s ", cp.ColorByIndex(i.CompanyIndex), company))
-	sb.WriteString(fmt.Sprintf("[white]%d x %d = %d", i.Amount, i.Price, i.Amount*i.Price))
-
-	return sb.String()
-}
 
 type HistoryPanel struct {
 	tv *tview.TextView
@@ -122,8 +43,50 @@ func (p *HistoryPanel) GetTextView() *tview.TextView {
 	return p.tv
 }
 
-func (p *HistoryPanel) AddItem(li HistoryItem) {
-	p.addString(li.HistoryString(p.cp))
+func (p *HistoryPanel) AddAction(a *message.Action) {
+	sb := strings.Builder{}
+
+	if a.ActorType == message.ActorPlayer {
+		sb.WriteString(fmt.Sprintf("[yellow]%s ", a.Name))
+	} else {
+		sb.WriteString(fmt.Sprintf("[purple]BANK "))
+	}
+
+	company := p.cp.CompanyByIndex(a.Mod.Company)
+	sb.WriteString(fmt.Sprintf("[white]action: [%s]%s ", p.cp.ColorByIndex(a.Mod.Company), company))
+
+	switch op := a.Mod.Mod.Op(); op {
+	case "+":
+		sb.WriteString(fmt.Sprintf("[green]+%d ", a.Mod.Mod.Value()))
+	case "-":
+		sb.WriteString(fmt.Sprintf("[red]-%d ", a.Mod.Mod.Value()))
+	case "*":
+		sb.WriteString(fmt.Sprintf("[yellow]*%d ", a.Mod.Mod.Value()))
+	case "=":
+		sb.WriteString(fmt.Sprintf("[blue]=%d ", a.Mod.Mod.Value()))
+	}
+
+	sb.WriteString(fmt.Sprintf("[white]--> %d", a.NewPrice))
+
+	p.addString(sb.String())
+}
+
+func (p *HistoryPanel) AddDeal(d *message.Deal) {
+	sb := strings.Builder{}
+
+	sb.WriteString(fmt.Sprintf("[yellow]%s [white]deal: ", d.Name))
+
+	if d.Type == message.DealBuy {
+		sb.WriteString(fmt.Sprintf("[green]buy "))
+	} else {
+		sb.WriteString(fmt.Sprintf("[red]sell "))
+	}
+
+	company := p.cp.CompanyByIndex(d.Company)
+	sb.WriteString(fmt.Sprintf("[%s]%s ", p.cp.ColorByIndex(d.Company), company))
+	sb.WriteString(fmt.Sprintf("[white]%d x %d = %d", d.Amount, d.Price, d.Amount*d.Price))
+
+	p.addString(sb.String())
 }
 
 func (p *HistoryPanel) addString(s string) {
