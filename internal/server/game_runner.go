@@ -82,7 +82,7 @@ func (g *gameRunner) run(inbox chan signedMessage, done <-chan struct{}) {
 		g.sendStateUpdate(order, turn, game.MaxPlayers+1, false)
 
 		// Perform bank action.
-		g.playCard(g.assets.BankDeck[turn-1], game.WildcardCompany)
+		g.playCard("", g.assets.BankDeck[turn-1], game.WildcardCompany)
 		g.sendStateUpdate(order, turn, game.MaxPlayers+1, false)
 	}
 
@@ -116,7 +116,7 @@ func (g *gameRunner) handlePlayerAction(inbox <-chan signedMessage, done <-chan 
 					p.SetHand(append(p.Hand()[:i], p.Hand()[i+1:]...))
 
 					// Play the card.
-					g.playCard(c, company)
+					g.playCard(p.Name(), c, company)
 
 					// Acknowledge action.
 					if err := retry(retryAttempts, retryDelay, func() error {
@@ -132,7 +132,7 @@ func (g *gameRunner) handlePlayerAction(inbox <-chan signedMessage, done <-chan 
 	}
 }
 
-func (g *gameRunner) playCard(c *game.Card, company int) {
+func (g *gameRunner) playCard(playerName string, c *game.Card, company int) {
 	for _, m := range c.Mods {
 		cpny := m.Company
 		if cpny <= game.WildcardCompany {
@@ -153,7 +153,22 @@ func (g *gameRunner) playCard(c *game.Card, company int) {
 		}
 		g.stockPrices[cpny] = newPrice
 
-		// TODO: send journal.
+		// Send journal message.
+		actor := message.ActorBank
+		if playerName == "" {
+			actor = message.ActorPlayer
+		}
+		action := &message.Action{
+			ActorType: actor,
+			Name:      playerName,
+			Mod:       &m,
+			NewPrice:  newPrice,
+		}
+		g.players.forEach(func(p Player) {
+			if err := p.Conn().Send(message.NewJournalAction(action)); err != nil {
+				g.l.Error("send journal action", "error", err, "remote_addr", p.Conn().RemoteAddress())
+			}
+		})
 	}
 }
 
@@ -194,16 +209,41 @@ func (g *gameRunner) playerBuyStocks(p Player, company int, amount int) {
 		p.AddCash(-cost)
 		p.AddStocks(company, amount)
 
-		// TODO: send journal
+		// Send journal message.
+		deal := &message.Deal{
+			Name:    p.Name(),
+			Type:    message.DealBuy,
+			Company: company,
+			Amount:  amount,
+			Price:   g.stockPrices[company],
+		}
+		g.players.forEach(func(pp Player) {
+			if err := pp.Conn().Send(message.NewJournalDeal(deal)); err != nil {
+				g.l.Error("send journal deal", "error", err, "remote_addr", pp.Conn().RemoteAddress())
+			}
+		})
 	}
 }
 
 func (g *gameRunner) playerSellStocks(p Player, company int, amount int) {
 	if p.Stocks()[company] >= amount {
-		p.AddCash(g.stockPrices[company] * amount)
+		price := g.stockPrices[company]
+		p.AddCash(price * amount)
 		p.AddStocks(company, -amount)
 
-		// TODO: send journal
+		// Send journal message.
+		deal := &message.Deal{
+			Name:    p.Name(),
+			Type:    message.DealSell,
+			Company: company,
+			Amount:  amount,
+			Price:   price,
+		}
+		g.players.forEach(func(pp Player) {
+			if err := pp.Conn().Send(message.NewJournalDeal(deal)); err != nil {
+				g.l.Error("send journal deal", "error", err, "remote_addr", pp.Conn().RemoteAddress())
+			}
+		})
 	}
 }
 
