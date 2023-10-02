@@ -43,6 +43,9 @@ type Application struct {
 	version   *ui.VersionPanel
 	srvStatus *ui.ServerStatusPanel
 
+	// The lower section of the game screen where player interactions are handled.
+	bottomRow *tview.Grid
+
 	// Lobby screen.
 	lobby *ui.LobbyForm
 
@@ -50,7 +53,10 @@ type Application struct {
 	title *ui.TitlePanel
 	login *ui.LoginForm
 
+	// Company provider knows the matching colors and names for companies.
 	cp *ui.CompanyProvider
+
+	hand []*game.Card
 
 	gameStarted atomic.Bool
 
@@ -164,16 +170,15 @@ func (a *Application) initUI() {
 	middleRow.AddItem(a.history.GetTextView(), 0, 1, 1, 1, 1, 1, false)
 
 	// Bottom row of the game page.
-	bottomRow := tview.NewGrid()
-	bottomRow.
+	a.bottomRow = tview.NewGrid()
+	a.bottomRow.
 		SetColumns(0, 0, 0).
 		SetRows(9)
-	gamePage.AddItem(bottomRow, 2, 0, 1, 3, 1, 1, true)
+	gamePage.AddItem(a.bottomRow, 2, 0, 1, 3, 1, 1, true)
 
 	// Action list.
-	// TODO: how to change focus?
+	// This is not added to the bottom row because it is hidden by default.
 	a.action = ui.NewActionList(a.cp)
-	bottomRow.AddItem(a.action.GetList(), 0, 1, 1, 1, 1, 1, true)
 
 	// Game version widget.
 	a.version = ui.NewVersionPanel()
@@ -347,6 +352,9 @@ func (a *Application) handleStateUpdate(state *message.GameState) {
 	// Update CompanyProvider.
 	a.cp.SetCompanies(state.Companies)
 
+	// Update player hand.
+	a.hand = state.Player.Hand
+
 	// Update UI - turn.
 	a.turn.Update(game.MaxTurns, state.Turn, state.PlayerOrder, state.CurrentPlayer)
 
@@ -355,9 +363,6 @@ func (a *Application) handleStateUpdate(state *message.GameState) {
 
 	// Update UI - graph.
 	a.graph.Add(state.StockPrices)
-
-	// Update UI - actions.
-	a.action.Update(state.Player.Hand)
 }
 
 func (a *Application) handleJournalAction(msg *message.Action) {
@@ -371,15 +376,39 @@ func (a *Application) handleJournalTrade(msg *message.Trade) {
 func (a *Application) handleStartTurn(phase game.TurnPhase) {
 	switch phase {
 	case game.ActionPhase:
-		// - Show action list.
+		a.showActionList()
 		// - Player selects an action.
 		//   - If card has wildcard, player selects a company.
 		// - Send action to server.
 	case game.TradePhase:
+		a.hideActionList()
 		// - Select: buy, sell, or end turn.
 		// - Select company.
 		// - Type in amount.
 		// - Send trade to server.
 		// - Repeat.
 	}
+}
+
+func (a *Application) showActionList() {
+	ch := make(chan *game.Card)
+	a.action.Update(a.hand, func(card *game.Card) {
+		ch <- card
+	})
+	a.bottomRow.AddItem(a.action.GetList(), 0, 1, 1, 1, 1, 1, true)
+	a.app.SetFocus(a.action.GetList())
+
+	// Sync point.
+	selected := <-ch
+
+	// TODO: Check if card has wildcard.
+
+	// Send action to server.
+	if err := a.server.Send(message.NewPlayCard(selected.ID, game.WildcardCompany)); err != nil {
+		a.l.Error("send action", "error", err)
+	}
+}
+
+func (a *Application) hideActionList() {
+	a.bottomRow.RemoveItem(a.action.GetList())
 }

@@ -186,7 +186,7 @@ func buildApp() *tview.Application {
 	}
 	actions := ui.NewActionList(cp)
 	bottomRow.AddItem(actions.GetList(), 0, 1, 1, 1, 1, 1, true)
-	actions.Update(cards)
+	actions.Update(cards, func(c *game.Card) {})
 
 	// Game version widget.
 	ver := ui.NewVersionPanel()

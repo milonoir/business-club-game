@@ -56,13 +56,13 @@ func (g *gameRunner) run(inbox chan signedMessage, done <-chan struct{}) {
 	// Game ends after maxTurns.
 	for turn := 1; turn < game.MaxTurns+1; turn++ {
 		// Shuffle players, then iterate over players.
-		order := g.shufflePlayers()
+		order, names := g.shufflePlayers()
 
 		for i, key := range order {
 			// TODO: consider player timeout and automated actions.
 
 			// Send state update to all players.
-			g.sendStateUpdate(order, turn, i, false)
+			g.sendStateUpdate(names, turn, i, false)
 
 			// Signal player to start turn with the action phase.
 			p, _ := g.players.get(key)
@@ -70,23 +70,23 @@ func (g *gameRunner) run(inbox chan signedMessage, done <-chan struct{}) {
 
 			// Get player action card.
 			g.handlePlayerAction(inbox, done, key, p)
-			g.sendStateUpdate(order, turn, i, false)
+			g.sendStateUpdate(names, turn, i, false)
 
 			// Signal player to start their trade phase.
 			g.sendStartTurn(p, game.TradePhase)
 
 			// Get player transaction. Send state update after each transaction.
 			for g.handlePlayerTransaction(inbox, done, key, p) {
-				g.sendStateUpdate(order, turn, i, false)
+				g.sendStateUpdate(names, turn, i, false)
 			}
 		}
 
 		// Update after last player in turn happens here.
-		g.sendStateUpdate(order, turn, game.MaxPlayers+1, false)
+		g.sendStateUpdate(names, turn, game.MaxPlayers+1, false)
 
 		// Perform bank action.
 		g.playCard("", g.assets.BankDeck[turn-1], game.WildcardCompany)
-		g.sendStateUpdate(order, turn, game.MaxPlayers+1, false)
+		g.sendStateUpdate(names, turn, game.MaxPlayers+1, false)
 	}
 
 	// Game has ended, calculate final scores, and send them to players.
@@ -158,7 +158,7 @@ func (g *gameRunner) playCard(playerName string, c *game.Card, company int) {
 
 		// Send journal message.
 		actor := message.ActorBank
-		if playerName == "" {
+		if playerName != "" {
 			actor = message.ActorPlayer
 		}
 		action := &message.Action{
@@ -250,19 +250,19 @@ func (g *gameRunner) playerSellStocks(p Player, company int, amount int) {
 	}
 }
 
-func (g *gameRunner) shufflePlayers() []string {
+func (g *gameRunner) shufflePlayers() ([]string, []string) {
 	order := g.players.keys()
 	rand.Shuffle(len(order), func(i, j int) {
 		order[i], order[j] = order[j], order[i]
 	})
 
-	playerOrder := make([]string, 0, len(order))
+	orderNames := make([]string, 0, len(order))
 	for _, key := range order {
 		p, _ := g.players.get(key)
-		playerOrder = append(playerOrder, p.Name())
+		orderNames = append(orderNames, p.Name())
 	}
 
-	return playerOrder
+	return order, orderNames
 }
 
 func (g *gameRunner) sendStartTurn(p Player, phase game.TurnPhase) {

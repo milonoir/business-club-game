@@ -28,7 +28,7 @@ func NewActionList(cp *CompanyProvider) *ActionList {
 		SetBorderColor(tcell.ColorGreen).
 		SetBorder(true).
 		SetBorderPadding(0, 0, 1, 1).
-		SetTitle(" Actions ")
+		SetTitle(" Select an action card ")
 
 	return a
 }
@@ -37,12 +37,13 @@ func (a *ActionList) GetList() *tview.List {
 	return a.l
 }
 
-func (a *ActionList) Update(cards []*game.Card) {
+func (a *ActionList) Update(cards []*game.Card, cb func(*game.Card)) {
 	a.dropAll()
 
 	for _, c := range cards {
+		c := c
 		a.l.AddItem(a.cardToString(c), "", 0, func() {
-			// TODO: send selected card to server; potentially use some callback func.
+			cb(c)
 		})
 	}
 }
