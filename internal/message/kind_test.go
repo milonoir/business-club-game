@@ -66,9 +66,9 @@ func TestKind_UnmarshalJSON(t *testing.T) {
 			expKind: JournalAction,
 		},
 		{
-			name:    "journal deal",
+			name:    "journal trade",
 			raw:     []byte(`{"Kind":11}`),
-			expKind: JournalDeal,
+			expKind: JournalTrade,
 		},
 		{
 			name:    "no kind",

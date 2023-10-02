@@ -25,13 +25,6 @@ const (
 	errorPageName = "errorPage"
 )
 
-type turnPhase int32
-
-const (
-	phaseAction turnPhase = iota
-	phaseDeal
-)
-
 var (
 	errConnectionClosed = errors.New("connection closed")
 )
@@ -60,7 +53,6 @@ type Application struct {
 	cp *ui.CompanyProvider
 
 	gameStarted atomic.Bool
-	phase       atomic.Int32
 
 	server network.Connection
 	errCh  chan string
@@ -290,11 +282,11 @@ func (a *Application) receiver(data *ui.LoginData, incoming <-chan message.Messa
 		case message.StateUpdate:
 			a.handleStateUpdate(msg.Payload().(*message.GameState))
 		case message.StartTurn:
-			a.handleStartTurn()
+			a.handleStartTurn(msg.Payload().(game.TurnPhase))
 		case message.JournalAction:
 			a.handleJournalAction(msg.Payload().(*message.Action))
-		case message.JournalDeal:
-			a.handleJournalDeal(msg.Payload().(*message.Deal))
+		case message.JournalTrade:
+			a.handleJournalTrade(msg.Payload().(*message.Trade))
 		}
 	}
 }
@@ -372,13 +364,22 @@ func (a *Application) handleJournalAction(msg *message.Action) {
 	a.history.AddAction(msg)
 }
 
-func (a *Application) handleJournalDeal(msg *message.Deal) {
-	a.history.AddDeal(msg)
+func (a *Application) handleJournalTrade(msg *message.Trade) {
+	a.history.AddTrade(msg)
 }
 
-func (a *Application) handleStartTurn() {
-	// Reset turn phase to action.
-	a.phase.Store(int32(phaseAction))
-
-	// TODO: Set focus to action list.
+func (a *Application) handleStartTurn(phase game.TurnPhase) {
+	switch phase {
+	case game.ActionPhase:
+		// - Show action list.
+		// - Player selects an action.
+		//   - If card has wildcard, player selects a company.
+		// - Send action to server.
+	case game.TradePhase:
+		// - Select: buy, sell, or end turn.
+		// - Select company.
+		// - Type in amount.
+		// - Send trade to server.
+		// - Repeat.
+	}
 }

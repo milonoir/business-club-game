@@ -71,12 +71,12 @@ func (p *HistoryPanel) AddAction(a *message.Action) {
 	p.addString(sb.String())
 }
 
-func (p *HistoryPanel) AddDeal(d *message.Deal) {
+func (p *HistoryPanel) AddTrade(d *message.Trade) {
 	sb := strings.Builder{}
 
-	sb.WriteString(fmt.Sprintf("[yellow]%s [white]deal: ", d.Name))
+	sb.WriteString(fmt.Sprintf("[yellow]%s [white]trade: ", d.Name))
 
-	if d.Type == message.DealBuy {
+	if d.Type == message.TradeBuy {
 		sb.WriteString(fmt.Sprintf("[green]buy "))
 	} else {
 		sb.WriteString(fmt.Sprintf("[red]sell "))

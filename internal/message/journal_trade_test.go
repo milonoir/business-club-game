@@ -7,16 +7,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewJournalDeal(t *testing.T) {
-	deal := &Deal{
+func TestNewJournalTrade(t *testing.T) {
+	trade := &Trade{
 		Name:    "player 3",
-		Type:    DealBuy,
+		Type:    TradeBuy,
 		Company: 3,
 		Amount:  15,
 		Price:   3250,
 	}
 
-	m := NewJournalDeal(deal)
+	m := NewJournalTrade(trade)
 
 	b, err := json.Marshal(m)
 	require.NoError(t, err)
@@ -24,11 +24,11 @@ func TestNewJournalDeal(t *testing.T) {
 	pm, err := Parse(b)
 	require.NoError(t, err)
 
-	require.Equal(t, JournalDeal, pm.Type())
-	require.Equal(t, deal, pm.Payload())
+	require.Equal(t, JournalTrade, pm.Type())
+	require.Equal(t, trade, pm.Payload())
 }
 
-func TestNewJournalDealFromBytes(t *testing.T) {
+func TestNewJournalTradeFromBytes(t *testing.T) {
 	b := []byte(`{
 	"Name": "player 3",
 	"Type": 0,
@@ -37,16 +37,16 @@ func TestNewJournalDealFromBytes(t *testing.T) {
 	"Price": 3250
 }`)
 
-	pm, err := NewJournalDealFromBytes(b)
+	pm, err := NewJournalTradeFromBytes(b)
 	require.NoError(t, err)
-	require.Equal(t, JournalDeal, pm.Type())
+	require.Equal(t, JournalTrade, pm.Type())
 
-	deal := &Deal{
+	trade := &Trade{
 		Name:    "player 3",
-		Type:    DealBuy,
+		Type:    TradeBuy,
 		Company: 3,
 		Amount:  15,
 		Price:   3250,
 	}
-	require.Equal(t, deal, pm.Payload())
+	require.Equal(t, trade, pm.Payload())
 }

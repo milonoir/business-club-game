@@ -259,9 +259,9 @@ func buildApp() *tview.Application {
 		Mod:       &(cards[1].Mods[1]),
 		NewPrice:  370,
 	})
-	history.AddDeal(&message.Deal{
+	history.AddTrade(&message.Trade{
 		Name:    pp.Players()[0],
-		Type:    message.DealBuy,
+		Type:    message.TradeBuy,
 		Company: 3,
 		Amount:  20,
 		Price:   10,

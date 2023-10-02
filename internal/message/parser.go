@@ -40,7 +40,7 @@ func Parse(raw []byte) (Message, error) {
 	case VoteToStart:
 		return NewVoteToStartFromBytes(b.Data), nil
 	case StartTurn:
-		return NewStartTurn(), nil
+		return NewStartTurnFromBytes(b.Data), nil
 	case EndTurn:
 		return NewEndTurn(), nil
 	case PlayCard:
@@ -51,8 +51,8 @@ func Parse(raw []byte) (Message, error) {
 		return NewSellStockMessageFromBytes(b.Data)
 	case JournalAction:
 		return NewJournalActionFromBytes(b.Data)
-	case JournalDeal:
-		return NewJournalDealFromBytes(b.Data)
+	case JournalTrade:
+		return NewJournalTradeFromBytes(b.Data)
 	default:
 		return NewUnknown(), nil
 	}

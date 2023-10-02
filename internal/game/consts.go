@@ -19,3 +19,14 @@ const (
 	// WildcardCompany is the company ID for the wildcard company.
 	WildcardCompany = -1
 )
+
+// TurnPhase is the phase of a turn.
+type TurnPhase int
+
+const (
+	// ActionPhase is the phase where players play cards.
+	ActionPhase TurnPhase = iota
+
+	// TradePhase is the phase where players trade stocks.
+	TradePhase
+)

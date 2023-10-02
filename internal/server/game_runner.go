@@ -64,13 +64,16 @@ func (g *gameRunner) run(inbox chan signedMessage, done <-chan struct{}) {
 			// Send state update to all players.
 			g.sendStateUpdate(order, turn, i, false)
 
-			// Signal player to start turn.
+			// Signal player to start turn with the action phase.
 			p, _ := g.players.get(key)
-			g.sendStartTurn(p)
+			g.sendStartTurn(p, game.ActionPhase)
 
 			// Get player action card.
 			g.handlePlayerAction(inbox, done, key, p)
 			g.sendStateUpdate(order, turn, i, false)
+
+			// Signal player to start their trade phase.
+			g.sendStartTurn(p, game.TradePhase)
 
 			// Get player transaction. Send state update after each transaction.
 			for g.handlePlayerTransaction(inbox, done, key, p) {
@@ -210,16 +213,16 @@ func (g *gameRunner) playerBuyStocks(p Player, company int, amount int) {
 		p.AddStocks(company, amount)
 
 		// Send journal message.
-		deal := &message.Deal{
+		trade := &message.Trade{
 			Name:    p.Name(),
-			Type:    message.DealBuy,
+			Type:    message.TradeBuy,
 			Company: company,
 			Amount:  amount,
 			Price:   g.stockPrices[company],
 		}
 		g.players.forEach(func(pp Player) {
-			if err := pp.Conn().Send(message.NewJournalDeal(deal)); err != nil {
-				g.l.Error("send journal deal", "error", err, "remote_addr", pp.Conn().RemoteAddress())
+			if err := pp.Conn().Send(message.NewJournalTrade(trade)); err != nil {
+				g.l.Error("send journal trade", "error", err, "remote_addr", pp.Conn().RemoteAddress())
 			}
 		})
 	}
@@ -232,16 +235,16 @@ func (g *gameRunner) playerSellStocks(p Player, company int, amount int) {
 		p.AddStocks(company, -amount)
 
 		// Send journal message.
-		deal := &message.Deal{
+		trade := &message.Trade{
 			Name:    p.Name(),
-			Type:    message.DealSell,
+			Type:    message.TradeSell,
 			Company: company,
 			Amount:  amount,
 			Price:   price,
 		}
 		g.players.forEach(func(pp Player) {
-			if err := pp.Conn().Send(message.NewJournalDeal(deal)); err != nil {
-				g.l.Error("send journal deal", "error", err, "remote_addr", pp.Conn().RemoteAddress())
+			if err := pp.Conn().Send(message.NewJournalTrade(trade)); err != nil {
+				g.l.Error("send journal trade", "error", err, "remote_addr", pp.Conn().RemoteAddress())
 			}
 		})
 	}
@@ -262,9 +265,9 @@ func (g *gameRunner) shufflePlayers() []string {
 	return playerOrder
 }
 
-func (g *gameRunner) sendStartTurn(p Player) {
+func (g *gameRunner) sendStartTurn(p Player, phase game.TurnPhase) {
 	if err := retry(retryAttempts, retryDelay, func() error {
-		return p.Conn().Send(message.NewStartTurn())
+		return p.Conn().Send(message.NewStartTurn(phase))
 	}); err != nil {
 		g.l.Error("send start turn", "error", err, "remote_addr", p.Conn().RemoteAddress())
 	}

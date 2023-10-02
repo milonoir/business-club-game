@@ -20,7 +20,7 @@ func (k *Kind) UnmarshalJSON(b []byte) error {
 		return fmt.Errorf("cannot parse kind: %w", err)
 	}
 
-	if kk := Kind(v); kk > JournalDeal {
+	if kk := Kind(v); kk > JournalTrade {
 		*k = Unknown
 	} else {
 		*k = kk
@@ -63,6 +63,6 @@ const (
 	// JournalAction is a server type message that contains an action journal message.
 	JournalAction
 
-	// JournalDeal is a server type message that contains a deal journal message.
-	JournalDeal
+	// JournalTrade is a server type message that contains a trade journal message.
+	JournalTrade
 )
