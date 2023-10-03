@@ -25,10 +25,11 @@ type gameRunner struct {
 	l *slog.Logger
 }
 
-func newGameRunner(players *playerMap, assets *game.Assets) *gameRunner {
+func newGameRunner(players *playerMap, assets *game.Assets, l *slog.Logger) *gameRunner {
 	return &gameRunner{
 		players: players,
 		assets:  assets,
+		l:       l.With("component", "game_runner"),
 	}
 }
 
@@ -115,20 +116,15 @@ func (g *gameRunner) handlePlayerAction(inbox <-chan signedMessage, done <-chan 
 
 			for i, c := range p.Hand() {
 				if c.ID == id {
+					g.l.Info("player action card", "player", p.Name(), "card", c.ID, "company", company)
+
 					// Remove card from player hand.
 					p.SetHand(append(p.Hand()[:i], p.Hand()[i+1:]...))
 
 					// Play the card.
 					g.playCard(p.Name(), c, company)
 
-					// Acknowledge action.
-					if err := retry(retryAttempts, retryDelay, func() error {
-						return p.Conn().Send(message.NewPlayCard(0, 0))
-					}); err != nil {
-						g.l.Error("send play card ack", "error", err, "remote_addr", p.Conn().RemoteAddress())
-					}
-
-					// TODO: What if player disconnects?
+					return
 				}
 			}
 		}

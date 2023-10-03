@@ -252,7 +252,7 @@ func (l *lobby) startGame() {
 	l.isGameRunning.Store(true)
 	defer l.isGameRunning.Store(false)
 
-	runner := newGameRunner(l.players, l.assets)
+	runner := newGameRunner(l.players, l.assets, l.l)
 	runner.run(l.gameInbox, l.done)
 }
 

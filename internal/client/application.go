@@ -376,11 +376,13 @@ func (a *Application) handleJournalTrade(msg *message.Trade) {
 func (a *Application) handleStartTurn(phase game.TurnPhase) {
 	switch phase {
 	case game.ActionPhase:
+		a.l.Info("starting action phase")
 		a.showActionList()
 		// - Player selects an action.
 		//   - If card has wildcard, player selects a company.
 		// - Send action to server.
 	case game.TradePhase:
+		a.l.Info("starting trade phase")
 		a.hideActionList()
 		// - Select: buy, sell, or end turn.
 		// - Select company.
@@ -404,6 +406,7 @@ func (a *Application) showActionList() {
 	// TODO: Check if card has wildcard.
 
 	// Send action to server.
+	a.l.Info("sending action", "card", selected.ID, "company", game.WildcardCompany)
 	if err := a.server.Send(message.NewPlayCard(selected.ID, game.WildcardCompany)); err != nil {
 		a.l.Error("send action", "error", err)
 	}
