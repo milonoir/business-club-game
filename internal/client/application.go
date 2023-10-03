@@ -377,13 +377,13 @@ func (a *Application) handleStartTurn(phase game.TurnPhase) {
 	switch phase {
 	case game.ActionPhase:
 		a.l.Info("starting action phase")
-		a.showActionList()
+		a.turnActionPhase()
 		// - Player selects an action.
 		//   - If card has wildcard, player selects a company.
 		// - Send action to server.
 	case game.TradePhase:
 		a.l.Info("starting trade phase")
-		a.hideActionList()
+		a.turnTradePhase()
 		// - Select: buy, sell, or end turn.
 		// - Select company.
 		// - Type in amount.
@@ -392,7 +392,7 @@ func (a *Application) handleStartTurn(phase game.TurnPhase) {
 	}
 }
 
-func (a *Application) showActionList() {
+func (a *Application) turnActionPhase() {
 	ch := make(chan *game.Card)
 	a.action.Update(a.hand, func(card *game.Card) {
 		ch <- card
@@ -412,6 +412,11 @@ func (a *Application) showActionList() {
 	}
 }
 
-func (a *Application) hideActionList() {
+func (a *Application) turnTradePhase() {
 	a.bottomRow.RemoveItem(a.action.GetList())
+
+	// TODO: Implement trade phase.
+	if err := a.server.Send(message.NewEndTurn()); err != nil {
+		a.l.Error("send end turn", "error", err)
+	}
 }
