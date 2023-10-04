@@ -13,13 +13,13 @@ func CashLevel(cash int) int {
 	switch {
 	case cash < 1:
 		return 0
-	case cash < 100:
+	case cash < 101:
 		return 1
-	case cash < 1_000:
+	case cash < 1_001:
 		return 2
-	case cash < 10_000:
+	case cash < 10_001:
 		return 3
-	case cash < 100_000:
+	case cash < 100_001:
 		return 4
 	default:
 		return 5
