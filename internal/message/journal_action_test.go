@@ -13,9 +13,10 @@ func TestNewJournalAction(t *testing.T) {
 		ActorType: ActorPlayer,
 		Name:      "player 1",
 		Mod: &game.Modifier{
-			Company: 2,
+			Company: -1,
 			Mod:     game.NewMod("+", 100),
 		},
+		Company:  3,
 		NewPrice: 320,
 	}
 
@@ -36,9 +37,10 @@ func TestNewJournalActionFromBytes(t *testing.T) {
 	"ActorType": 0,
 	"Name": "player 1",
 	"Mod": {
-		"Company": 2,
+		"Company": -1,
 		"Mod": "+ 100"
 	},
+	"Company": 3,
 	"NewPrice":320
 }`)
 
@@ -50,9 +52,10 @@ func TestNewJournalActionFromBytes(t *testing.T) {
 		ActorType: ActorPlayer,
 		Name:      "player 1",
 		Mod: &game.Modifier{
-			Company: 2,
+			Company: -1,
 			Mod:     game.NewMod("+", 100),
 		},
+		Company:  3,
 		NewPrice: 320,
 	}
 	require.Equal(t, action, pm.Payload())

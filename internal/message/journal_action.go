@@ -20,6 +20,7 @@ type Action struct {
 	ActorType ActorType
 	Name      string
 	Mod       *game.Modifier
+	Company   int
 	NewPrice  int
 }
 

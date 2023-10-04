@@ -63,6 +63,11 @@ func (p *GraphPanel) GetGrid() *tview.Grid {
 }
 
 func (p *GraphPanel) Add(prices [4]int) {
+	// Return if prices are the same as the last one.
+	if len(p.data) > 0 && p.data[len(p.data)-1] == prices {
+		return
+	}
+
 	p.data = append(p.data, prices)
 	if len(p.data) > 10 {
 		p.data = p.data[1:]

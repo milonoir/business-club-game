@@ -161,6 +161,7 @@ func (g *gameRunner) playCard(playerName string, c *game.Card, company int) {
 			ActorType: actor,
 			Name:      playerName,
 			Mod:       &m,
+			Company:   cpny,
 			NewPrice:  newPrice,
 		}
 		g.players.forEach(func(p Player) {

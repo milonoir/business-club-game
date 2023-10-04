@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/gdamore/tcell/v2"
+	"github.com/milonoir/business-club-game/internal/game"
 	"github.com/milonoir/business-club-game/internal/message"
 	"github.com/rivo/tview"
 )
@@ -52,8 +53,11 @@ func (p *HistoryPanel) AddAction(a *message.Action) {
 		sb.WriteString(fmt.Sprintf("[purple]BANK "))
 	}
 
-	company := p.cp.CompanyByIndex(a.Mod.Company)
-	sb.WriteString(fmt.Sprintf("[white]action: [%s]%s ", p.cp.ColorByIndex(a.Mod.Company), company))
+	company := a.Mod.Company
+	if company == game.WildcardCompany {
+		company = a.Company
+	}
+	sb.WriteString(fmt.Sprintf("[white]action: [%s]%s ", p.cp.ColorByIndex(company), p.cp.CompanyByIndex(company)))
 
 	switch op := a.Mod.Mod.Op(); op {
 	case "+":

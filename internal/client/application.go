@@ -403,11 +403,27 @@ func (a *Application) turnActionPhase() {
 	// Sync point.
 	selected := <-ch
 
-	// TODO: Check if card has wildcard.
+	// If card has a wildcard company, player must select a company.
+	company := game.WildcardCompany
+	if selected.Mods[0].Company == game.WildcardCompany || selected.Mods[1].Company == game.WildcardCompany {
+		ch2 := make(chan int)
+		cl := ui.NewCompanyList(a.cp)
+		cl.SetCallback(func(i int) {
+			ch2 <- i
+		})
+		a.bottomRow.AddItem(cl.GetList(), 0, 2, 1, 1, 1, 1, true)
+		a.app.SetFocus(cl.GetList())
+
+		// Sync point.
+		company = <-ch2
+
+		// Remove company list.
+		a.bottomRow.RemoveItem(cl.GetList())
+	}
 
 	// Send action to server.
-	a.l.Info("sending action", "card", selected.ID, "company", game.WildcardCompany)
-	if err := a.server.Send(message.NewPlayCard(selected.ID, game.WildcardCompany)); err != nil {
+	a.l.Info("sending action", "card", selected.ID, "company", company)
+	if err := a.server.Send(message.NewPlayCard(selected.ID, company)); err != nil {
 		a.l.Error("send action", "error", err)
 	}
 }
