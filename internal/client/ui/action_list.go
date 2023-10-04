@@ -15,7 +15,7 @@ type ActionList struct {
 	cp *CompanyProvider
 }
 
-func NewActionList(cp *CompanyProvider) *ActionList {
+func NewActionList(cp *CompanyProvider, cards []*game.Card, cb func(*game.Card)) *ActionList {
 	a := &ActionList{
 		l:  tview.NewList(),
 		cp: cp,
@@ -30,22 +30,18 @@ func NewActionList(cp *CompanyProvider) *ActionList {
 		SetBorderPadding(0, 0, 1, 1).
 		SetTitle(" Select an action card ")
 
-	return a
-}
-
-func (a *ActionList) GetList() *tview.List {
-	return a.l
-}
-
-func (a *ActionList) Update(cards []*game.Card, cb func(*game.Card)) {
-	a.dropAll()
-
 	for _, c := range cards {
 		c := c
 		a.l.AddItem(a.cardToString(c), "", 0, func() {
 			cb(c)
 		})
 	}
+
+	return a
+}
+
+func (a *ActionList) GetList() *tview.List {
+	return a.l
 }
 
 func (a *ActionList) cardToString(c *game.Card) string {
@@ -74,10 +70,4 @@ func (a *ActionList) cardToString(c *game.Card) string {
 	}
 
 	return sb.String()
-}
-
-func (a *ActionList) dropAll() {
-	for a.l.GetItemCount() > 0 {
-		a.l.RemoveItem(0)
-	}
 }

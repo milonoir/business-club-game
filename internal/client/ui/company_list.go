@@ -13,7 +13,7 @@ type CompanyList struct {
 	cp *CompanyProvider
 }
 
-func NewCompanyList(cp *CompanyProvider) *CompanyList {
+func NewCompanyList(cp *CompanyProvider, cb func(int)) *CompanyList {
 	c := &CompanyList{
 		l:  tview.NewList(),
 		cp: cp,
@@ -28,14 +28,6 @@ func NewCompanyList(cp *CompanyProvider) *CompanyList {
 		SetBorderPadding(0, 0, 1, 1).
 		SetTitle(" Select a company ")
 
-	return c
-}
-
-func (c *CompanyList) GetList() *tview.List {
-	return c.l
-}
-
-func (c *CompanyList) SetCallback(cb func(int)) {
 	for i, comp := range c.cp.Companies() {
 		i := i
 		comp := comp
@@ -43,4 +35,10 @@ func (c *CompanyList) SetCallback(cb func(int)) {
 			cb(i)
 		})
 	}
+
+	return c
+}
+
+func (c *CompanyList) GetList() *tview.List {
+	return c.l
 }

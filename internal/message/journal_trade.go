@@ -5,14 +5,6 @@ import (
 	"fmt"
 )
 
-// TradeType represents the type of trade.
-type TradeType uint8
-
-const (
-	TradeBuy TradeType = iota
-	TradeSell
-)
-
 // Trade represents a trade journal item.
 type Trade struct {
 	Name    string

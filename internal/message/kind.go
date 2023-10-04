@@ -54,11 +54,8 @@ const (
 	// PlayCard is a client type message when a player wants to play a card.
 	PlayCard
 
-	// Buy is a client type message when a player wants to buy stocks.
-	Buy
-
-	// Sell is a client type message when a player wants to sell stocks.
-	Sell
+	// TradeStock is a client type message when a player wants to trade stocks.
+	TradeStock
 
 	// JournalAction is a server type message that contains an action journal message.
 	JournalAction

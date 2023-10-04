@@ -39,7 +39,6 @@ type Application struct {
 	turn      *ui.TurnPanel
 	graph     *ui.GraphPanel
 	history   *ui.HistoryPanel
-	action    *ui.ActionList
 	version   *ui.VersionPanel
 	srvStatus *ui.ServerStatusPanel
 
@@ -56,13 +55,15 @@ type Application struct {
 	// Company provider knows the matching colors and names for companies.
 	cp *ui.CompanyProvider
 
-	hand []*game.Card
+	hand   []*game.Card
+	cash   int
+	stocks [4]int
+	prices [4]int
 
 	gameStarted atomic.Bool
-
-	server network.Connection
-	errCh  chan string
-	l      *slog.Logger
+	server      network.Connection
+	errCh       chan string
+	l           *slog.Logger
 }
 
 func NewApplication(l *slog.Logger) *Application {
@@ -175,10 +176,6 @@ func (a *Application) initUI() {
 		SetColumns(0, 0, 0).
 		SetRows(9)
 	gamePage.AddItem(a.bottomRow, 2, 0, 1, 3, 1, 1, true)
-
-	// Action list.
-	// This is not added to the bottom row because it is hidden by default.
-	a.action = ui.NewActionList(a.cp)
 
 	// Game version widget.
 	a.version = ui.NewVersionPanel()
@@ -350,10 +347,14 @@ func (a *Application) handleStateUpdate(state *message.GameState) {
 	}
 
 	// Update CompanyProvider.
+	// This should not change during the game, but it is useful when a client is reconnecting.
 	a.cp.SetCompanies(state.Companies)
 
-	// Update player hand.
+	// Update local game data.
 	a.hand = state.Player.Hand
+	a.cash = state.Player.Cash
+	a.stocks = state.Player.Stocks
+	a.prices = state.StockPrices
 
 	// Update UI - turn.
 	a.turn.Update(game.MaxTurns, state.Turn, state.PlayerOrder, state.CurrentPlayer)
@@ -378,61 +379,139 @@ func (a *Application) handleStartTurn(phase game.TurnPhase) {
 	case game.ActionPhase:
 		a.l.Info("starting action phase")
 		a.turnActionPhase()
-		// - Player selects an action.
-		//   - If card has wildcard, player selects a company.
-		// - Send action to server.
 	case game.TradePhase:
 		a.l.Info("starting trade phase")
 		a.turnTradePhase()
-		// - Select: buy, sell, or end turn.
-		// - Select company.
-		// - Type in amount.
-		// - Send trade to server.
-		// - Repeat.
 	}
 }
 
 func (a *Application) turnActionPhase() {
-	ch := make(chan *game.Card)
-	a.action.Update(a.hand, func(card *game.Card) {
-		ch <- card
+	actCh := make(chan *game.Card)
+	defer close(actCh)
+
+	action := ui.NewActionList(a.cp, a.hand, func(card *game.Card) {
+		actCh <- card
 	})
-	a.bottomRow.AddItem(a.action.GetList(), 0, 1, 1, 1, 1, 1, true)
-	a.app.SetFocus(a.action.GetList())
+	a.bottomRow.AddItem(action.GetList(), 0, 1, 1, 1, 1, 1, true)
+	a.app.SetFocus(action.GetList())
+
+	// Make sure action list is removed.
+	defer a.bottomRow.RemoveItem(action.GetList())
 
 	// Sync point.
-	selected := <-ch
+	card := <-actCh
 
 	// If card has a wildcard company, player must select a company.
 	company := game.WildcardCompany
-	if selected.Mods[0].Company == game.WildcardCompany || selected.Mods[1].Company == game.WildcardCompany {
-		ch2 := make(chan int)
-		cl := ui.NewCompanyList(a.cp)
-		cl.SetCallback(func(i int) {
-			ch2 <- i
+	if card.Mods[0].Company == game.WildcardCompany || card.Mods[1].Company == game.WildcardCompany {
+		compCh := make(chan int)
+		defer close(compCh)
+
+		cl := ui.NewCompanyList(a.cp, func(i int) {
+			compCh <- i
 		})
 		a.bottomRow.AddItem(cl.GetList(), 0, 2, 1, 1, 1, 1, true)
 		a.app.SetFocus(cl.GetList())
 
 		// Sync point.
-		company = <-ch2
+		company = <-compCh
 
 		// Remove company list.
 		a.bottomRow.RemoveItem(cl.GetList())
 	}
 
 	// Send action to server.
-	a.l.Info("sending action", "card", selected.ID, "company", company)
-	if err := a.server.Send(message.NewPlayCard(selected.ID, company)); err != nil {
+	a.l.Info("sending action", "card", card.ID, "company", company)
+	if err := a.server.Send(message.NewPlayCard(card.ID, company)); err != nil {
 		a.l.Error("send action", "error", err)
 	}
 }
 
 func (a *Application) turnTradePhase() {
-	a.bottomRow.RemoveItem(a.action.GetList())
+	optCh := make(chan ui.TradeOption)
+	defer close(optCh)
 
-	// TODO: Implement trade phase.
-	if err := a.server.Send(message.NewEndTurn()); err != nil {
-		a.l.Error("send end turn", "error", err)
+	tm := ui.NewTradeMenu(func(option ui.TradeOption) {
+		optCh <- option
+	})
+	a.bottomRow.AddItem(tm.GetList(), 0, 1, 1, 1, 1, 1, true)
+	a.app.SetFocus(tm.GetList())
+
+	// Make sure trade menu is removed.
+	defer a.bottomRow.RemoveItem(tm.GetList())
+
+	// Sync point.
+	option := <-optCh
+
+	// End turn.
+	if option == ui.EndTurn {
+		a.bottomRow.RemoveItem(tm.GetList())
+		if err := a.server.Send(message.NewEndTurn()); err != nil {
+			a.l.Error("send end turn", "error", err)
+		}
+		return
+	}
+
+	// Select company.
+	compCh := make(chan int)
+	defer close(compCh)
+
+	cl := ui.NewCompanyList(a.cp, func(i int) {
+		compCh <- i
+	})
+	a.bottomRow.AddItem(cl.GetList(), 0, 2, 1, 1, 1, 1, true)
+	a.app.SetFocus(cl.GetList())
+
+	// Sync point.
+	company := <-compCh
+
+	// Remove company list.
+	a.bottomRow.RemoveItem(cl.GetList())
+
+	// Calculate the maximum amount of stocks that can be traded.
+	var (
+		tradeType message.TradeType
+		maximum   int
+	)
+	switch option {
+	case ui.Buy:
+		tradeType = message.TradeBuy
+		if a.prices[company] > 0 {
+			// This is an integer division, so the result is floored.
+			maximum = a.cash / a.prices[company]
+		}
+	case ui.Sell:
+		tradeType = message.TradeSell
+		maximum = a.stocks[company]
+	}
+
+	// Player has not enough money or stocks.
+	// Send a trade with 0 amount.
+	if maximum == 0 {
+		if err := a.server.Send(message.NewTradeStock(tradeType, company, 0)); err != nil {
+			a.l.Error("send cancelled trade", "error", err)
+		}
+		return
+	}
+
+	// Type in amount.
+	amountCh := make(chan int)
+	defer close(amountCh)
+
+	form := ui.NewTradeForm(a.cp, tradeType, company, maximum, func(amount int) {
+		amountCh <- amount
+	})
+	a.bottomRow.AddItem(form.GetForm(), 0, 2, 1, 1, 1, 1, true)
+	a.app.SetFocus(form.GetForm())
+
+	// Sync point.
+	amount := <-amountCh
+
+	// Remove trade form.
+	a.bottomRow.RemoveItem(form.GetForm())
+
+	// Send trade to server.
+	if err := a.server.Send(message.NewTradeStock(tradeType, company, amount)); err != nil {
+		a.l.Error("send trade", "error", err)
 	}
 }

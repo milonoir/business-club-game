@@ -45,10 +45,8 @@ func Parse(raw []byte) (Message, error) {
 		return NewEndTurn(), nil
 	case PlayCard:
 		return NewPlayCardFromBytes(b.Data)
-	case Buy:
-		return NewBuyStockMessageFromBytes(b.Data)
-	case Sell:
-		return NewSellStockMessageFromBytes(b.Data)
+	case TradeStock:
+		return NewTradeStockFromBytes(b.Data)
 	case JournalAction:
 		return NewJournalActionFromBytes(b.Data)
 	case JournalTrade:

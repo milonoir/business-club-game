@@ -51,23 +51,18 @@ func TestKind_UnmarshalJSON(t *testing.T) {
 			expKind: PlayCard,
 		},
 		{
-			name:    "buy stocks",
+			name:    "trade stocks",
 			raw:     []byte(`{"Kind":8}`),
-			expKind: Buy,
-		},
-		{
-			name:    "sell stocks",
-			raw:     []byte(`{"Kind":9}`),
-			expKind: Sell,
+			expKind: TradeStock,
 		},
 		{
 			name:    "journal action",
-			raw:     []byte(`{"Kind":10}`),
+			raw:     []byte(`{"Kind":9}`),
 			expKind: JournalAction,
 		},
 		{
 			name:    "journal trade",
-			raw:     []byte(`{"Kind":11}`),
+			raw:     []byte(`{"Kind":10}`),
 			expKind: JournalTrade,
 		},
 		{

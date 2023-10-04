@@ -184,9 +184,8 @@ func buildApp() *tview.Application {
 	if err := json.Unmarshal([]byte(cardsJson), &cards); err != nil {
 		panic(err)
 	}
-	actions := ui.NewActionList(cp)
+	actions := ui.NewActionList(cp, cards, func(c *game.Card) {})
 	bottomRow.AddItem(actions.GetList(), 0, 1, 1, 1, 1, 1, true)
-	actions.Update(cards, func(c *game.Card) {})
 
 	// Game version widget.
 	ver := ui.NewVersionPanel()

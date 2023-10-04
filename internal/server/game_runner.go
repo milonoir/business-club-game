@@ -79,6 +79,7 @@ func (g *gameRunner) run(inbox chan signedMessage, done <-chan struct{}) {
 			// Get player transaction. Send state update after each transaction.
 			for g.handlePlayerTransaction(inbox, done, key, p) {
 				g.sendStateUpdate(names, turn, i, false)
+				g.sendStartTurn(p, game.TradePhase)
 			}
 		}
 
@@ -127,6 +128,9 @@ func (g *gameRunner) handlePlayerAction(inbox <-chan signedMessage, done <-chan 
 					return
 				}
 			}
+
+			// Invalid card ID, send start turn again.
+			g.sendStartTurn(p, game.ActionPhase)
 		}
 	}
 }
@@ -187,17 +191,16 @@ func (g *gameRunner) handlePlayerTransaction(inbox <-chan signedMessage, done <-
 			case message.EndTurn:
 				// Player ends turn.
 				return false
-			case message.Buy:
-				// Player wants to buy stocks.
-				pl := msg.Msg.Payload().([]int)
-				company, amount := pl[0], pl[1]
-				g.playerBuyStocks(p, company, amount)
-				return true
-			case message.Sell:
-				// Player wants to sell stocks.
-				pl := msg.Msg.Payload().([]int)
-				company, amount := pl[0], pl[1]
-				g.playerSellStocks(p, company, amount)
+			case message.TradeStock:
+				// Player wants to trade stocks.
+				pl := msg.Msg.Payload().([]any)
+				trade, company, amount := pl[0].(message.TradeType), pl[1].(int), pl[2].(int)
+				switch trade {
+				case message.TradeBuy:
+					g.playerBuyStocks(p, company, amount)
+				case message.TradeSell:
+					g.playerSellStocks(p, company, amount)
+				}
 				return true
 			}
 		}
@@ -205,6 +208,9 @@ func (g *gameRunner) handlePlayerTransaction(inbox <-chan signedMessage, done <-
 }
 
 func (g *gameRunner) playerBuyStocks(p Player, company int, amount int) {
+	if amount == 0 {
+		return
+	}
 	if cost := g.stockPrices[company] * amount; p.Cash() >= cost {
 		p.AddCash(-cost)
 		p.AddStocks(company, amount)
@@ -226,6 +232,9 @@ func (g *gameRunner) playerBuyStocks(p Player, company int, amount int) {
 }
 
 func (g *gameRunner) playerSellStocks(p Player, company int, amount int) {
+	if amount == 0 {
+		return
+	}
 	if p.Stocks()[company] >= amount {
 		price := g.stockPrices[company]
 		p.AddCash(price * amount)
