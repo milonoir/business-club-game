@@ -24,6 +24,7 @@ func NewTradeMenu(cb func(option TradeOption)) *TradeMenu {
 
 	t.l.
 		ShowSecondaryText(false).
+
 		SetHighlightFullLine(true).
 		SetSelectedBackgroundColor(tcell.ColorDarkGray).
 		SetBorderColor(tcell.ColorGreen).
@@ -35,8 +36,8 @@ func NewTradeMenu(cb func(option TradeOption)) *TradeMenu {
 		val TradeOption
 		str string
 	}{
-		{Buy, "Buy"},
-		{Sell, "Sell"},
+		{Buy, "Buy stock"},
+		{Sell, "Sell stock"},
 		{EndTurn, "End turn"},
 	}
 

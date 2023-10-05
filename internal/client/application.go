@@ -173,7 +173,7 @@ func (a *Application) initUI() {
 	// Bottom row of the game page.
 	a.bottomRow = tview.NewGrid()
 	a.bottomRow.
-		SetColumns(0, 0, 0).
+		SetColumns(0, 0, 43, 0, 0).
 		SetRows(9)
 	gamePage.AddItem(a.bottomRow, 2, 0, 1, 3, 1, 1, true)
 
@@ -392,7 +392,7 @@ func (a *Application) turnActionPhase() {
 	action := ui.NewActionList(a.cp, a.hand, func(card *game.Card) {
 		actCh <- card
 	})
-	a.bottomRow.AddItem(action.GetList(), 0, 1, 1, 1, 1, 1, true)
+	a.bottomRow.AddItem(action.GetList(), 0, 2, 1, 1, 1, 1, true)
 	a.app.SetFocus(action.GetList())
 
 	// Make sure action list is removed.
@@ -410,7 +410,7 @@ func (a *Application) turnActionPhase() {
 		cl := ui.NewCompanyList(a.cp, func(i int) {
 			compCh <- i
 		})
-		a.bottomRow.AddItem(cl.GetList(), 0, 2, 1, 1, 1, 1, true)
+		a.bottomRow.AddItem(cl.GetList(), 0, 3, 1, 1, 1, 1, true)
 		a.app.SetFocus(cl.GetList())
 
 		// Sync point.
@@ -434,7 +434,7 @@ func (a *Application) turnTradePhase() {
 	tm := ui.NewTradeMenu(func(option ui.TradeOption) {
 		optCh <- option
 	})
-	a.bottomRow.AddItem(tm.GetList(), 0, 1, 1, 1, 1, 1, true)
+	a.bottomRow.AddItem(tm.GetList(), 0, 2, 1, 1, 1, 1, true)
 	a.app.SetFocus(tm.GetList())
 
 	// Make sure trade menu is removed.
@@ -459,7 +459,7 @@ func (a *Application) turnTradePhase() {
 	cl := ui.NewCompanyList(a.cp, func(i int) {
 		compCh <- i
 	})
-	a.bottomRow.AddItem(cl.GetList(), 0, 2, 1, 1, 1, 1, true)
+	a.bottomRow.AddItem(cl.GetList(), 0, 3, 1, 1, 1, 1, true)
 	a.app.SetFocus(cl.GetList())
 
 	// Sync point.
@@ -476,13 +476,17 @@ func (a *Application) turnTradePhase() {
 	switch option {
 	case ui.Buy:
 		tradeType = message.TradeBuy
+		// Buying stocks is only possible if the price is greater than 0.
 		if a.prices[company] > 0 {
 			// This is an integer division, so the result is floored.
 			maximum = a.cash / a.prices[company]
 		}
 	case ui.Sell:
 		tradeType = message.TradeSell
-		maximum = a.stocks[company]
+		// Selling stocks is only possible if the price is greater than 0.
+		if a.prices[company] > 0 {
+			maximum = a.stocks[company]
+		}
 	}
 
 	// Player has not enough money or stocks.
@@ -501,7 +505,7 @@ func (a *Application) turnTradePhase() {
 	form := ui.NewTradeForm(a.cp, tradeType, company, maximum, func(amount int) {
 		amountCh <- amount
 	})
-	a.bottomRow.AddItem(form.GetForm(), 0, 2, 1, 1, 1, 1, true)
+	a.bottomRow.AddItem(form.GetForm(), 0, 3, 1, 1, 1, 1, true)
 	a.app.SetFocus(form.GetForm())
 
 	// Sync point.
