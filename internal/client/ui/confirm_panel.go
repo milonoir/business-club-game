@@ -6,30 +6,41 @@ import (
 )
 
 type ConfirmPanel struct {
-	modal *tview.Modal
+	form *tview.Form
 }
 
-func NewConfirmPanel(text string, result chan bool) *ConfirmPanel {
+func NewConfirmPanel(result chan bool) *ConfirmPanel {
 	c := &ConfirmPanel{
-		modal: tview.NewModal(),
+		form: tview.NewForm(),
 	}
 
-	c.modal.
-		SetBackgroundColor(tcell.ColorBlue).
-		SetText(text).
-		AddButtons([]string{"Yes", "No"})
+	c.form.
+		SetButtonsAlign(tview.AlignCenter).
+		SetBorder(true).
+		SetBorderColor(tcell.ColorGreen).
+		SetBorderPadding(3, 1, 1, 1).
+		SetTitle(" Are you sure? ")
 
-	c.modal.SetDoneFunc(func(buttonIndex int, buttonLabel string) {
-		if buttonLabel == "Yes" {
-			result <- true
-		} else {
-			result <- false
+	c.form.AddButton("Yes", func() {
+		result <- true
+	})
+	c.form.AddButton("No", func() {
+		result <- false
+	})
+
+	c.form.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		switch event.Key() {
+		case tcell.KeyDown, tcell.KeyRight:
+			return tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone)
+		case tcell.KeyUp, tcell.KeyLeft:
+			return tcell.NewEventKey(tcell.KeyBacktab, 0, tcell.ModNone)
 		}
+		return event
 	})
 
 	return c
 }
 
-func (c *ConfirmPanel) GetModal() *tview.Modal {
-	return c.modal
+func (c *ConfirmPanel) GetForm() *tview.Form {
+	return c.form
 }

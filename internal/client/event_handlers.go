@@ -134,22 +134,23 @@ func (a *Application) turnActionPhase() {
 		a.bottomRow.RemoveItem(cl.GetList())
 	}
 
-	//confirmCh := make(chan bool)
-	//defer close(confirmCh)
-	//
-	//cf := ui.NewConfirmPanel("Are you sure?", confirmCh)
-	//a.bottomRow.AddItem(cf.GetModal(), 0, 3, 1, 1, 1, 1, true)
-	//
-	//// Sync point.
-	//confirmed := <-confirmCh
-	//
-	//// Remove confirm modal.
-	//a.bottomRow.RemoveItem(cf.GetModal())
-	//
-	//if !confirmed {
-	//	// Cancel the action by sending a wildcard company to the channel.
-	//	company = game.WildcardCompany
-	//}
+	confirmCh := make(chan bool)
+	defer close(confirmCh)
+
+	cf := ui.NewConfirmPanel(confirmCh)
+	a.bottomRow.AddItem(cf.GetForm(), 0, 3, 1, 1, 1, 1, true)
+	a.app.SetFocus(cf.GetForm())
+
+	// Sync point.
+	confirmed := <-confirmCh
+
+	// Remove confirm modal.
+	a.bottomRow.RemoveItem(cf.GetForm())
+
+	if !confirmed {
+		// Cancel the action by sending a wildcard company to the channel.
+		id = -1
+	}
 
 	// Send action to server.
 	a.l.Info("sending action", "card", id, "company", company)
