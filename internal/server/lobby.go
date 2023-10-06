@@ -85,6 +85,8 @@ func (l *lobby) joinPlayer(c net.Conn) {
 		lg.Info("player reconnected", "key", key)
 		p.SetConn(conn)
 		p.SetName(name)
+		go l.fanInConnection(key, conn)
+		l.triggerStateUpdate()
 		return
 	}
 

@@ -334,6 +334,11 @@ func (a *Application) handleStateUpdate(state *message.GameState) {
 
 	// Readiness update.
 	if !state.Started {
+		if a.gameStarted.Load() {
+			a.gameStarted.Store(false)
+			a.pages.SwitchToPage(lobbyPageName)
+		}
+
 		if len(state.Readiness) > 0 {
 			a.lobby.Update(state.Readiness)
 		}
