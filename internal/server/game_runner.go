@@ -310,23 +310,27 @@ func (g *gameRunner) sendStateUpdate(order []string, turn, currentPlayer int, is
 	for _, key := range keys {
 		// Separate player and opponents.
 		state.Player = playerStates[key]
+
 		opps := make([]game.Player, 0, game.MaxPlayers-1)
-		for k, p := range playerStates {
+		for _, k := range keys {
 			if k != key {
+				// Opponent state.
+				oppState := playerStates[k]
+
 				// Never include opponent hand.
-				o := game.Player{Name: p.Name}
+				opp := game.Player{Name: oppState.Name}
 
 				if isFinal {
 					// Only include cash and stocks if game is over.
-					o.Cash = p.Cash
-					o.Stocks = p.Stocks
+					opp.Cash = oppState.Cash
+					opp.Stocks = oppState.Stocks
 				} else {
 					// Otherwise, only include "levels" of wealth.
-					o.Cash = game.CashLevel(p.Cash)
-					o.Stocks = [4]int{game.StockLevel(p.Stocks[0]), game.StockLevel(p.Stocks[1]), game.StockLevel(p.Stocks[2]), game.StockLevel(p.Stocks[3])}
+					opp.Cash = game.CashLevel(oppState.Cash)
+					opp.Stocks = [4]int{game.StockLevel(oppState.Stocks[0]), game.StockLevel(oppState.Stocks[1]), game.StockLevel(oppState.Stocks[2]), game.StockLevel(oppState.Stocks[3])}
 				}
 
-				opps = append(opps, o)
+				opps = append(opps, opp)
 			}
 		}
 		state.Opponents = opps

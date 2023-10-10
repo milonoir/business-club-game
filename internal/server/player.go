@@ -1,7 +1,7 @@
 package server
 
 import (
-	"sort"
+	"slices"
 	"sync"
 
 	"github.com/milonoir/business-club-game/internal/game"
@@ -105,12 +105,14 @@ func (p *player) SetHand(hand []*game.Card) {
 type playerMap struct {
 	mux sync.RWMutex
 	m   map[string]Player
+	ord []string
 }
 
 // newPlayerMap creates a new playerMap.
 func newPlayerMap() *playerMap {
 	return &playerMap{
-		m: make(map[string]Player, game.MaxPlayers),
+		m:   make(map[string]Player, game.MaxPlayers),
+		ord: make([]string, 0, game.MaxPlayers*2),
 	}
 }
 
@@ -120,6 +122,14 @@ func (pm *playerMap) add(key string, p Player) {
 	defer pm.mux.Unlock()
 
 	pm.m[key] = p
+
+	pm.ord = pm.ord[:0]
+	for k := range pm.m {
+		pm.ord = append(pm.ord, k)
+	}
+
+	// Sort keys for deterministic order.
+	slices.Sort(pm.ord)
 }
 
 // remove removes a Player from the map.
@@ -128,6 +138,14 @@ func (pm *playerMap) remove(key string) {
 	defer pm.mux.Unlock()
 
 	delete(pm.m, key)
+
+	pm.ord = pm.ord[:0]
+	for k := range pm.m {
+		pm.ord = append(pm.ord, k)
+	}
+
+	// Sort keys for deterministic order.
+	slices.Sort(pm.ord)
 }
 
 // keys returns a slice of keys in the map.
@@ -135,15 +153,7 @@ func (pm *playerMap) keys() []string {
 	pm.mux.RLock()
 	defer pm.mux.RUnlock()
 
-	keys := make([]string, 0, len(pm.m))
-	for k := range pm.m {
-		keys = append(keys, k)
-	}
-
-	// Sort keys for deterministic order.
-	sort.Strings(keys)
-
-	return keys
+	return pm.ord
 }
 
 // get returns a Player from the map.
@@ -164,6 +174,7 @@ func (pm *playerMap) len() int {
 }
 
 // forEach iterates over all Players in the map.
+// Players are iterated in a non-deterministic order.
 func (pm *playerMap) forEach(f func(Player)) {
 	pm.mux.RLock()
 	defer pm.mux.RUnlock()
