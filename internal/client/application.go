@@ -184,7 +184,7 @@ func (a *Application) initUI() {
 
 	// Game version widget.
 	a.version = ui.NewVersionPanel()
-	a.version.SetVersion("0.0.1")
+	a.version.SetVersion(game.Version)
 	gamePage.AddItem(a.version.GetTextView(), 4, 0, 1, 1, 1, 1, false)
 
 	// Server status widget.
