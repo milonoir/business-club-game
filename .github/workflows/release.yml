@@ -24,11 +24,14 @@ jobs:
         uses: magefile/mage-action@v3
         with:
           install-only: true
+      - name: Extract version
+        run: |
+          echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
       - name: Build binaries with Mage
         run: |
-          mage v-all ${GITHUB_REF#refs/tags/}
-          mage v-win ${GITHUB_REF#refs/tags/}
-          mage v-mac ${GITHUB_REF#refs/tags/}
+          mage v-all ${VERSION}
+          mage v-win ${VERSION}
+          mage v-mac ${VERSION}
       - name: Release Notes
         run: |
           git log $(git describe HEAD~ --tags --abbrev=0)..HEAD --pretty='format:* %h %s%n  * %an <%ae>' --no-merges >> ".github/RELEASE-TEMPLATE.md"
@@ -38,7 +41,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
             bin/*
+            bin/win64/*
+            bin/darwin/*
           body_path: ".github/RELEASE-TEMPLATE.md"
-          tag_name: ${{ github.ref }}
+          tag_name: ${VERSION}
           draft: false
           prerelease: false
