@@ -30,5 +30,5 @@ func (p *VersionPanel) GetTextView() *tview.TextView {
 }
 
 func (p *VersionPanel) SetVersion(v string) {
-	p.tv.SetText(fmt.Sprintf("The Business Club v%s", v))
+	p.tv.SetText(fmt.Sprintf("The Business Club %s", v))
 }

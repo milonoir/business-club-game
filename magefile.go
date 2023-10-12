@@ -10,6 +10,35 @@ import (
 	"github.com/magefile/mage/sh"
 )
 
+// Path to main packages.
+const (
+	mainServer = "./cmd/bc-server"
+	mainClient = "./cmd/bc-client"
+)
+
+// Target binary names.
+const (
+	targetServer = "bin/bc-server"
+	targetClient = "bin/bc-client"
+)
+
+// Target file name suffixes.
+const (
+	targetLinux   = ".linux-x86_64"
+	targetWindows = ".windows-x86_64.exe"
+	targetMac     = ".darwin-x86_64"
+)
+
+// Target file names.
+const (
+	targetLinuxServer   = targetServer + targetLinux
+	targetLinuxClient   = targetClient + targetLinux
+	targetWindowsServer = targetServer + targetWindows
+	targetWindowsClient = targetClient + targetWindows
+	targetMacServer     = targetServer + targetMac
+	targetMacClient     = targetClient + targetMac
+)
+
 // Default target to run when none is specified
 // If not set, running mage will list available targets
 var Default = Build.All
@@ -63,13 +92,13 @@ func (b Build) All() error {
 func (Build) Server() error {
 	mg.Deps(Deps)
 	fmt.Println("Building Linux server...")
-	return sh.Run("go", "build", "-o", "bin/bc-server", "./cmd/bc-server")
+	return sh.Run("go", "build", "-o", targetLinuxServer, mainServer)
 }
 
 func (Build) Client() error {
 	mg.Deps(Deps)
 	fmt.Println("Building Linux client...")
-	return sh.Run("go", "build", "-o", "bin/bc-client", "./cmd/bc-client")
+	return sh.Run("go", "build", "-o", targetLinuxClient, mainClient)
 }
 
 func (b Build) WinAll() error {
@@ -83,13 +112,13 @@ func (b Build) WinAll() error {
 func (Build) WinServer() error {
 	mg.Deps(Deps)
 	fmt.Println("Building Windows server...")
-	return sh.RunWith(envWin, "go", "build", "-o", "bin/win64/bc-server.exe", "./cmd/bc-server")
+	return sh.RunWith(envWin, "go", "build", "-o", targetWindowsServer, mainServer)
 }
 
 func (Build) WinClient() error {
 	mg.Deps(Deps)
 	fmt.Println("Building Windows client...")
-	return sh.RunWith(envWin, "go", "build", "-o", "bin/win64/bc-client.exe", "./cmd/bc-client")
+	return sh.RunWith(envWin, "go", "build", "-o", targetWindowsClient, mainClient)
 }
 
 func (b Build) MacAll() error {
@@ -103,13 +132,13 @@ func (b Build) MacAll() error {
 func (Build) MacServer() error {
 	mg.Deps(Deps)
 	fmt.Println("Building Mac server...")
-	return sh.RunWith(envMac, "go", "build", "-o", "bin/darwin/bc-server", "./cmd/bc-server")
+	return sh.RunWith(envMac, "go", "build", "-o", targetMacServer, mainServer)
 }
 
 func (Build) MacClient() error {
 	mg.Deps(Deps)
 	fmt.Println("Building Mac client...")
-	return sh.RunWith(envMac, "go", "build", "-o", "bin/darwin/bc-client", "./cmd/bc-client")
+	return sh.RunWith(envMac, "go", "build", "-o", targetMacClient, mainClient)
 }
 
 func (v Versioned) All(version string) error {
@@ -122,16 +151,16 @@ func (v Versioned) All(version string) error {
 
 func (Versioned) Server(version string) error {
 	mg.Deps(Deps)
-	fmt.Printf("Building Linux server (v%s)...\n", version)
+	fmt.Printf("Building Linux server (%s)...\n", version)
 	vf := fmt.Sprintf("-X 'github.com/milonoir/business-club-game/internal/game.Version=%s'", version)
-	return sh.Run("go", "build", "-ldflags", vf, "-o", "bin/bc-server", "./cmd/bc-server")
+	return sh.Run("go", "build", "-ldflags", vf, "-o", targetLinuxServer, mainServer)
 }
 
 func (Versioned) Client(version string) error {
 	mg.Deps(Deps)
-	fmt.Printf("Building Linux client (v%s)...\n", version)
+	fmt.Printf("Building Linux client (%s)...\n", version)
 	vf := fmt.Sprintf("-X 'github.com/milonoir/business-club-game/internal/game.Version=%s'", version)
-	return sh.Run("go", "build", "-ldflags", vf, "-o", "bin/bc-client", "./cmd/bc-client")
+	return sh.Run("go", "build", "-ldflags", vf, "-o", targetLinuxClient, mainClient)
 }
 
 func (v Versioned) WinAll(version string) error {
@@ -144,16 +173,16 @@ func (v Versioned) WinAll(version string) error {
 
 func (Versioned) WinServer(version string) error {
 	mg.Deps(Deps)
-	fmt.Printf("Building Windows server (v%s)...\n", version)
+	fmt.Printf("Building Windows server (%s)...\n", version)
 	vf := fmt.Sprintf("-X 'github.com/milonoir/business-club-game/internal/game.Version=%s'", version)
-	return sh.RunWith(envWin, "go", "build", "-ldflags", vf, "-o", "bin/win64/bc-server.exe", "./cmd/bc-server")
+	return sh.RunWith(envWin, "go", "build", "-ldflags", vf, "-o", targetWindowsServer, mainServer)
 }
 
 func (Versioned) WinClient(version string) error {
 	mg.Deps(Deps)
-	fmt.Printf("Building Windows client (v%s)...\n", version)
+	fmt.Printf("Building Windows client (%s)...\n", version)
 	vf := fmt.Sprintf("-X 'github.com/milonoir/business-club-game/internal/game.Version=%s'", version)
-	return sh.RunWith(envWin, "go", "build", "-ldflags", vf, "-o", "bin/win64/bc-client.exe", "./cmd/bc-client")
+	return sh.RunWith(envWin, "go", "build", "-ldflags", vf, "-o", targetWindowsClient, mainClient)
 }
 
 func (v Versioned) MacAll(version string) error {
@@ -166,16 +195,16 @@ func (v Versioned) MacAll(version string) error {
 
 func (Versioned) MacServer(version string) error {
 	mg.Deps(Deps)
-	fmt.Printf("Building Mac server (v%s)...\n", version)
+	fmt.Printf("Building Mac server (%s)...\n", version)
 	vf := fmt.Sprintf("-X 'github.com/milonoir/business-club-game/internal/game.Version=%s'", version)
-	return sh.RunWith(envMac, "go", "build", "-ldflags", vf, "-o", "bin/darwin/bc-server", "./cmd/bc-server")
+	return sh.RunWith(envMac, "go", "build", "-ldflags", vf, "-o", targetMacServer, mainServer)
 }
 
 func (Versioned) MacClient(version string) error {
 	mg.Deps(Deps)
-	fmt.Printf("Building Mac client (v%s)...\n", version)
+	fmt.Printf("Building Mac client (%s)...\n", version)
 	vf := fmt.Sprintf("-X 'github.com/milonoir/business-club-game/internal/game.Version=%s'", version)
-	return sh.RunWith(envMac, "go", "build", "-ldflags", vf, "-o", "bin/darwin/bc-client", "./cmd/bc-client")
+	return sh.RunWith(envMac, "go", "build", "-ldflags", vf, "-o", targetMacClient, mainClient)
 }
 
 func Deps() error {

@@ -44,6 +44,6 @@ jobs:
             bin/win64/*
             bin/darwin/*
           body_path: ".github/RELEASE-TEMPLATE.md"
-          tag_name: ${VERSION}
+          tag_name: ${{ env.VERSION }}
           draft: false
           prerelease: false
