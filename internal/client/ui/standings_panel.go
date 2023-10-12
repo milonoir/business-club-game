@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/dustin/go-humanize"
 	"github.com/gdamore/tcell/v2"
 	"github.com/milonoir/business-club-game/internal/message"
 	"github.com/rivo/tview"
@@ -120,9 +121,9 @@ func (p *StandingsPanel) generateBreakdownString(prices, stocks [4]int, cash int
 
 	if showNumbers {
 		for i := 0; i < 4; i++ {
-			sb.WriteString(fmt.Sprintf("[%s]%d\n", p.cp.ColorByIndex(i), stocks[i]))
+			sb.WriteString(fmt.Sprintf("[%s]%s\n", p.cp.ColorByIndex(i), humanize.Comma(int64(stocks[i]))))
 		}
-		sb.WriteString(fmt.Sprintf("[green]%d\n", cash))
+		sb.WriteString(fmt.Sprintf("[green]%s\n", humanize.Comma(int64(cash))))
 	} else {
 		for i := 0; i < 4; i++ {
 			s := strings.Repeat("♦", stocks[i])
@@ -140,7 +141,7 @@ func (p *StandingsPanel) generateBreakdownString(prices, stocks [4]int, cash int
 
 	if showNumbers && showTotal {
 		total := prices[0]*stocks[0] + prices[1]*stocks[1] + prices[2]*stocks[2] + prices[3]*stocks[3] + cash
-		sb.WriteString(fmt.Sprintf("[white]%d\n", total))
+		sb.WriteString(fmt.Sprintf("[white]%s\n", humanize.Comma(int64(total))))
 	}
 
 	return sb.String()
