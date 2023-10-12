@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    name: Build binaries
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21
+      - name: Setup Mage
+        uses: magefile/mage-action@v3
+        with:
+          install-only: true
+      - name: Build binaries with Mage
+        run: |
+          mage v-all ${GITHUB_REF#refs/tags/}
+          mage v-win ${GITHUB_REF#refs/tags/}
+          mage v-mac ${GITHUB_REF#refs/tags/}
+      - name: Release Notes
+        run: |
+          git log $(git describe HEAD~ --tags --abbrev=0)..HEAD --pretty='format:* %h %s%n  * %an <%ae>' --no-merges >> ".github/RELEASE-TEMPLATE.md"
+      - name: Release with Notes
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            bin/*
+          body_path: ".github/RELEASE-TEMPLATE.md"
+          tag_name: ${{ github.ref }}
+          draft: false
+          prerelease: false
