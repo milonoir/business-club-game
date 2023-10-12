@@ -205,7 +205,26 @@ func (a *Application) GetApplication() *tview.Application {
 }
 
 func (a *Application) Run() error {
+	done := make(chan struct{})
+	defer close(done)
+
+	go a.redraw(done)
+
 	return a.app.Run()
+}
+
+func (a *Application) redraw(done <-chan struct{}) {
+	t := time.NewTicker(500 * time.Millisecond)
+	defer t.Stop()
+
+	for {
+		select {
+		case <-done:
+			return
+		case <-t.C:
+			a.app.Draw()
+		}
+	}
 }
 
 func (a *Application) Stop() {

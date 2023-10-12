@@ -44,7 +44,7 @@ func (s *Server) handler() http.HandlerFunc {
 }
 
 func (s *Server) Start(a *game.Assets) {
-	s.l.Info(fmt.Sprintf("The Business Club - server v%s", game.Version))
+	s.l.Info(fmt.Sprintf("The Business Club - server %s", game.Version))
 	// Start the lobby.
 	s.l.Info("starting lobby")
 	s.lobby = newLobby(s.l, a)
