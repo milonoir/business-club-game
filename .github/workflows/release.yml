@@ -41,8 +41,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
             bin/*
-            bin/win64/*
-            bin/darwin/*
           body_path: ".github/RELEASE-TEMPLATE.md"
           tag_name: ${{ env.VERSION }}
           draft: false
