@@ -153,7 +153,11 @@ func (pm *playerMap) keys() []string {
 	pm.mux.RLock()
 	defer pm.mux.RUnlock()
 
-	return pm.ord
+	// The slice is copied to prevent concurrent modification.
+	c := make([]string, len(pm.ord))
+	copy(c, pm.ord)
+
+	return c
 }
 
 // get returns a Player from the map.
