@@ -212,6 +212,9 @@ func (l *lobby) receiver() {
 				// This is an internal signal to send state update to all players.
 				if !l.isGameRunning.Load() {
 					l.sendStateUpdate()
+				} else {
+					// Forward to game runner.
+					l.gameInbox <- sm
 				}
 			default:
 				// Forward to game runner if game is running, otherwise drop.
