@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/dustin/go-humanize"
 	"github.com/gdamore/tcell/v2"
 	"github.com/milonoir/business-club-game/internal/game"
 	"github.com/milonoir/business-club-game/internal/message"
@@ -32,8 +33,6 @@ func NewHistoryPanel(cp *CompanyProvider) *HistoryPanel {
 		SetDynamicColors(true).
 		SetBorder(true).
 		SetBorderColor(tcell.ColorGrey).
-		//SetBorderStyle(tcell.Style{}.
-		//	Foreground(tcell.ColorGrey)).
 		SetTitle(" History ").
 		SetBorderPadding(0, 0, 0, 1)
 
@@ -88,7 +87,7 @@ func (p *HistoryPanel) AddTrade(d *message.Trade) {
 
 	company := p.cp.CompanyByIndex(d.Company)
 	sb.WriteString(fmt.Sprintf("[%s]%s ", p.cp.ColorByIndex(d.Company), company))
-	sb.WriteString(fmt.Sprintf("[white]%d x %d = %d", d.Amount, d.Price, d.Amount*d.Price))
+	sb.WriteString(fmt.Sprintf("[white]%s x %d = %s", humanize.Comma(int64(d.Amount)), d.Price, humanize.Comma(int64(d.Amount*d.Price))))
 
 	p.addString(sb.String())
 }
