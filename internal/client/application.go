@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log/slog"
 	"net"
-	"sync/atomic"
 	"time"
 
 	"github.com/gobwas/ws"
@@ -61,10 +60,9 @@ type Application struct {
 	stocks [4]int
 	prices [4]int
 
-	gameStarted atomic.Bool
-	server      network.Connection
-	errCh       chan string
-	l           *slog.Logger
+	server network.Connection
+	errCh  chan string
+	l      *slog.Logger
 }
 
 func NewApplication(l *slog.Logger) *Application {
@@ -109,11 +107,6 @@ func (a *Application) initUI() {
 			}
 			// Successful login.
 			a.lobby.Reset()
-			if a.gameStarted.Load() {
-				a.pages.SwitchToPage(gamePageName)
-			} else {
-				a.pages.SwitchToPage(lobbyPageName)
-			}
 		},
 		func() {
 			a.Stop()

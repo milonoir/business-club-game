@@ -30,8 +30,7 @@ func (a *Application) handleStateUpdate(state *message.GameState) {
 
 	// Readiness update.
 	if !state.Started {
-		if a.gameStarted.Load() {
-			a.gameStarted.Store(false)
+		if page, _ := a.pages.GetFrontPage(); page == titlePageName || page == gamePageName {
 			a.pages.SwitchToPage(lobbyPageName)
 		}
 
@@ -41,9 +40,8 @@ func (a *Application) handleStateUpdate(state *message.GameState) {
 		return
 	}
 
-	// Switch to main page if game started.
-	if !a.gameStarted.Load() {
-		a.gameStarted.Store(true)
+	// Switch to game page if game started.
+	if page, _ := a.pages.GetFrontPage(); page == titlePageName || page == lobbyPageName {
 		a.pages.SwitchToPage(gamePageName)
 	}
 
@@ -53,7 +51,7 @@ func (a *Application) handleStateUpdate(state *message.GameState) {
 
 	// Update local game data.
 	if len(a.hand) == 0 || len(a.hand) != len(state.Player.Hand) {
-		// This is a little trick to only update the card list if the hand size did not change.
+		// This is a little trick to only update the actions display if the hand changed.
 		// It prevents the list from scrolling to the top on each update made by other players.
 		a.actions.Update(state.Player.Hand)
 	}
