@@ -23,8 +23,8 @@ func NewTradeMenu(cb func(option TradeOption)) *TradeMenu {
 	}
 
 	t.l.
+		SetWrapAround(false).
 		ShowSecondaryText(false).
-
 		SetHighlightFullLine(true).
 		SetSelectedBackgroundColor(tcell.ColorDarkGray).
 		SetBorderColor(tcell.ColorGreen).

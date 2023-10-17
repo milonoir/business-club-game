@@ -20,6 +20,7 @@ func NewCompanyList(cp *CompanyProvider, cb func(int)) *CompanyList {
 	}
 
 	c.l.
+		SetWrapAround(false).
 		ShowSecondaryText(false).
 		SetHighlightFullLine(true).
 		SetSelectedBackgroundColor(tcell.ColorDarkGray).

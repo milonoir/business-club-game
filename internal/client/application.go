@@ -44,7 +44,7 @@ type Application struct {
 
 	// The lower section of the game screen where player interactions are handled.
 	bottomRow *tview.Grid
-	wait      *ui.WaitPanel
+	actions   *ui.ActionDisplay
 
 	// Lobby screen.
 	lobby *ui.LobbyForm
@@ -179,8 +179,8 @@ func (a *Application) initUI() {
 	gamePage.AddItem(a.bottomRow, 2, 0, 1, 3, 1, 1, true)
 
 	// By default, display wait panel will be displayed.
-	a.wait = ui.NewWaitPanel("Please wait for your turn...")
-	a.bottomRow.AddItem(a.wait.GetTextView(), 0, 2, 1, 1, 1, 1, false)
+	a.actions = ui.NewActionDisplay(a.cp)
+	a.bottomRow.AddItem(a.actions.GetTextView(), 0, 2, 1, 1, 1, 1, true)
 
 	// Game version widget.
 	a.version = ui.NewVersionPanel()

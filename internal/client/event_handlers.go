@@ -52,6 +52,11 @@ func (a *Application) handleStateUpdate(state *message.GameState) {
 	a.cp.SetCompanies(state.Companies)
 
 	// Update local game data.
+	if len(a.hand) == 0 || len(a.hand) != len(state.Player.Hand) {
+		// This is a little trick to only update the card list if the hand size did not change.
+		// It prevents the list from scrolling to the top on each update made by other players.
+		a.actions.Update(state.Player.Hand)
+	}
 	a.hand = state.Player.Hand
 	a.cash = state.Player.Cash
 	a.stocks = state.Player.Stocks
@@ -87,9 +92,13 @@ func (a *Application) handleStartTurn(phase game.TurnPhase) {
 }
 
 func (a *Application) turnActionPhase() {
-	// Remove wait panel, while action list is displayed.
-	a.bottomRow.RemoveItem(a.wait.GetTextView())
-	defer a.bottomRow.AddItem(a.wait.GetTextView(), 0, 2, 1, 1, 1, 1, false)
+	// Remove action display, while action list is displayed.
+	a.bottomRow.RemoveItem(a.actions.GetTextView())
+	defer func() {
+		a.actions.Update(a.hand)
+		a.bottomRow.AddItem(a.actions.GetTextView(), 0, 2, 1, 1, 1, 1, true)
+		a.app.SetFocus(a.actions.GetTextView())
+	}()
 
 	actCh := make(chan *game.Card)
 	defer close(actCh)
@@ -160,9 +169,13 @@ func (a *Application) turnActionPhase() {
 }
 
 func (a *Application) turnTradePhase() {
-	// Remove wait panel, while action list is displayed.
-	a.bottomRow.RemoveItem(a.wait.GetTextView())
-	defer a.bottomRow.AddItem(a.wait.GetTextView(), 0, 2, 1, 1, 1, 1, false)
+	// Remove action display, while trade menu is displayed.
+	a.bottomRow.RemoveItem(a.actions.GetTextView())
+	defer func() {
+		a.actions.Update(a.hand)
+		a.bottomRow.AddItem(a.actions.GetTextView(), 0, 2, 1, 1, 1, 1, true)
+		a.app.SetFocus(a.actions.GetTextView())
+	}()
 
 	optCh := make(chan ui.TradeOption)
 	defer close(optCh)
