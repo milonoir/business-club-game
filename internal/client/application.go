@@ -21,6 +21,7 @@ const (
 	titlePageName = "titlePage"
 	lobbyPageName = "lobbyPage"
 	gamePageName  = "gamePage"
+	winPageName   = "winPage"
 	errorPageName = "errorPage"
 )
 
@@ -184,11 +185,25 @@ func (a *Application) initUI() {
 	a.srvStatus = ui.NewServerStatus()
 	gamePage.AddItem(a.srvStatus.GetTextView(), 4, 1, 1, 2, 1, 1, false)
 
+	//-------------------------------------------------- Win page
+	winPage := tview.NewGrid().
+		SetColumns(38, 0).
+		SetRows(0, 0)
+
+	// Congrats panel.
+	congrats := ui.NewCongratsPanel()
+	winPage.AddItem(congrats.GetTextView(), 0, 1, 1, 1, 1, 1, false)
+
+	// Business Club man logo.
+	logo := ui.NewLogoPanel()
+	winPage.AddItem(logo.GetTextView(), 0, 0, 2, 1, 1, 1, false)
+
 	// Setup pages and set pages as root.
 	a.pages.
-		AddPage(titlePageName, titlePage, true, true).
+		AddPage(titlePageName, titlePage, true, false).
 		AddPage(lobbyPageName, lobbyPage, true, false).
-		AddPage(gamePageName, gamePage, true, false)
+		AddPage(gamePageName, gamePage, true, false).
+		AddPage(winPageName, winPage, true, true)
 
 	a.app.SetRoot(a.pages, true)
 }
