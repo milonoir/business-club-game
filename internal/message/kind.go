@@ -1,65 +1,66 @@
 package message
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	"strconv"
 )
 
 // Kind is the type of the message.
-type Kind uint8
+type Kind string
 
 // UnmarshalJSON implements the json.Unmarshaler interface.
 func (k *Kind) UnmarshalJSON(b []byte) error {
 	if b == nil {
 		return errors.New("kind cannot be nil")
 	}
-
-	v, err := strconv.ParseUint(string(b), 10, 8)
-	if err != nil {
+	var s string
+	if err := json.Unmarshal(b, &s); err != nil {
 		return fmt.Errorf("cannot parse kind: %w", err)
 	}
-
-	if kk := Kind(v); kk > JournalTrade {
+	switch v := Kind(s); v {
+	case Unknown, Ack, Error, KeyExchange, StateUpdate, VoteToStart, StartTurn, EndTurn, PlayCard, TradeStock, JournalAction, JournalTrade:
+		*k = v
+	default:
 		*k = Unknown
-	} else {
-		*k = kk
 	}
-
 	return nil
 }
 
 const (
 	// Unknown is used for unidentified messages.
-	Unknown Kind = iota
+	Unknown Kind = "Unknown"
+
+	// Ack is used for acknowledging messages.
+	Ack Kind = "Ack"
 
 	// Error is a server type message that contains an error.
-	Error
+	Error Kind = "Error"
 
 	// KeyExchange is used for sending/receiving reconnect keys.
-	KeyExchange
+	KeyExchange Kind = "KeyExchange"
 
 	// StateUpdate is a server type message that contains the up-to-date game state sent to clients.
-	StateUpdate
+	StateUpdate Kind = "StateUpdate"
 
 	// VoteToStart is a client type message that represents client readiness.
-	VoteToStart
+	VoteToStart Kind = "VoteToStart"
 
 	// StartTurn is a server type message that signals a client that their turn has started.
-	StartTurn
+	StartTurn Kind = "StartTurn"
 
 	// EndTurn is a client type message when a player wants to end their turn.
-	EndTurn
+	EndTurn Kind = "EndTurn"
 
 	// PlayCard is a client type message when a player wants to play a card.
-	PlayCard
+	PlayCard Kind = "PlayCard"
 
 	// TradeStock is a client type message when a player wants to trade stocks.
-	TradeStock
+	TradeStock Kind = "TradeStock"
 
 	// JournalAction is a server type message that contains an action journal message.
-	JournalAction
+	JournalAction Kind = "JournalAction"
 
 	// JournalTrade is a server type message that contains a trade journal message.
-	JournalTrade
+	JournalTrade Kind = "JournalTrade"
 )

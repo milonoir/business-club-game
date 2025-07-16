@@ -7,11 +7,13 @@ import (
 	"io"
 	"log/slog"
 	"net"
+	"sync"
 	"sync/atomic"
 	"time"
 
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
+	"github.com/google/uuid"
 	"github.com/milonoir/business-club-game/internal/message"
 )
 
@@ -40,6 +42,7 @@ type connection struct {
 	conn     net.Conn
 	side     ws.State
 	done     chan struct{}
+	couriers sync.Map
 	inbox    chan message.Message
 	alive    atomic.Bool
 	lastPong time.Time
@@ -92,16 +95,34 @@ func (c *connection) Send(msg message.Message) error {
 		return fmt.Errorf("corrupt message: %w", err)
 	}
 
-	c.l.Debug("write message", "type", msg.Type(), "payload", msg.Payload())
-	if err = wsutil.WriteMessage(c.conn, c.side, ws.OpText, b); err != nil {
-		return fmt.Errorf("write message to %s: %w", c.conn.RemoteAddr(), err)
+	id := uuid.NewString()
+	wrapped := &wrapped{
+		Id:   id,
+		Type: deliveryWrapped,
+		Msg:  b,
 	}
+	b, err = json.Marshal(wrapped)
+	if err != nil {
+		return fmt.Errorf("marshal wrapped message: %w", err)
+	}
+
+	c.l.Debug("write message", "type", msg.Type(), "payload", msg.Payload(), "id", id)
+
+	courier := newCourier(c.conn, c.side, id, b, c.l)
+	c.couriers.Store(id, courier)
+	go courier.run()
 
 	return nil
 }
 
 // Close closes the connection along with all running goroutines.
 func (c *connection) Close() error {
+	c.couriers.Range(func(key, value interface{}) bool {
+		courier := value.(*courier)
+		courier.stop()
+		return true
+	})
+	c.couriers.Clear()
 	close(c.done)
 	close(c.inbox)
 
@@ -198,14 +219,37 @@ func (c *connection) receive() {
 			}
 
 			// Text message.
-			if msg, err = message.Parse(rm.Payload); err != nil {
-				c.l.Error("parse message", "error", err)
+			var w wrapped
+			if err = json.Unmarshal(rm.Payload, &w); err != nil {
+				c.l.Error("unmarshal wrapped message", "error", err)
 				continue
 			}
-			select {
-			case c.inbox <- msg:
-			default:
-				// Inbox buffer full, drop message.
+			if w.Type == deliveryAck {
+				c.l.Debug("acknowledge message", "id", w.Id)
+				if v, ok := c.couriers.LoadAndDelete(w.Id); ok {
+					v.(*courier).stop()
+				}
+				continue
+			}
+			if w.Type == deliveryWrapped && w.Msg != nil {
+				if msg, err = message.Parse(w.Msg); err != nil {
+					c.l.Error("parse message", "error", err)
+					continue
+				}
+				select {
+				case c.inbox <- msg:
+					w := &wrapped{
+						Id:   w.Id,
+						Type: deliveryAck,
+					}
+					if b, err := json.Marshal(w); err != nil {
+						c.l.Error("marshal ack message", "error", err)
+					} else if err := wsutil.WriteMessage(c.conn, c.side, ws.OpText, b); err != nil {
+						c.l.Error(fmt.Sprintf("write ack message %s to %s: %v", w.Id, c.conn.RemoteAddr(), err))
+					}
+				default:
+					// Inbox buffer full, drop message.
+				}
 			}
 		}
 	}

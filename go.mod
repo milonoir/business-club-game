@@ -1,10 +1,12 @@
 module github.com/milonoir/business-club-game
 
-go 1.21
+go 1.24
 
 require (
+	github.com/dustin/go-humanize v1.0.1
 	github.com/gdamore/tcell/v2 v2.6.0
 	github.com/gobwas/ws v1.1.0
+	github.com/google/uuid v1.6.0
 	github.com/magefile/mage v1.15.0
 	github.com/rivo/tview v0.0.0-20230511053024-822bd067b165
 	github.com/stretchr/testify v1.7.2
@@ -13,7 +15,6 @@ require (
 
 require (
 	github.com/davecgh/go-spew v1.1.0 // indirect
-	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/gdamore/encoding v1.0.0 // indirect
 	github.com/gobwas/httphead v0.1.0 // indirect
 	github.com/gobwas/pool v0.2.1 // indirect

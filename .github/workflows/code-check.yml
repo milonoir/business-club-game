@@ -1,0 +1,40 @@
+name: Code Check
+
+on:
+  pull_request:
+    branches:
+      - main
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    name: Build and Test 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.24
+      - name: Setup Mage
+        uses: magefile/mage-action@v3
+        with:
+          install-only: true
+      - name: Run Tests
+        run: |
+          mage test
+
+      ### TODO: Uncomment when linting and formatting checks are implemented
+      # - name: Run Lint
+      #   run: |
+      #     mage lint
+      # - name: Run Format Check
+      #   run: |
+      #     mage format-check
+      # - name: Run Vet
+      #   run: |
+      #     mage vet
