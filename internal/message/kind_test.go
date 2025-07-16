@@ -17,62 +17,57 @@ func TestKind_UnmarshalJSON(t *testing.T) {
 	}{
 		{
 			name:    "error",
-			raw:     []byte(`{"Kind":1}`),
+			raw:     []byte(`{"Kind":"Error"}`),
 			expKind: Error,
 		},
 		{
 			name:    "key exchange",
-			raw:     []byte(`{"Kind":2}`),
+			raw:     []byte(`{"Kind":"KeyExchange"}`),
 			expKind: KeyExchange,
 		},
 		{
 			name:    "game state",
-			raw:     []byte(`{"Kind":3}`),
+			raw:     []byte(`{"Kind":"StateUpdate"}`),
 			expKind: StateUpdate,
 		},
 		{
 			name:    "vote to start",
-			raw:     []byte(`{"Kind":4}`),
+			raw:     []byte(`{"Kind":"VoteToStart"}`),
 			expKind: VoteToStart,
 		},
 		{
 			name:    "start turn",
-			raw:     []byte(`{"Kind":5}`),
+			raw:     []byte(`{"Kind":"StartTurn"}`),
 			expKind: StartTurn,
 		},
 		{
 			name:    "end turn",
-			raw:     []byte(`{"Kind":6}`),
+			raw:     []byte(`{"Kind":"EndTurn"}`),
 			expKind: EndTurn,
 		},
 		{
 			name:    "play a card",
-			raw:     []byte(`{"Kind":7}`),
+			raw:     []byte(`{"Kind":"PlayCard"}`),
 			expKind: PlayCard,
 		},
 		{
 			name:    "trade stocks",
-			raw:     []byte(`{"Kind":8}`),
+			raw:     []byte(`{"Kind":"TradeStock"}`),
 			expKind: TradeStock,
 		},
 		{
 			name:    "journal action",
-			raw:     []byte(`{"Kind":9}`),
+			raw:     []byte(`{"Kind":"JournalAction"}`),
 			expKind: JournalAction,
 		},
 		{
 			name:    "journal trade",
-			raw:     []byte(`{"Kind":10}`),
+			raw:     []byte(`{"Kind":"JournalTrade"}`),
 			expKind: JournalTrade,
 		},
 		{
-			name:    "no kind",
-			raw:     []byte(`{"Type":6}`),
-			expKind: Unknown,
-		},
-		{
 			name:    "unknown kind",
-			raw:     []byte(`{"Kind":71}`),
+			raw:     []byte(`{"Kind":"Foobar"}`),
 			expKind: Unknown,
 		},
 		{
